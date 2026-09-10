@@ -1,0 +1,617 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pilotage SRH 2026</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><style>
+:root{--page-bg:#f7f8fb;--ink:#172033;--muted:#6c7587;--line:#e7eaf0;--accent:#d97706;--accent-soft:#fff7e8;--green:#0f766e;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--page-bg);color:var(--ink)}
+.page-shell{max-width:1480px;margin:auto;padding:1rem 1rem 2rem}.page-panel,.card{background:#fff;border:1px solid var(--line);border-radius:.85rem;box-shadow:0 .25rem 1rem rgba(15,23,42,.045)}
+.hero{background:linear-gradient(120deg,#fff 0%,#fff8ed 62%,#f2f7ff 100%);position:relative;overflow:hidden;padding:1.35rem 1.5rem;margin-bottom:1rem}.hero:after{content:"";position:absolute;width:220px;height:220px;border:38px solid rgba(217,119,6,.035);border-radius:50%;right:-65px;top:-100px}.hero-content{position:relative;z-index:1}.eyebrow{font-size:.7rem;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:.09em}.hero h1{font-weight:750;letter-spacing:-.035em;margin:0;font-size:1.65rem}.hero p{color:var(--muted);max-width:820px;margin:.35rem 0 0;font-size:.84rem}.hero-actions{display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap}.stamp{padding:.5rem .7rem;border:1px solid var(--line);border-radius:.65rem;background:rgba(255,255,255,.85);font-size:.76rem;color:var(--muted);font-weight:700}
+.tabs{display:flex;gap:.35rem;margin-bottom:1rem;padding:.35rem;background:#eef1f5;border-radius:.75rem;width:max-content;max-width:100%;overflow:auto}.tab{border:0;background:transparent;padding:.58rem .85rem;border-radius:.55rem;cursor:pointer;font-weight:650;color:#5f6878;font-size:.82rem;white-space:nowrap}.tab.active{background:#fff;color:#172033;box-shadow:0 1px 4px rgba(15,23,42,.08)}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;gap:.85rem}.kpis{grid-template-columns:repeat(4,1fr)}.card{padding:.95rem}.kpis .card{position:relative;overflow:hidden}.kpis .card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent,#d97706)}.label{color:var(--muted);font-size:.67rem;text-transform:uppercase;font-weight:750;letter-spacing:.05em}.value{font-size:1.55rem;font-weight:780;margin:.35rem 0;color:#172033;letter-spacing:-.02em}.sub{font-size:.74rem;color:var(--muted);line-height:1.45}.three{grid-template-columns:repeat(3,1fr);margin-top:.85rem}.mass h3{margin:0 0 .65rem;font-size:.95rem}.bar{height:7px;background:#edf0f4;border-radius:9px;overflow:hidden;margin:.65rem 0}.bar i{display:block;height:100%;background:var(--accent,#d97706)}
+table{width:100%;border-collapse:collapse;font-size:.78rem}th,td{padding:.58rem .65rem;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{background:#fafbfc;color:#596273;font-weight:700}.group-row td{background:#faf7f2;font-weight:750;color:#5d4630}.total-row td{background:#fff8ed;font-weight:800;border-top:2px solid #f2d4a8}.param-total{font-size:1.45rem;font-weight:800;color:#172033}.param-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--line)}.param-head h3{margin:0;font-size:.95rem}.pill{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border-radius:999px;background:#fff7e8;color:#b45309;font-size:.7rem;font-weight:700}
+input{width:100%;padding:.48rem .55rem;border:1px solid #d8dde6;border-radius:.55rem;text-align:right;background:#fff;outline:none;font-size:.78rem}input:focus{border-color:#f0b45e;box-shadow:0 0 0 3px rgba(217,119,6,.12)}.input{background:#fffaf0}.section-title{display:flex;justify-content:space-between;align-items:end;margin:1.15rem .1rem .45rem}.section-title h2{font-size:1rem;margin:0;color:#172033}.section-title:before{content:""}.note{padding:.8rem .9rem;background:#fff8ed;border-left:3px solid #d97706;font-size:.76rem;border-radius:.55rem;line-height:1.5;color:#5d4630}.actions{display:flex;gap:.45rem;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:.55rem;padding:.5rem .75rem;cursor:pointer;font-weight:700;font-size:.76rem;background:#fff;color:#384152}.btn:hover{box-shadow:0 .2rem .65rem rgba(15,23,42,.06)}.primary{background:#d97706;color:#fff;border-color:#d97706}.secondary{background:#fff;color:#475569}.status{font-weight:750}.ok{color:var(--green)}.warn{color:#b7791f}.danger{color:var(--red)}.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}.hint{font-size:.72rem;color:var(--muted);margin-top:.5rem}.money-cell{font-variant-numeric:tabular-nums}.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}.chart-card canvas{width:100%;height:320px;display:block}.history-empty{padding:2rem;text-align:center;color:var(--muted)}.badge-date{font-weight:800;color:#172033}.mini{font-size:.68rem;color:var(--muted)}
+.section-kicker{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#b45309}.section-copy{font-size:.76rem;color:var(--muted)}
+@media(max-width:1050px){.kpis,.three,.param-grid,.chart-grid{grid-template-columns:1fr 1fr}}@media(max-width:680px){.kpis,.three,.param-grid,.chart-grid{grid-template-columns:1fr}.page-shell{padding:.75rem}.hero{padding:1rem}.hero h1{font-size:1.35rem}.hero-actions{justify-content:flex-start;margin-top:.75rem}.tabs{width:100%}}
+
+.tariff-actions{display:flex;gap:.4rem;align-items:center}.btn-xs{padding:.3rem .5rem;font-size:.68rem}
+.readonly{background:#f8fafc;color:#64748b}.delta{font-weight:750}.delta.pos{color:#0f766e}.delta.neg{color:#b42318}
+.point-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}.point-summary>div{padding:.75rem;border:1px solid var(--line);border-radius:.7rem;background:#fafbfc}
+.data-menu{position:relative}.data-menu summary{list-style:none}.data-menu summary::-webkit-details-marker{display:none}.menu{position:fixed;z-index:9999;background:#fff;border:1px solid var(--line);border-radius:.65rem;padding:.4rem;box-shadow:0 .7rem 1.8rem rgba(15,23,42,.16);min-width:220px;display:none}.data-menu[open] .menu{display:block}.menu button{display:block;width:100%;text-align:left;margin:.15rem 0}
+@media(max-width:680px){.point-summary{grid-template-columns:1fr}}
+
+.tariff-current{border:1px solid #cfe0ff;background:linear-gradient(145deg,#fff,#f7faff)}
+.tariff-current .param-head{align-items:center}
+.badge-active{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem;border-radius:999px;background:#e9f8f1;color:#0f766e;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.tariff-history{margin-top:12px;border:1px solid var(--line);border-radius:.8rem;background:#fff;overflow:hidden}
+.tariff-history>summary{cursor:pointer;padding:.9rem 1rem;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.tariff-history>summary::-webkit-details-marker{display:none}.tariff-history>summary:after{content:"▾";color:var(--muted)}
+.tariff-history[open]>summary:after{content:"▴"}.tariff-history-body{padding:0 1rem 1rem}
+.version-card{border:1px solid var(--line);border-radius:.7rem;padding:.8rem;margin-top:.7rem;background:#fafbfc}
+.version-card summary{cursor:pointer;font-weight:700}.muted-small{font-size:.7rem;color:var(--muted)}
+.calc-alert{display:none;margin:.6rem 0;padding:.65rem .8rem;border:1px solid #fecaca;background:#fff7f7;color:#991b1b;border-radius:.65rem;font-size:.75rem}
+
+.tariff-toolbar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.badge-future{display:inline-flex;align-items:center;padding:.2rem .5rem;border-radius:999px;background:#fff7ed;color:#b45309;font-size:.64rem;font-weight:800;text-transform:uppercase}
+.badge-history{display:inline-flex;align-items:center;padding:.2rem .5rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.64rem;font-weight:800;text-transform:uppercase}
+.edit-confirm{margin-top:.7rem;padding:.65rem .8rem;border:1px solid #fde68a;background:#fffbeb;border-radius:.65rem;font-size:.72rem;color:#92400e}
+
+.module-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.15rem;background:#fff;border:1px solid var(--line);border-radius:.85rem;box-shadow:0 .25rem 1rem rgba(15,23,42,.045);margin-bottom:1rem}
+.module-ident{display:flex;align-items:center;gap:.9rem;min-width:0}.module-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:.72rem;background:#fff4e5;color:#d97706;flex:0 0 auto}
+.module-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.9;fill:none}.module-copy{min-width:0}.module-kicker{font-size:.64rem;font-weight:800;color:#d97706;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.12rem}
+.module-title{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;line-height:1.15}.module-sub{font-size:.72rem;color:var(--muted);margin-top:.28rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.module-actions{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.decision-card{margin-top:.85rem;padding:1rem;border:1px solid var(--line);border-radius:.85rem;background:#fff;box-shadow:0 .25rem 1rem rgba(15,23,42,.045)}
+.decision-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.8rem}.decision-title{font-size:1rem;font-weight:800;margin:0}.decision-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.decision-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}.decision-item{border:1px solid var(--line);border-radius:.7rem;padding:.78rem;background:#fafbfc;min-height:92px}.decision-item .k{font-size:.64rem;text-transform:uppercase;font-weight:800;letter-spacing:.05em;color:var(--muted)}.decision-item .v{font-size:.83rem;font-weight:800;margin-top:.38rem;line-height:1.35}.decision-item .d{font-size:.69rem;color:var(--muted);margin-top:.3rem;line-height:1.35}
+.decision-item.ok{background:#f3faf7;border-color:#cce8dc}.decision-item.watch{background:#fffaf0;border-color:#fde0a6}.decision-item.alert{background:#fff5f5;border-color:#fecaca}
+.decision-item.ok .v{color:#0f766e}.decision-item.watch .v{color:#a16207}.decision-item.alert .v{color:#b42318}
+.action-line{margin-top:.75rem;padding:.8rem .9rem;border-radius:.7rem;border-left:4px solid #d97706;background:#fff8ed;font-size:.76rem;line-height:1.5}
+.check-list{margin:.7rem 0 0;padding-left:1.05rem;font-size:.73rem;color:#475569}.check-list li{margin:.25rem 0}
+@media(max-width:1050px){.decision-grid{grid-template-columns:1fr 1fr}}@media(max-width:680px){.module-head{align-items:flex-start;flex-direction:column}.module-actions{justify-content:flex-start}.module-sub{white-space:normal}.decision-grid{grid-template-columns:1fr}}
+
+.pdf-only{display:none}
+@media print{
+ @page{size:A4 landscape;margin:8mm}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ body{background:#fff!important;font-size:9pt}
+ .page-shell{max-width:none!important;padding:0!important;margin:0!important}
+ .module-head{box-shadow:none!important;margin:0 0 5mm!important;padding:4mm 5mm!important;border-radius:3mm!important}
+ .module-actions,.tabs,.data-menu,.btn,.calc-alert{display:none!important}
+ .module-sub{white-space:normal!important}
+ .panel{display:none!important}
+ #dash.panel{display:block!important}
+ .kpis{grid-template-columns:repeat(4,1fr)!important;gap:3mm!important}
+ .three{grid-template-columns:repeat(3,1fr)!important;gap:3mm!important;margin-top:3mm!important}
+ .card,.decision-card{box-shadow:none!important;break-inside:avoid}
+ .kpis .card{padding:3mm!important}
+ .value{font-size:15pt!important;margin:1.5mm 0!important}
+ .sub{font-size:7pt!important}
+ .mass{padding:3mm!important}
+ .mass h3{font-size:9pt!important;margin-bottom:2mm!important}
+ table{font-size:7.3pt!important}
+ th,td{padding:1.7mm 2mm!important}
+ .bar{margin:2mm 0!important}
+ .decision-card{margin-top:3mm!important;padding:3mm!important}
+ .decision-head{margin-bottom:2mm!important}
+ .decision-grid{grid-template-columns:repeat(4,1fr)!important;gap:2mm!important}
+ .decision-item{padding:2.5mm!important;min-height:0!important}
+ .decision-item .k{font-size:6.5pt!important}.decision-item .v{font-size:8pt!important;margin-top:1mm!important}.decision-item .d{font-size:6.5pt!important;margin-top:1mm!important}
+ .action-line{margin-top:2mm!important;padding:2.5mm!important;font-size:7.3pt!important}
+ .check-list{font-size:6.8pt!important;margin-top:2mm!important}
+ #dash>.section-title,#dash>.section-title+.card,#dash>.note{display:none!important}
+ .pdf-only{display:block!important}
+ .pdf-footer{margin-top:2.5mm;padding-top:2mm;border-top:1px solid #dfe3e8;font-size:6.5pt;color:#64748b;display:flex!important;justify-content:space-between}
+}
+</style><script src="assets/iframe-storage-bridge.js"></script></head><body><main class="page-shell"><section class="module-head">
+  <div class="module-ident">
+    <div class="module-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M7 3v8M4 3v5c0 2 1 3 3 3s3-1 3-3V3M7 11v10M16 3v18M16 3c3 2 4 5 4 8h-4"/></svg>
+    </div>
+    <div class="module-copy">
+      <div class="module-kicker">Pilotage</div>
+      <div class="module-title">Crédit nourriture</div>
+      <div class="module-sub" id="moduleSub">Mon EPLE — exercice 2026 — situation au 31/08/2026</div>
+    </div>
+  </div>
+  <div class="module-actions">
+    <button class="btn primary" onclick="savePoint()">Enregistrer le point</button><button class="btn secondary" onclick="exportPDF()">Export PDF</button>
+    <details class="data-menu"><summary class="btn secondary">Données ▾</summary><div class="menu"><button class="btn secondary" onclick="exportHTML()">Sauvegarde HTML autonome</button><button class="btn secondary" onclick="resetBase()">Réinitialiser les saisies</button></div></details>
+    <div id="stamp" class="stamp">Point au 31/08/2026</div>
+  </div>
+</section>
+<div class="tabs"><button class="tab active" data-tab="dash">Tableau de bord</button><button class="tab" data-tab="saisie">Point de situation</button><button class="tab" data-tab="hist">Historique</button><button class="tab" data-tab="param">Paramètres</button></div>
+<section id="dash" class="panel active"><div class="grid kpis">
+<div class="card" style="--accent:#2563eb"><div class="label">Recettes repas projetées</div><div class="value" id="kRec">—</div><div class="sub" id="recSub">—</div></div>
+<div class="card" style="--accent:#d97706"><div class="label">Crédit nourriture annuel</div><div class="value" id="kFood">—</div><div class="sub" id="foodSub">—</div></div>
+<div class="card" style="--accent:#0f766e"><div class="label">Fonctionnement SRH hors RRH</div><div class="value" id="kFonct">—</div><div class="sub">participation votée : VIAB, maintenance, contrats, EPI, produits…</div></div>
+<div class="card" style="--accent:#7c3aed"><div class="label">RRH projeté</div><div class="value" id="kRRH">—</div><div class="sub" id="rrhSub">—</div></div></div>
+<div class="grid three">
+<div class="card mass" style="--accent:#d97706"><h3>🍽️ Denrées</h3><table><tr><td>Atterrissage calculé</td><td id="dCalc"></td></tr><tr><td>Budget Op@le</td><td id="dBud"></td></tr><tr><td>Engagé</td><td id="dEng"></td></tr><tr><td>Capacité résiduelle théorique</td><td id="dRest"></td></tr></table><div class="bar"><i id="dBar"></i></div><div class="sub" id="dMsg"></div></div>
+<div class="card mass" style="--accent:#0f766e"><h3>⚙️ Fonctionnement hors RRH</h3><table><tr><td>Participation projetée</td><td id="fCalc"></td></tr><tr><td>Budget identifié</td><td id="fBud"></td></tr><tr><td>Engagé identifié</td><td id="fEng"></td></tr><tr><td>Capacité résiduelle théorique</td><td id="fRest"></td></tr></table><div class="bar"><i id="fBar"></i></div><div class="sub">Cette capacité n'est pas un disponible : confronter aux charges restant à supporter.</div></div>
+<div class="card mass" style="--accent:#7c3aed"><h3>🏛️ RRH</h3><table><tr><td>Reversement projeté</td><td id="rCalc"></td></tr><tr><td>Budget Op@le</td><td id="rBud"></td></tr><tr><td>Engagé</td><td id="rEng"></td></tr><tr><td>Reste théorique</td><td id="rRest"></td></tr></table><div class="bar"><i id="rBar"></i></div><div class="sub" id="rMsg"></div></div></div>
+
+<div class="decision-card">
+  <div class="decision-head">
+    <div><h2 class="decision-title">Lecture & conduite à tenir</h2><div class="decision-sub">Diagnostic automatique à partir de l’atterrissage, du budget DENRÉE et du rapprochement SRH / gestion.</div></div>
+    <span class="status" id="decisionBadge">—</span>
+  </div>
+  <div class="decision-grid">
+    <div class="decision-item" id="decSituation"><div class="k">Situation</div><div class="v" id="decSituationV">—</div><div class="d" id="decSituationD">—</div></div>
+    <div class="decision-item" id="decGap"><div class="k">Écart SRH / gestion</div><div class="v" id="decGapV">—</div><div class="d" id="decGapD">—</div></div>
+    <div class="decision-item" id="decVigilance"><div class="k">Vigilance</div><div class="v" id="decVigilanceV">—</div><div class="d" id="decVigilanceD">—</div></div>
+    <div class="decision-item" id="decAction"><div class="k">Action</div><div class="v" id="decActionV">—</div><div class="d" id="decActionD">—</div></div>
+  </div>
+  <div class="action-line"><b>Décision proposée :</b> <span id="decisionText">—</span></div>
+  <ul class="check-list" id="decisionChecks"></ul>
+</div>
+<div class="section-title"><h2>Lecture de trajectoire</h2></div><div class="card"><table><thead><tr><th>Population</th><th>Réalisé à la date</th><th>Projection future tarif 3</th><th>Atterrissage</th><th>Part projetée</th></tr></thead><tbody id="traj"></tbody></table></div>
+<div class="note" style="margin-top:14px"><b>Contrôle :</b> au point de référence du 31/08/2026, avec les valeurs préchargées, l’atterrissage doit être proche de 646 444,72 € de recettes repas. Une forte divergence signale une saisie, un tarif ou une projection à vérifier.</div><div class="note" style="margin-top:14px"><b>Principe :</b> à chaque point, le réalisé remplace la projection. Le reliquat futur des élèves DP et des internes est projeté sur le tarif 3 ; les autres convives sont projetés sur leur propre tarif. L'atterrissage recalcule automatiquement participation au fonctionnement, RRH et crédit nourriture.</div>
+<div class="pdf-only pdf-footer"><span>Crédit nourriture · document de pilotage SRH</span><span id="pdfFooterDate"></span></div></section>
+<section id="saisie" class="panel">
+<div class="section-title"><div><div class="section-kicker">Saisie simplifiée</div><h2>Nouveau point de situation</h2></div><div class="actions"><button class="btn primary" onclick="savePoint()">Enregistrer et recalculer</button></div></div>
+<div class="card">
+  <div style="display:grid;grid-template-columns:220px minmax(250px,1fr) minmax(260px,1fr);gap:12px;align-items:end">
+    <label>Date du point<input id="datePoint" type="date" value="2026-08-31"></label>
+    <label>Commandes SRH non encore intégrées en gestion (€)<input id="cmdPending" type="number" step=".01" value="0"></label>
+    <div class="sub">Saisissez les commandes déjà passées par le SRH mais qui ne sont pas encore retrouvées dans l’engagé Op@le. Cet écart sert uniquement au diagnostic et ne modifie pas l’engagé comptable.</div>
+  </div>
+</div>
+<div class="section-title"><h2>Demi-pensionnaires · passages cumulés</h2><div class="sub">Le delta depuis le point précédent est calculé automatiquement.</div></div>
+<div class="card"><table><thead><tr><th>Tarif</th><th>Point précédent</th><th>Nouveau cumul</th><th>Écart période</th><th>Tarif applicable</th></tr></thead><tbody id="dpRows"></tbody></table>
+<div class="point-summary mt-3"><div><div class="label">Projection future</div><label>Passages projetés au tarif médian T3<input id="dpProjT3" class="input" value="24954"></label></div><div><div class="label">Tarif T3 applicable</div><div class="param-total" id="dpT3Display">—</div></div><div><div class="label">Projection valorisée</div><div class="param-total" id="dpProjValue">—</div></div></div></div>
+<div class="section-title"><h2>Internat · effectifs et réalisé cumulé</h2><div class="sub">L’effectif sert au suivi. Le réalisé en euros est saisi séparément pour éviter de valoriser à tort un effectif par un forfait annuel complet.</div></div>
+<div class="card"><table><thead><tr><th>Tranche</th><th>Effectif précédent</th><th>Effectif actuel</th><th>Écart</th><th>Réalisé cumulé €</th></tr></thead><tbody id="intRows"></tbody></table>
+<div class="point-summary mt-3"><div><div class="label">Projection future</div><label>Internes projetés en tranche T3<input id="intProjT3" class="input" value="118"></label></div><div><div class="label">Tarif T3 de projection</div><div class="param-total" id="intT3Display">—</div></div><div><div class="label">Projection valorisée</div><div class="param-total" id="intProjValue">—</div></div></div></div>
+<div class="section-title"><h2>Autres convives · passages cumulés</h2><div class="sub">Même mécanisme que pour les demi-pensionnaires : cumul constaté, delta depuis le point précédent et projection en nombre de repas.</div></div>
+<div class="card"><table><thead><tr><th>Population / tarif</th><th>Point précédent</th><th>Nouveau cumul</th><th>Écart période</th><th>Tarif réalisé</th><th>Projection repas</th><th>Tarif projection</th><th>Atterrissage €</th></tr></thead><tbody id="otherRows"></tbody></table></div>
+<div class="note" style="margin-top:14px"><b>Calcul :</b> les passages DP et autres convives sont valorisés au tarif applicable à leur période. Pour l’internat, le réalisé cumulé est saisi en euros et seule la projection future est valorisée au tarif T3. Le tarif de projection est celui applicable au lendemain du point.</div>
+</section>
+<section id="hist" class="panel"><div class="section-title"><h2>Historique des points</h2><div class="actions"><button class="btn secondary" onclick="exportHTML()">Sauvegarde HTML</button><button class="btn primary" onclick="savePoint()">Enregistrer le point courant</button></div></div>
+<div class="chart-grid"><div class="card chart-card"><div class="param-head"><div><div class="label">Tendances financières</div><h3>Budget · calculé · restant</h3></div><span class="pill">4 indicateurs</span></div><canvas id="finChart" width="700" height="320"></canvas></div><div class="card chart-card"><div class="param-head"><div><div class="label">Fréquentation</div><h3>Passages DP par tarif</h3></div><span class="pill">Réalisé cumulé</span></div><canvas id="mealChart" width="700" height="320"></canvas></div></div>
+<div class="section-title"><h2>Détail des points enregistrés</h2><div class="sub">Chaque point conserve les paramètres et tarifs utilisés lors de son enregistrement. Une même date met à jour le snapshot.</div></div><div class="card" id="histTable"></div></section>
+<section id="param" class="panel">
+
+
+<div class="section-title">
+  <div><div class="section-kicker">Référentiel temporel</div><h2>Tarifs et taux applicables</h2></div>
+  <div class="actions"><button class="btn primary" onclick="addTariffChangeSet()">Nouveaux tarifs</button></div>
+</div>
+<div id="calcAlert" class="calc-alert"></div>
+<div id="activeTariffSet"></div>
+<details class="tariff-history">
+  <summary><span>Versions précédentes</span><span class="muted-small" id="previousTariffCount"></span></summary>
+  <div class="tariff-history-body" id="previousTariffSets"></div>
+</details>
+<div class="section-title"><h2>Paramètres budgétaires Op@le</h2><div class="sub">Les totaux sont calculés automatiquement à partir des lignes détaillées.</div></div>
+<div class="param-grid">
+<div class="card"><div class="param-head"><div><div class="label">Recettes repas</div><h3>Budget de référence</h3></div><div><div class="label">Total budget</div><div class="param-total" id="totBudRec">—</div></div></div><table><thead><tr><th>Ligne</th><th>Budget ouvert</th></tr></thead><tbody><tr><td>FORFAIT</td><td><input id="budFORFAIT" value="301676.40"></td></tr><tr><td>PERSON</td><td><input id="budPERSON" value="32967.60"></td></tr><tr><td>TICKET</td><td><input id="budTICKET" value="274385.00"></td></tr><tr class="total-row"><td>Total recettes repas</td><td id="sumBudRec">—</td></tr></tbody></table><input id="budRec" type="hidden" value="609029.00"><div class="hint">Le total FORFAIT + PERSON + TICKET alimente automatiquement la comparaison avec l’atterrissage des recettes repas.</div></div>
+<div class="card"><div class="param-head"><div><div class="label">Denrées</div><h3>Ventilation des crédits alimentaires</h3></div><div><div class="label">Total budget</div><div class="param-total" id="totBudD">—</div></div></div><table><thead><tr><th>Ligne</th><th>Budget ouvert</th><th>Engagé</th></tr></thead><tbody><tr><td>DENR · EGAlim</td><td><input id="budDE" value="90522.23"></td><td><input id="engDE" value="46028.89"></td></tr><tr><td>DENR · Bio</td><td><input id="budDB" value="60348.15"></td><td><input id="engDB" value="44497.15"></td></tr><tr><td>DENR · Conventionnel</td><td><input id="budDC" value="150870.39"></td><td><input id="engDC" value="94133.42"></td></tr><tr class="total-row"><td>Total Denrées</td><td id="sumBudD">—</td><td id="sumEngD">—</td></tr></tbody></table><div class="hint">Le total Denrées alimente automatiquement la carte « Denrées » du tableau de bord.</div></div>
+<div class="card"><div class="param-head"><div><div class="label">Fonctionnement SRH hors RRH</div><h3>Charges de structure et dépenses obligatoires</h3></div><div><div class="label">Total budget</div><div class="param-total" id="totBudF">—</div></div></div><table><thead><tr><th>Ligne</th><th>Budget ouvert</th><th>Engagé</th></tr></thead><tbody><tr><td>VIAB · Eau / énergie</td><td><input id="budFV" value="139305.00"></td><td><input id="engFV" value="69998.75"></td></tr><tr><td>FONCT · Maintenance / contrats / produits / EPI</td><td><input id="budFF" value="40520.00"></td><td><input id="engFF" value="31043.34"></td></tr><tr><td>ADMINI · Charges administratives SRH</td><td><input id="budFA" value="7042.65"></td><td><input id="engFA" value="249.63"></td></tr><tr><td>DIVERS · Autres charges SRH</td><td><input id="budFD" value="2500.00"></td><td><input id="engFD" value="57.00"></td></tr><tr class="total-row"><td>Total fonctionnement hors RRH</td><td id="sumBudF">—</td><td id="sumEngF">—</td></tr></tbody></table><div class="hint">Ce total est comparé à la participation au fonctionnement calculée à partir des recettes repas. Il ne correspond pas aux seules dépenses VIAB.</div></div>
+<div class="card"><div class="param-head"><div><div class="label">RRH</div><h3>Reversement à la collectivité</h3></div><span class="pill">Ligne autonome</span></div><table><thead><tr><th>Masse</th><th>Budget ouvert</th><th>Engagé</th></tr></thead><tbody><tr><td>RRH</td><td><input id="budR" value="141703.89"></td><td><input id="engR" value="16167.05"></td></tr></tbody></table></div>
+</div>
+<div class="section-title"><h2>Principe de calcul</h2></div><div class="card"><div class="note"><b>À chaque point de situation :</b> les valeurs observées remplacent progressivement la projection. Pour les élèves DP et les internes, seul le reliquat à servir est projeté au tarif 3. L’atterrissage recalcule ensuite automatiquement le crédit nourriture, la participation au fonctionnement hors RRH et le RRH.</div></div>
+</section></div>
+<script id="embeddedState" type="application/json">null</script>
+<script>
+const EUR=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}), N=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0});
+const otherDefs=[
+ {pop:'COMM',label:'Agent Région',real:1525,proj:1067},
+ {pop:'COMM',label:'Agent État INM < 360',real:915,proj:640},
+ {pop:'COMM',label:'Agent État INM < 460',real:536,proj:375},
+ {pop:'COMM',label:'Agent État INM > 460',real:624,proj:436},
+ {pop:'OTHER',label:'Hôte de passage',real:221,proj:154},
+ {pop:'OTHER',label:'Élève ponctuel',real:4487,proj:3365},
+ {pop:'OTHER',label:'Repas amélioré',real:0,proj:0}
+];
+const baseTariffs=[
+ {pop:'DP',label:'T1',amount:3.40,rrh:0,fon:.25,from:'2025-09-01'},
+ {pop:'DP',label:'T2',amount:4.15,rrh:.15,fon:.25,from:'2025-09-01'},
+ {pop:'DP',label:'T3',amount:4.55,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'DP',label:'T4',amount:5.15,rrh:.32,fon:.25,from:'2025-09-01'},
+ {pop:'INT',label:'T1',amount:1395,rrh:.03,fon:.35,from:'2025-09-01'},
+ {pop:'INT',label:'T2',amount:1620,rrh:.165,fon:.35,from:'2025-09-01'},
+ {pop:'INT',label:'T3',amount:1750,rrh:.23,fon:.35,from:'2025-09-01'},
+ {pop:'INT',label:'T4',amount:1953,rrh:.31,fon:.35,from:'2025-09-01'},
+ {pop:'COMM',label:'Agent Région',amount:3.00,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'COMM',label:'Agent État INM < 360',amount:3.10,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'COMM',label:'Agent État INM < 460',amount:4.70,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'COMM',label:'Agent État INM > 460',amount:5.60,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'OTHER',label:'Hôte de passage',amount:9.60,rrh:.23,fon:.25,from:'2025-09-01'},
+ {pop:'OTHER',label:'Élève ponctuel',amount:5.15,rrh:.32,fon:.25,from:'2025-09-01'},
+ {pop:'OTHER',label:'Repas amélioré',amount:16.50,rrh:.23,fon:.25,from:'2025-09-01'}
+];
+const defaultChangeSets=[
+ {id:'chg-2026-09',date:'2026-09-01',label:'Tarifs applicables au 01/09/2026',changes:[
+   {pop:'DP',label:'T1',amount:3.50},
+   {pop:'DP',label:'T2',amount:4.25},
+   {pop:'DP',label:'T3',amount:4.70},
+   {pop:'DP',label:'T4',amount:5.30},
+   {pop:'INT',label:'T1',amount:1494},
+   {pop:'INT',label:'T2',amount:1737},
+   {pop:'INT',label:'T3',amount:1881},
+   {pop:'INT',label:'T4',amount:2097},
+   {pop:'COMM',label:'Agent État INM < 360',amount:3.20},
+   {pop:'COMM',label:'Agent État INM < 460',amount:4.85},
+   {pop:'COMM',label:'Agent État INM > 460',amount:5.80},
+   {pop:'OTHER',label:'Hôte de passage',amount:9.90},
+   {pop:'OTHER',label:'Élève ponctuel',amount:5.30}
+ ]}
+];
+const initialDP=[8046,9040,7430,11133], initialINT=[37,42,34,56], initialINTReal=[16247.28,20672.10,18563.95,28095.34];
+let tariffs=JSON.parse(JSON.stringify(baseTariffs)), tariffChangeSets=JSON.parse(JSON.stringify(defaultChangeSets)), history=[], lastMetrics=null;
+function num(id){let e=document.getElementById(id);return e?(parseFloat(e.value)||0):0} function money(x){return EUR.format(x)}
+function inputsState(){return [...document.querySelectorAll('input')].reduce((a,e)=>(e.id&&(a[e.id]=e.value),a),{})}
+function applyInputs(o){Object.entries(o||{}).forEach(([k,v])=>{let e=document.getElementById(k);if(e)e.value=v})}
+function popLabel(pop){return ({DP:'Demi-pension',INT:'Internat',COMM:'Commensaux',OTHER:'Autre'})[pop]||pop}
+function activeTariff(pop,label,date){
+ const base=tariffs.filter(t=>t.pop===pop&&t.label===label&&t.from<=date).sort((a,b)=>b.from.localeCompare(a.from))[0];
+ if(!base)return {amount:0,rrh:0,fon:0,from:''};
+ let result={...base};
+ tariffChangeSets.filter(cs=>cs.date<=date).sort((a,b)=>a.date.localeCompare(b.date)).forEach(cs=>{
+   const c=cs.changes.find(x=>x.pop===pop&&x.label===label);
+   if(c) result={...result,...Object.fromEntries(Object.entries(c).filter(([,v])=>v!==null&&v!==''&&v!==undefined)),from:cs.date};
+ });
+ return result
+}
+function nextDay(date){if(!date)return date;let d=new Date(date+'T12:00:00');d.setDate(d.getDate()+1);return d.toISOString().slice(0,10)}
+function previousRevenue(prev,key){return prev?.realizedByKey?.[key]??0}
+function previousPoint(date){
+  return history.filter(h=>h.date<date).sort((a,b)=>b.date.localeCompare(a.date))[0]||null
+}
+
+function tariffKey(t){return t.pop+'|'+t.label}
+function resolvedTariffs(date){
+ const order={DP:1,INT:2,COMM:3,OTHER:4};
+ return tariffs.map(t=>activeTariff(t.pop,t.label,date))
+   .filter((t,i,a)=>a.findIndex(x=>tariffKey(x)===tariffKey(t))===i)
+   .sort((a,b)=>(order[a.pop]-order[b.pop])||a.label.localeCompare(b.label,'fr'))
+}
+function currentChangeSet(date){
+  return tariffChangeSets.filter(cs=>cs.date<=date).sort((a,b)=>b.date.localeCompare(a.date))[0]||null
+}
+function tariffYear(date){return (date||new Date().toISOString().slice(0,10)).slice(0,4)}
+function yearStart(date){return tariffYear(date)+'-01-01'}
+function versionsInYear(date){
+  const y=tariffYear(date);
+  return tariffChangeSets.filter(cs=>cs.date.startsWith(y+'-')).sort((a,b)=>a.date.localeCompare(b.date))
+}
+function effectiveVersionDate(date){
+  const y=tariffYear(date), inYear=versionsInYear(date).filter(cs=>cs.date<=date);
+  if(inYear.length)return inYear[inYear.length-1].date;
+  // If no tariff change exists in the year up to the point, the unique inherited tariff set
+  // is considered applicable from 01/01 of the year for display and control purposes.
+  return y+'-01-01'
+}
+function isLastChangeSet(cs){
+  if(!cs)return false;
+  const ordered=[...tariffChangeSets].sort((a,b)=>a.date.localeCompare(b.date));
+  return ordered.length>0 && ordered[ordered.length-1].id===cs.id
+}
+function editRowHtml(c,i,scope){
+ return `<tr>
+ <td><select data-scope="${scope}" data-ti="${i}" data-k="pop"><option value="DP"${c.pop==='DP'?' selected':''}>Demi-pension</option><option value="INT"${c.pop==='INT'?' selected':''}>Internat</option><option value="COMM"${c.pop==='COMM'?' selected':''}>Commensaux</option><option value="OTHER"${c.pop==='OTHER'?' selected':''}>Autre</option></select></td>
+ <td><input data-scope="${scope}" data-ti="${i}" data-k="label" value="${c.label||''}"></td>
+ <td><input data-scope="${scope}" data-ti="${i}" data-k="amount" type="number" step=".01" value="${c.amount??''}" placeholder="hérité"></td>
+ <td><input data-scope="${scope}" data-ti="${i}" data-k="rrh" type="number" step=".1" value="${c.rrh==null?'':(c.rrh*100).toFixed(1)}" placeholder="hérité"></td>
+ <td><input data-scope="${scope}" data-ti="${i}" data-k="fon" type="number" step=".1" value="${c.fon==null?'':(c.fon*100).toFixed(1)}" placeholder="hérité"></td>
+ <td><button class="btn btn-xs secondary" onclick="removeChangeRow('${scope}',${i})">Suppr.</button></td></tr>`
+}
+function renderResolvedTable(date){
+ const rows=resolvedTariffs(date);
+ return `<div style="overflow:auto"><table><thead><tr><th>Population</th><th>Intitulé</th><th>Tarif actif</th><th>RRH</th><th>Fonct. SRH</th></tr></thead><tbody>${
+   rows.map(t=>`<tr><td>${popLabel(t.pop)}</td><td>${t.label}</td><td><b>${money(t.amount)}</b></td><td>${(t.rrh*100).toFixed(1)} %</td><td>${(t.fon*100).toFixed(1)} %</td></tr>`).join('')
+ }</tbody></table></div>`
+}
+function renderTariffs(){
+ const pointDate=document.getElementById('datePoint')?.value||new Date().toISOString().slice(0,10);
+ const date=new Date().toISOString().slice(0,10);
+ const cs=currentChangeSet(date);
+ const active=document.getElementById('activeTariffSet');
+ if(!active)return;
+
+ const effectiveDate=effectiveVersionDate(date);
+ let editor='';
+ if(cs && isLastChangeSet(cs)){
+   editor=`<div class="section-title" style="margin-top:.85rem">
+     <div><div class="label">Dernier jeu de tarifs</div><div class="sub">Modifiable après validation explicite.</div></div>
+     <button class="btn secondary" onclick="confirmEditLastTariffSet('${cs.id}')">Modifier le dernier jeu</button>
+   </div>
+   <div id="lastTariffEditor-${cs.id}" style="display:none">
+     <div class="edit-confirm"><b>Modification contrôlée :</b> cette action modifie le dernier jeu de tarifs. Les points déjà enregistrés restent figés dans l’historique.</div>
+     <div class="section-title" style="margin-top:.7rem"><div><div class="label">Modifications du jeu actif</div></div><button class="btn secondary" onclick="addChangeRow('${cs.id}')">Ajouter une modification</button></div>
+     <div style="overflow:auto"><table><thead><tr><th>Population</th><th>Intitulé</th><th>Nouveau tarif</th><th>Nouveau RRH</th><th>Nouveau Fonct.</th><th></th></tr></thead><tbody>${cs.changes.map((c,i)=>editRowHtml(c,i,cs.id)).join('')}</tbody></table></div>
+   </div>`;
+ } else if(cs){
+   editor=`<div class="note" style="margin-top:.8rem">Ce jeu n’est pas le dernier jeu tarifaire : il est conservé en lecture seule pour sécuriser l’historique.</div>`;
+ } else {
+   editor=`<div class="note" style="margin-top:.8rem">Aucune modification tarifaire n’est active dans l’année à cette date. La grille héritée s’applique depuis le <b>${formatDate(yearStart(date))}</b>.</div>`;
+ }
+
+ active.innerHTML=`<div class="card tariff-current">
+   <div class="param-head">
+     <div><div class="label">Jeu de tarifs actif aujourd’hui</div><h3>Tarifs applicables au ${formatDate(date)}</h3></div>
+     <div class="tariff-toolbar"><span class="badge-active">● Actif</span><span class="muted-small">Applicable depuis le ${formatDate(effectiveDate)}</span></div>
+   </div>
+   ${renderResolvedTable(date)}
+   <div class="note" style="margin-top:.7rem">Le jeu affiché ici est celui applicable aujourd’hui. Le calcul d’un point de situation continue d’utiliser les tarifs réellement applicables à la date du point et aux périodes projetées.</div>
+   ${editor}
+ </div>`;
+
+ const prev=document.getElementById('previousTariffSets');
+ const previous=tariffChangeSets.filter(x=>x.date<effectiveDate).sort((a,b)=>b.date.localeCompare(a.date));
+ const future=tariffChangeSets.filter(x=>x.date>date).sort((a,b)=>a.date.localeCompare(b.date));
+ let cards=[];
+
+ cards.push(`<details class="version-card"><summary>${formatDate(yearStart(date))} · Grille héritée au début de l’année <span class="badge-history">Référence</span></summary><div style="margin-top:.7rem">${renderResolvedTable(yearStart(date))}</div></details>`);
+
+ previous.forEach(v=>cards.push(`<details class="version-card"><summary>${formatDate(v.date)} · ${v.label} <span class="badge-history">Précédent</span></summary><div style="margin-top:.7rem">${renderResolvedTable(v.date)}</div></details>`));
+ future.forEach(v=>cards.push(`<details class="version-card"><summary>${formatDate(v.date)} · ${v.label} <span class="badge-future">À venir</span></summary><div style="margin-top:.7rem">${renderResolvedTable(v.date)}${isLastChangeSet(v)?`<div style="margin-top:.7rem"><button class="btn secondary" onclick="confirmEditLastTariffSet('${v.id}')">Modifier ce dernier jeu</button></div>`:''}</div></details>`));
+
+ document.getElementById('previousTariffCount').textContent=(cards.length)+' version'+(cards.length>1?'s':'');
+ prev.innerHTML=cards.join('')
+}
+function confirmEditLastTariffSet(id){
+ const cs=tariffChangeSets.find(x=>x.id===id);if(!cs)return;
+ if(!isLastChangeSet(cs)){alert('Seul le dernier jeu de tarifs peut être modifié.');return}
+ if(!confirm(`Modifier le dernier jeu de tarifs du ${formatDate(cs.date)} ?\n\nLes points historiques déjà enregistrés ne seront pas recalculés.`))return;
+ const editor=document.getElementById('lastTariffEditor-'+id);
+ if(editor){editor.style.display='block';editor.scrollIntoView({behavior:'smooth',block:'nearest'});return}
+ // If the set is future and displayed in the archive, move the point to that effective date so it becomes active/editable.
+ const dp=document.getElementById('datePoint');
+ if(dp){dp.value=cs.date;renderTariffs();safeCalc(false);setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+id);if(e)e.style.display='block'},0)}
+}
+function addBaseTariff(){tariffs.push({pop:'OTHER',label:'Nouveau tarif',amount:0,rrh:0,fon:0,from:yearStart(document.getElementById('datePoint')?.value)});renderTariffs();safeCalc(false)}
+function removeBaseTariff(i){tariffs.splice(i,1);renderTariffs();safeCalc(false)}
+function addTariffChangeSet(){
+ const point=new Date().toISOString().slice(0,10);
+ const activeToday=currentChangeSet(point);
+ if(activeToday && isLastChangeSet(activeToday)){
+   if(confirm(`Le dernier jeu de tarifs, applicable depuis le ${formatDate(activeToday.date)}, est actuellement actif.\n\nVoulez-vous modifier ce jeu ?\n\nChoisissez Annuler pour créer un nouveau jeu à une date ultérieure.`)){
+     renderTariffs();safeCalc(false);
+     setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+activeToday.id);if(e){e.style.display='block';e.scrollIntoView({behavior:'smooth',block:'nearest'})}},0);
+     return
+   }
+ }
+ let proposed=nextDay(point);
+ const y=tariffYear(point);
+ const sets=versionsInYear(point);
+
+ // If there is only one tariff game for the considered year, it is deemed to start on 01/01.
+ if(sets.length===0) proposed=y+'-01-01';
+
+ const existing=tariffChangeSets.find(cs=>cs.date===proposed);
+ if(existing){
+   if(isLastChangeSet(existing)){
+     if(confirm(`Un jeu de tarifs existe déjà au ${formatDate(proposed)}.\n\nVoulez-vous modifier ce dernier jeu plutôt que d’en créer un nouveau ?`)){
+       const dp=document.getElementById('datePoint');
+       if(dp)dp.value=existing.date;
+       renderTariffs();safeCalc(false);
+       setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+existing.id);if(e)e.style.display='block'},0)
+     }
+     return
+   }
+   // Non-blocking fallback: choose the next free day.
+   let d=new Date(proposed+'T12:00:00');
+   while(tariffChangeSets.some(cs=>cs.date===d.toISOString().slice(0,10)))d.setDate(d.getDate()+1);
+   proposed=d.toISOString().slice(0,10)
+ }
+ const id='chg-'+Date.now();
+ tariffChangeSets.push({id,date:proposed,label:'Tarifs applicables au '+formatDate(proposed),changes:[]});
+ const dp=document.getElementById('datePoint');if(dp)dp.value=proposed;
+ renderTariffs();safeCalc(false);
+ setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+id);if(e)e.style.display='block'},0)
+}
+function removeChangeSet(id){tariffChangeSets=tariffChangeSets.filter(cs=>cs.id!==id);renderTariffs();safeCalc(false)}
+function addChangeRow(id){const cs=tariffChangeSets.find(x=>x.id===id);if(!cs)return;cs.changes.push({pop:'OTHER',label:'Nouveau tarif',amount:null,rrh:null,fon:null});renderTariffs();setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+id);if(e)e.style.display='block'},0)}
+function removeChangeRow(id,i){const cs=tariffChangeSets.find(x=>x.id===id);if(!cs)return;cs.changes.splice(i,1);renderTariffs();safeCalc(false);setTimeout(()=>{const e=document.getElementById('lastTariffEditor-'+id);if(e)e.style.display='block'},0)}
+function build(){
+ let d=document.getElementById('dpRows');d.innerHTML='';initialDP.forEach((v,i)=>d.innerHTML+=`<tr><td>T${i+1}</td><td class="readonly" id="dpprev${i}">—</td><td><input id="dpn${i}" value="${v}"></td><td id="dpdelta${i}">—</td><td id="dptar${i}">—</td></tr>`);
+ let q=document.getElementById('intRows');q.innerHTML='';initialINT.forEach((v,i)=>q.innerHTML+=`<tr><td>T${i+1}</td><td class="readonly" id="inprev${i}">—</td><td><input id="inn${i}" value="${v}"></td><td id="indelta${i}">—</td><td><input id="inreal${i}" value="${initialINTReal[i].toFixed(2)}"></td></tr>`);
+ let o=document.getElementById('otherRows');o.innerHTML='';otherDefs.forEach((x,i)=>o.innerHTML+=`<tr><td>${x.label}</td><td class="readonly" id="othprev${i}">—</td><td><input id="othn${i}" value="${x.real}"></td><td id="othdelta${i}">—</td><td id="othtar${i}">—</td><td><input id="othproj${i}" value="${x.proj}"></td><td id="othptar${i}">—</td><td id="othatt${i}">—</td></tr>`);renderTariffs()
+}
+function renderBudgetTotals(){
+ const budRec=num('budFORFAIT')+num('budPERSON')+num('budTICKET');
+ const bd=num('budDE')+num('budDB')+num('budDC'),ed=num('engDE')+num('engDB')+num('engDC');
+ const bf=num('budFV')+num('budFF')+num('budFA')+num('budFD'),ef=num('engFV')+num('engFF')+num('engFA')+num('engFD');
+ const br=num('budR'),er=num('engR');
+ const put=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=money(val)};
+ put('totBudRec',budRec);put('sumBudRec',budRec);const hidden=document.getElementById('budRec');if(hidden)hidden.value=budRec;
+ put('totBudD',bd);put('sumBudD',bd);put('sumEngD',ed);
+ put('totBudF',bf);put('sumBudF',bf);put('sumEngF',ef);
+ return {budRec,bd,ed,bf,ef,br,er}
+}
+function ensureCoreHelpers(){
+ if(typeof previousPoint!=='function')window.previousPoint=(date)=>history.filter(h=>h.date<date).sort((a,b)=>b.date.localeCompare(a.date))[0]||null
+}
+function setDecisionCard(id,level,title,detail){
+ const e=document.getElementById(id);if(!e)return;
+ e.classList.remove('ok','watch','alert');e.classList.add(level);
+ const v=document.getElementById(id+'V'),d=document.getElementById(id+'D');if(v)v.textContent=title;if(d)d.textContent=detail
+}
+function renderDecision(rec,food,budRec,bd,ed){
+ const pending=num('cmdPending');
+ const srhCommitted=ed+pending;
+ const pendingRate=pending/Math.max(srhCommitted,1);
+ const foodGap=food-bd;
+ const foodGapRate=Math.abs(foodGap)/Math.max(bd,1);
+ const recGap=rec-budRec;
+ const recGapRate=Math.abs(recGap)/Math.max(budRec,1);
+ const remainingNeed=Math.max(0,food-srhCommitted);
+ const available=Math.max(0,bd-ed);
+ const availableAfterPending=Math.max(0,bd-srhCommitted);
+
+ let level='ok',sit='Trajectoire maîtrisée',sitD='Le crédit nourriture projeté reste cohérent avec le budget DENRÉE.';
+ if(foodGap>0){level=foodGapRate>0.10?'alert':'watch';sit='Crédit nourriture supérieur au budget';sitD=`Écart de ${money(foodGap)} entre l’atterrissage et les crédits DENRÉE ouverts.`}
+ else if(foodGapRate>0.10){level='watch';sit='Sous-consommation ou marge importante';sitD=`Le budget DENRÉE dépasse l’atterrissage de ${money(-foodGap)} : vérifier qu’il ne manque pas de commandes ou de factures.`}
+ setDecisionCard('decSituation',level,sit,sitD);
+
+ let gapLevel='ok',gapTitle='Rapprochement satisfaisant',gapDetail='Aucune commande SRH non intégrée n’est déclarée.';
+ if(pending>0){
+   gapLevel=pendingRate>0.10?'alert':pendingRate>=0.05?'watch':'ok';
+   gapTitle=`${money(pending)} à rapprocher`;
+   gapDetail=`${(pendingRate*100).toFixed(1)} % des commandes/engagements identifiés ne sont pas encore traduits dans l’engagé Op@le.`;
+ }
+ setDecisionCard('decGap',gapLevel,gapTitle,gapDetail);
+
+ let vigLevel='ok',vigTitle='Pas d’alerte majeure',vigDetail=`Disponible DENRÉE : ${money(available)} · besoin restant projeté : ${money(remainingNeed)}.`;
+ if(recGapRate>0.10 && recGap>0){vigLevel='watch';vigTitle='Recettes très au-dessus du budget';vigDetail=`Atterrissage recettes supérieur de ${money(recGap)} : confirmer les hypothèses de fréquentation.`}
+ if(pendingRate>0.10){vigLevel='alert';vigTitle='Écart SRH / gestion important';vigDetail='Le rapprochement commandes, engagements et factures doit précéder toute décision budgétaire.'}
+ setDecisionCard('decVigilance',vigLevel,vigTitle,vigDetail);
+
+ let actLevel='ok',actTitle='Poursuivre le suivi',actDetail='Actualiser passages, commandes et engagements au prochain point.';
+ let decision='Ne pas modifier les crédits aujourd’hui. Maintenir le suivi et actualiser l’atterrissage au prochain point.';
+ if(pendingRate>=0.05){
+   actLevel=pendingRate>0.10?'alert':'watch';
+   actTitle='Rapprocher SRH et gestion';
+   actDetail='Identifier les commandes déjà passées qui ne sont pas encore engagées ou facturées dans Op@le.';
+   decision='Rapprocher les commandes SRH, les engagements Op@le et les factures avant toute DBM ou conclusion de sous-consommation.';
+ }else if(foodGap>0){
+   actLevel=foodGapRate>0.10?'alert':'watch';
+   actTitle='Confirmer avant ouverture de crédits';
+   actDetail=`Besoin potentiel supplémentaire : ${money(foodGap)} si la trajectoire est confirmée.`;
+   decision='Ne pas ouvrir immédiatement de crédits. Confirmer les recettes attendues, les commandes en cours et les besoins de fin d’exercice avant toute DBM.';
+ }else if(foodGapRate>0.10){
+   actLevel='watch';actTitle='Vérifier la sous-consommation';
+   actDetail='Contrôler que les commandes et factures sont toutes prises en compte avant de considérer la marge comme réelle.';
+   decision='Conserver les crédits à ce stade et vérifier commandes, factures non parvenues et rythme de consommation avant toute réduction ou redéploiement.';
+ }
+ setDecisionCard('decAction',actLevel,actTitle,actDetail);
+
+ const badge=document.getElementById('decisionBadge');
+ if(badge){badge.className='status '+(level==='alert'||gapLevel==='alert'||vigLevel==='alert'?'danger':level==='watch'||gapLevel==='watch'||vigLevel==='watch'?'warn':'ok');badge.textContent=badge.classList.contains('danger')?'À traiter':badge.classList.contains('warn')?'À surveiller':'Situation maîtrisée'}
+ const dt=document.getElementById('decisionText');if(dt)dt.textContent=decision;
+ const checks=[];
+ if(pending>0)checks.push(`Rapprocher ${money(pending)} de commandes SRH non encore intégrées dans l’engagé.`);
+ checks.push('Vérifier les factures non parvenues et les commandes engagées mais non réceptionnées.');
+ if(recGapRate>0.10)checks.push('Revalider les hypothèses de fréquentation et de recettes projetées.');
+ if(foodGap>0)checks.push('Ne considérer une ouverture de crédits DENRÉE qu’après confirmation de l’atterrissage.');
+ if(foodGap<0 && foodGapRate>0.10)checks.push('Rechercher une sous-consommation réelle ou un retard de prise en compte des commandes.');
+ const ul=document.getElementById('decisionChecks');if(ul)ul.innerHTML=checks.map(x=>`<li>${x}</li>`).join('');
+}
+function safeCalc(persist=false){
+ ensureCoreHelpers();
+ try{
+   const alertBox=document.getElementById('calcAlert');if(alertBox){alertBox.style.display='none';alertBox.textContent=''}
+   renderBudgetTotals();
+   return calc(persist)
+ }catch(e){
+   console.error('Calcul SRH',e);
+   renderBudgetTotals();
+   const alertBox=document.getElementById('calcAlert');if(alertBox){alertBox.style.display='block';alertBox.textContent='Le calcul du tableau de bord a rencontré une erreur : '+e.message}
+   return null
+ }
+}
+function calc(persist=false){
+ let date=document.getElementById('datePoint').value, projDate=nextDay(date), prev=previousPoint(date), rec=0,fon=0,rrh=0,tr=[],meals=[],internCounts=[],otherCounts=[],realizedByKey={};
+
+ // DP: cumulative passages. On later points only the delta is valued at the tariff applicable to the current period.
+ let dpReal=0;
+ initialDP.forEach((_,i)=>{
+   let label='T'+(i+1), key='DP|'+label, n=num('dpn'+i), t=activeTariff('DP',label,date), pv=prev?.meals?.[i]??0, delta=n-pv;
+   let cumulativeRevenue=prev?previousRevenue(prev,key)+delta*t.amount:n*t.amount;
+   realizedByKey[key]=cumulativeRevenue; meals.push(n); dpReal+=cumulativeRevenue;
+   fon+=cumulativeRevenue*t.fon; rrh+=cumulativeRevenue*t.rrh;
+   document.getElementById('dpprev'+i).textContent=N.format(pv);
+   let de=document.getElementById('dpdelta'+i);de.textContent=(delta>=0?'+':'')+N.format(delta);de.className='delta '+(delta>=0?'pos':'neg');
+   document.getElementById('dptar'+i).textContent=money(t.amount)
+ });
+ let dpT3=activeTariff('DP','T3',projDate),dpProjN=num('dpProjT3'),dpProj=dpProjN*dpT3.amount;
+ fon+=dpProj*dpT3.fon;rrh+=dpProj*dpT3.rrh;
+ document.getElementById('dpT3Display').textContent=money(dpT3.amount);
+ document.getElementById('dpProjValue').textContent=money(dpProj);
+ let dpTot=dpReal+dpProj;rec+=dpTot;tr.push(['DP tickets',dpReal,dpProj,dpTot]);
+
+ // Internat: effectifs for monitoring, realized revenue entered separately, future projected on T3.
+ let inReal=0;
+ initialINT.forEach((_,i)=>{
+   let label='T'+(i+1),n=num('inn'+i),pv=prev?.internCounts?.[i]??0,delta=n-pv,real=num('inreal'+i),t=activeTariff('INT',label,date);
+   internCounts.push(n); inReal+=real; realizedByKey['INT|'+label]=real;
+   fon+=real*t.fon;rrh+=real*t.rrh;
+   document.getElementById('inprev'+i).textContent=N.format(pv);
+   let de=document.getElementById('indelta'+i);de.textContent=(delta>=0?'+':'')+N.format(delta);de.className='delta '+(delta>=0?'pos':'neg')
+ });
+ let intT3=activeTariff('INT','T3',projDate),intProjN=num('intProjT3'),intProj=intProjN*intT3.amount;
+ fon+=intProj*intT3.fon;rrh+=intProj*intT3.rrh;
+ document.getElementById('intT3Display').textContent=money(intT3.amount);
+ document.getElementById('intProjValue').textContent=money(intProj);
+ let inTot=inReal+intProj;rec+=inTot;tr.push(['Internes',inReal,intProj,inTot]);
+
+ // Other convives: same mechanism as DP, but each category keeps its own tariff for the projection.
+ let othReal=0,othProj=0;
+ otherDefs.forEach((x,i)=>{
+   let key=x.pop+'|'+x.label,n=num('othn'+i),pv=prev?.otherCounts?.[i]??0,delta=n-pv,t=activeTariff(x.pop,x.label,date),pt=activeTariff(x.pop,x.label,projDate);
+   let cumulativeRevenue=prev?previousRevenue(prev,key)+delta*t.amount:n*t.amount;
+   let projN=num('othproj'+i),proj=projN*pt.amount,att=cumulativeRevenue+proj;
+   otherCounts.push(n);realizedByKey[key]=cumulativeRevenue;othReal+=cumulativeRevenue;othProj+=proj;
+   fon+=cumulativeRevenue*t.fon+proj*pt.fon;rrh+=cumulativeRevenue*t.rrh+proj*pt.rrh;
+   document.getElementById('othprev'+i).textContent=N.format(pv);
+   let de=document.getElementById('othdelta'+i);de.textContent=(delta>=0?'+':'')+N.format(delta);de.className='delta '+(delta>=0?'pos':'neg');
+   document.getElementById('othtar'+i).textContent=money(t.amount);
+   document.getElementById('othptar'+i).textContent=money(pt.amount);
+   document.getElementById('othatt'+i).textContent=money(att)
+ });
+ let othTot=othReal+othProj;rec+=othTot;tr.push(['Autres convives',othReal,othProj,othTot]);
+
+ let food=rec-fon-rrh,{budRec,bd,ed,bf,ef,br,er}=renderBudgetTotals();
+
+ document.getElementById('kRec').textContent=money(rec);document.getElementById('kFood').textContent=money(food);document.getElementById('kFonct').textContent=money(fon);document.getElementById('kRRH').textContent=money(rrh);
+ renderBudgetTotals();
+ document.getElementById('totBudD').textContent=money(bd);document.getElementById('sumBudD').textContent=money(bd);document.getElementById('sumEngD').textContent=money(ed);
+ document.getElementById('totBudF').textContent=money(bf);document.getElementById('sumBudF').textContent=money(bf);document.getElementById('sumEngF').textContent=money(ef);
+
+ [['d',food,bd,ed],['f',fon,bf,ef],['r',rrh,br,er]].forEach(z=>{document.getElementById(z[0]+'Calc').textContent=money(z[1]);document.getElementById(z[0]+'Bud').textContent=money(z[2]);document.getElementById(z[0]+'Eng').textContent=money(z[3]);document.getElementById(z[0]+'Rest').textContent=money(z[1]-z[3]);document.getElementById(z[0]+'Bar').style.width=Math.min(100,z[3]/Math.max(z[1],1)*100)+'%'});
+
+ let de=food-bd,re=rrh-br,recE=rec-budRec;
+ document.getElementById('recSub').innerHTML=`Écart au budget : <span class="status ${recE>=0?'ok':'warn'}">${money(recE)}</span>`;
+ document.getElementById('foodSub').innerHTML=`Écart au budget : <span class="status ${de>0?'warn':'ok'}">${money(de)}</span>`;
+ document.getElementById('rrhSub').innerHTML=`Écart au budget : <span class="status ${re>0?'warn':'ok'}">${money(re)}</span>`;
+ document.getElementById('dMsg').textContent=de>0?'Ouverture complémentaire à confirmer après stabilisation de la trajectoire.':'Crédits ouverts compatibles avec l’atterrissage actuel.';
+ document.getElementById('rMsg').textContent=re>0?'RRH projeté supérieur au budget ouvert : surveiller l’ajustement.':'Budget RRH compatible avec la projection.';renderDecision(rec,food,budRec,bd,ed);
+ document.getElementById('traj').innerHTML=tr.map(x=>`<tr><td>${x[0]}</td><td>${money(x[1])}</td><td>${money(x[2])}</td><td><b>${money(x[3])}</b></td><td>${(x[2]/Math.max(x[3],1)*100).toFixed(1)} %</td></tr>`).join('');
+
+ if(date){let [y,m,d]=date.split('-');document.getElementById('stamp').textContent=`Point au ${d}/${m}/${y}`;let ms=document.getElementById('moduleSub');if(ms)ms.textContent=`Mon EPLE — exercice ${y} — situation au ${d}/${m}/${y}`};
+ lastMetrics={date,rec,recBudget:budRec,recReal:dpReal+inReal+othReal,food,foodBudget:bd,foodEng:ed,fon,fonBudget:bf,fonEng:ef,rrh,rrhBudget:br,rrhEng:er,meals,internCounts,otherCounts,realizedByKey,tariffsUsed:tariffs.filter(t=>t.from<=projDate),inputs:inputsState()};
+ if(persist){localStorage.setItem('srhDashV14',JSON.stringify(lastMetrics.inputs));localStorage.setItem('srhTariffsV14',JSON.stringify({base:tariffs,changes:tariffChangeSets}))}
+ return lastMetrics
+}
+function savePoint(){let m=safeCalc(true);if(!m)return;if(!m.date){alert('Renseignez la date du point.');return}let point=JSON.parse(JSON.stringify(m));let idx=history.findIndex(x=>x.date===point.date);if(idx>=0)history[idx]=point;else history.push(point);history.sort((a,b)=>a.date.localeCompare(b.date));localStorage.setItem('srhHistoryV14',JSON.stringify(history));renderHistory();calc(false);alert('Point du '+formatDate(point.date)+' enregistré. La photographie conserve les paramètres utilisés.')}
+function resetBase(){localStorage.removeItem('srhDashV14');localStorage.removeItem('srhTariffsV14');location.reload()}
+function formatDate(s){if(!s)return '';let [y,m,d]=s.split('-');return `${d}/${m}/${y}`}
+function restore(){
+ let embedded=null;
+ try{embedded=JSON.parse(document.getElementById('embeddedState').textContent||'null')}catch(e){console.warn('Snapshot HTML illisible',e)}
+ try{
+   if(embedded){
+     history=embedded.history||[];
+     tariffs=embedded.tariffs||tariffs;
+     tariffChangeSets=embedded.tariffChangeSets||tariffChangeSets;
+     applyInputs(embedded.inputs||{});
+   }else{
+     let x=localStorage.getItem('srhDashV14');if(x)applyInputs(JSON.parse(x));
+     let h=localStorage.getItem('srhHistoryV14');if(h)history=JSON.parse(h);
+     let t=localStorage.getItem('srhTariffsV14');if(t){let z=JSON.parse(t);tariffs=z.base||tariffs;tariffChangeSets=z.changes||tariffChangeSets}
+   }
+ }catch(e){console.warn('Restauration ignorée',e)}
+ renderTariffs()
+}
+function exportPDF(){
+ safeCalc(false);
+ const point=document.getElementById('datePoint')?.value||new Date().toISOString().slice(0,10);
+ const [y,m,d]=point.split('-');
+ const foot=document.getElementById('pdfFooterDate');
+ if(foot)foot.textContent=`Situation au ${d}/${m}/${y} · édité le ${new Date().toLocaleDateString('fr-FR')}`;
+ const oldTitle=document.title;
+ document.title=`Credit_nourriture_${y}-${m}-${d}`;
+ // L'impression native du navigateur produit un PDF vectoriel, lisible en réunion,
+ // sans dépendance externe ni perte des données du tableau de bord.
+ window.addEventListener('afterprint',()=>{document.title=oldTitle},{once:true});
+ window.print()
+}
+function exportHTML(){safeCalc(true);let state={version:14,exportedAt:new Date().toISOString(),inputs:inputsState(),history,tariffs,tariffChangeSets};let tag=document.getElementById('embeddedState');tag.textContent=JSON.stringify(state).replace(/<\//g,'<\\/');document.querySelectorAll('input').forEach(e=>e.setAttribute('value',e.value));let html='<!doctype html>\n'+document.documentElement.outerHTML;let blob=new Blob([html],{type:'text/html;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Pilotage_SRH_${document.getElementById('datePoint').value||'sauvegarde'}.html`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function drawLineChart(canvas,series,labels,formatter){let c=canvas,ctx=c.getContext('2d'),W=c.width,H=c.height,p={l:70,r:20,t:28,b:48};ctx.clearRect(0,0,W,H);ctx.font='12px Segoe UI';ctx.fillStyle='#667085';if(!labels.length){ctx.textAlign='center';ctx.fillText('Enregistrez au moins un point de situation.',W/2,H/2);return}let vals=series.flatMap(s=>s.values).filter(Number.isFinite),max=Math.max(...vals,1),min=Math.min(0,...vals);let y=v=>p.t+(max-v)/(max-min||1)*(H-p.t-p.b),x=i=>p.l+(labels.length===1?0:(i/(labels.length-1)))*(W-p.l-p.r);ctx.strokeStyle='#d9e0e7';ctx.lineWidth=1;for(let k=0;k<5;k++){let yy=p.t+k*(H-p.t-p.b)/4;ctx.beginPath();ctx.moveTo(p.l,yy);ctx.lineTo(W-p.r,yy);ctx.stroke();let v=max-k*(max-min)/4;ctx.fillStyle='#667085';ctx.textAlign='right';ctx.fillText(formatter(v),p.l-8,yy+4)}ctx.fillStyle='#667085';ctx.textAlign='center';labels.forEach((l,i)=>ctx.fillText(l,x(i),H-20));let colors=['#1d6fa5','#23845d','#b7791f','#8b5cf6','#b42318','#0891b2'];series.forEach((s,si)=>{ctx.strokeStyle=colors[si%colors.length];ctx.fillStyle=colors[si%colors.length];ctx.lineWidth=2;ctx.beginPath();s.values.forEach((v,i)=>{let xx=x(i),yy=y(v);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)});ctx.stroke();s.values.forEach((v,i)=>{ctx.beginPath();ctx.arc(x(i),y(v),3,0,Math.PI*2);ctx.fill()})});let lx=p.l,ly=12;ctx.font='11px Segoe UI';ctx.textAlign='left';series.forEach((s,si)=>{ctx.fillStyle=colors[si%colors.length];ctx.fillRect(lx,ly-7,10,3);ctx.fillStyle='#475467';ctx.fillText(s.name,lx+15,ly);lx+=ctx.measureText(s.name).width+38;if(lx>W-150){lx=p.l;ly+=14}})}
+function renderHistory(){let box=document.getElementById('histTable');if(!history.length){box.innerHTML='<div class="history-empty">Aucun point enregistré. Utilisez « Enregistrer le point » lors de chaque relevé.</div>';drawLineChart(document.getElementById('finChart'),[],[],v=>Math.round(v/1000)+' k€');drawLineChart(document.getElementById('mealChart'),[],[],v=>N.format(v));return}
+ let labels=history.map(h=>formatDate(h.date).slice(0,5));let finSeries=[{name:'Recettes calculées',values:history.map(h=>h.rec)},{name:'Recettes budget',values:history.map(h=>h.recBudget)},{name:'Crédit nourriture',values:history.map(h=>h.food)},{name:'Fonct. calculé',values:history.map(h=>h.fon)},{name:'RRH calculé',values:history.map(h=>h.rrh)}];drawLineChart(document.getElementById('finChart'),finSeries,labels,v=>Math.round(v/1000)+' k€');let mealSeries=['T1','T2','T3','T4'].map((n,i)=>({name:n,values:history.map(h=>(h.meals||[])[i]||0)}));drawLineChart(document.getElementById('mealChart'),mealSeries,labels,v=>N.format(v));
+ box.innerHTML=`<table><thead><tr><th>Date</th><th>Indicateur</th><th>Budget</th><th>Calculé</th><th>Restant</th></tr></thead><tbody>${history.map(h=>{let rows=[['Recettes repas',h.recBudget,h.rec,h.rec-h.recReal],['Crédit nourriture',h.foodBudget,h.food,h.food-h.foodEng],['Fonctionnement hors RRH',h.fonBudget,h.fon,h.fon-h.fonEng],['RRH',h.rrhBudget,h.rrh,h.rrh-h.rrhEng]];return rows.map((r,j)=>`<tr>${j===0?`<td rowspan="4" class="badge-date">${formatDate(h.date)}</td>`:''}<td>${r[0]}</td><td>${money(r[1])}</td><td><b>${money(r[2])}</b></td><td>${money(r[3])}</td></tr>`).join('')}).join('')}</tbody></table>`}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');if(b.dataset.tab==='hist')setTimeout(renderHistory,50)});
+build();restore();renderBudgetTotals();renderTariffs();
+function tariffEdit(e){
+ if(!e.target.matches('[data-scope][data-ti]'))return;
+ let scope=e.target.dataset.scope,i=+e.target.dataset.ti,k=e.target.dataset.k,v=e.target.value;
+ if(k==='amount')v=v===''?null:(parseFloat(v)||0);
+ if(k==='rrh'||k==='fon')v=v===''?null:(parseFloat(v)||0)/100;
+ if(scope==='base')tariffs[i][k]=v;
+ else{let cs=tariffChangeSets.find(x=>x.id===scope);if(cs)cs.changes[i][k]=v}
+ safeCalc(false)
+}
+document.addEventListener('input',e=>{
+ if(e.target.matches('[data-scope][data-ti]'))tariffEdit(e);
+ else if(e.target.matches('input')){renderBudgetTotals();safeCalc(false)}
+});
+document.addEventListener('change',e=>{
+ if(e.target.matches('[data-scope][data-ti]'))tariffEdit(e);
+ if(e.target.id==='datePoint'){renderTariffs();safeCalc(false)}
+});
+function positionDataMenu(){const d=document.querySelector('.data-menu'),m=d?.querySelector('.menu'),q=d?.querySelector('summary');if(!d||!m||!q||!d.open)return;const r=q.getBoundingClientRect();m.style.top=(r.bottom+8)+'px';requestAnimationFrame(()=>{m.style.left=Math.max(8,Math.min(window.innerWidth-m.offsetWidth-8,r.right-m.offsetWidth))+'px'})}
+document.addEventListener('toggle',e=>{if(e.target.matches?.('.data-menu'))setTimeout(positionDataMenu,0)},true);
+document.addEventListener('click',e=>{const d=document.querySelector('.data-menu');if(d?.open&&!d.contains(e.target))d.open=false});
+window.addEventListener('resize',positionDataMenu);window.addEventListener('scroll',positionDataMenu,true);
+safeCalc();renderHistory();
+(()=>{"use strict";document.addEventListener("click",event=>{const link=event.target.closest?.("a[href]");if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;if(link.target&&link.target!=="_self")return;const href=link.getAttribute("href")||"";if(!href||/^(#|mailto:|tel:|javascript:)/i.test(href))return;let url;try{url=new URL(href,window.location.href)}catch{return}const file=url.pathname.split("/").filter(Boolean).pop()||"";if(!file.toLowerCase().endsWith(".html")||window.parent===window)return;event.preventDefault();window.parent.postMessage({type:"shell:navigate",file},"*")},true)})();
+</script></main></body></html>

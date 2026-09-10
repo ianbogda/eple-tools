@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analyseur YCRINT (OP@LE) - INFO / WARNING / ERROR</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background: #f7f8fb; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .badge-level { letter-spacing: .02em; }
+    .rowline { border-left: 4px solid transparent; }
+    .rowline.info { border-left-color: #0d6efd; }
+    .rowline.warn { border-left-color: #ffc107; }
+    .rowline.error { border-left-color: #dc3545; }
+    .sticky-top-offset { position: sticky; top: .75rem; z-index: 1020; }
+    .small-muted { color: #6c757d; font-size: .875rem; }
+    .clickable { cursor: pointer; }
+    .nowrap { white-space: nowrap; }
+    .wrap-any { overflow-wrap: anywhere; }
+    .shadow-soft { box-shadow: 0 .25rem 1rem rgba(0,0,0,.06); }
+  </style>
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+
+<body>
+  <div class="container py-4">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+      <div>
+        <h1 class="h3 mb-1">Analyseur YCRINT (OP@LE)</h1>
+        <div class="small-muted">
+          Chargez un fichier plat (log) et visualisez rapidement les <strong>INFO</strong>, <strong>WARNING</strong> et surtout les <strong>ERROR</strong>.
+        </div>
+      </div>
+		<div class="d-flex gap-2">
+		  <button id="btnDemo" class="btn btn-outline-secondary">Charger l'exemple</button>
+
+		  <button type="button"
+				  class="btn btn-outline-primary"
+				  data-bs-toggle="modal"
+				  data-bs-target="#helpModal">
+			Aide
+		  </button>
+
+		  <button id="btnReset" class="btn btn-outline-danger">Réinitialiser</button>
+		</div>
+
+    </div>
+
+    <div class="card shadow-soft mb-4">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-6">
+            <label class="form-label">Fichier YCRINT (texte)</label>
+            <input id="fileInput" type="file" class="form-control" accept=".txt,.log,.csv,text/plain" />
+            <div class="form-text">Astuce : un fichier log peut être volumineux ; ce parser reste côté navigateur.</div>
+          </div>
+
+          <div class="col-12 col-lg-6">
+            <label class="form-label">Options d'analyse</label>
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="optIgnoreEmpty" checked>
+                <label class="form-check-label" for="optIgnoreEmpty">Ignorer lignes vides</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="optCollapseDup" checked>
+                <label class="form-check-label" for="optCollapseDup">Regrouper doublons (même message)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="optExtractKey" checked>
+                <label class="form-check-label" for="optExtractKey">Extraire clé (INE / personneID)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="optFocusErrors" checked>
+                <label class="form-check-label" for="optFocusErrors">Focus erreurs (ouvrir onglet erreurs)</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <button id="btnAnalyze" class="btn btn-primary">Analyser</button>
+            <span id="fileName" class="ms-3 small-muted"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="row g-3 mb-4 d-none">
+      <div class="col-12 col-lg-3">
+        <div class="card shadow-soft h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="small-muted">Lignes analysées</div>
+                <div id="statLines" class="display-6 mb-0">0</div>
+              </div>
+              <span class="badge text-bg-secondary">Total</span>
+            </div>
+            <div class="mt-3 small-muted">Lignes détectées comme messages ou brutes (selon parsing).</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-3">
+        <div class="card shadow-soft h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="small-muted">INFO</div>
+                <div id="statInfo" class="display-6 mb-0">0</div>
+              </div>
+              <span class="badge text-bg-primary badge-level">INFO</span>
+            </div>
+            <div class="mt-3">
+              <div class="progress" role="progressbar" aria-label="INFO" style="height: 10px;">
+                <div id="barInfo" class="progress-bar"></div>
+              </div>
+              <div id="pctInfo" class="small-muted mt-2">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-3">
+        <div class="card shadow-soft h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="small-muted">WARNING</div>
+                <div id="statWarn" class="display-6 mb-0">0</div>
+              </div>
+              <span class="badge text-bg-warning text-dark badge-level">WARN</span>
+            </div>
+            <div class="mt-3">
+              <div class="progress" role="progressbar" aria-label="WARN" style="height: 10px;">
+                <div id="barWarn" class="progress-bar bg-warning"></div>
+              </div>
+              <div id="pctWarn" class="small-muted mt-2">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-3">
+        <div class="card shadow-soft h-100 border border-2 border-danger">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="small-muted">ERROR</div>
+                <div id="statError" class="display-6 mb-0 text-danger">0</div>
+              </div>
+              <span class="badge text-bg-danger badge-level">ERROR</span>
+            </div>
+            <div class="mt-3">
+              <div class="progress" role="progressbar" aria-label="ERROR" style="height: 10px;">
+                <div id="barError" class="progress-bar bg-danger"></div>
+              </div>
+              <div id="pctError" class="small-muted mt-2">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card shadow-soft">
+          <div class="card-body">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-2">
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="small-muted">Filtre niveau :</span>
+                <div class="btn-group" role="group" aria-label="Filtre niveau">
+                  <input type="radio" class="btn-check" name="lvlFilter" id="lvlAll" autocomplete="off" checked>
+                  <label class="btn btn-outline-secondary" for="lvlAll">Tous</label>
+
+                  <input type="radio" class="btn-check" name="lvlFilter" id="lvlInfo" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="lvlInfo">INFO</label>
+
+                  <input type="radio" class="btn-check" name="lvlFilter" id="lvlWarn" autocomplete="off">
+                  <label class="btn btn-outline-warning" for="lvlWarn">WARN</label>
+
+                  <input type="radio" class="btn-check" name="lvlFilter" id="lvlError" autocomplete="off">
+                  <label class="btn btn-outline-danger" for="lvlError">ERROR</label>
+                </div>
+
+                <span class="small-muted ms-lg-3">Module :</span>
+                <select id="moduleFilter" class="form-select form-select-sm" style="width: 180px;">
+                  <option value="">Tous</option>
+                </select>
+
+                <span class="small-muted ms-lg-3">Recherche :</span>
+                <input id="searchBox" class="form-control form-control-sm" style="width: 320px;" placeholder="INE, personneID, CodePostal, Commune, ...">
+              </div>
+
+              <div class="d-flex gap-2">
+                <button id="btnExportErrors" class="btn btn-outline-danger btn-sm">Exporter erreurs (CSV)</button>
+                <button id="btnCopyTop" class="btn btn-outline-secondary btn-sm">Copier résumé</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tabsBlock" class="d-none">
+      <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-errors" data-bs-toggle="tab" data-bs-target="#pane-errors" type="button" role="tab">
+            Erreurs à corriger <span id="badgeErrTab" class="badge text-bg-danger ms-2">0</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-all" data-bs-toggle="tab" data-bs-target="#pane-all" type="button" role="tab">
+            Tous les messages <span id="badgeAllTab" class="badge text-bg-secondary ms-2">0</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-modules" data-bs-toggle="tab" data-bs-target="#pane-modules" type="button" role="tab">
+            Regroupement par module
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="mainTabsContent">
+        <!-- Errors -->
+        <div class="tab-pane fade show active" id="pane-errors" role="tabpanel" aria-labelledby="tab-errors">
+          <div class="row g-3 mt-1">
+            <div class="col-12 col-lg-4">
+              <div class="card shadow-soft sticky-top-offset">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h6 mb-0">Synthèse erreurs</h2>
+                    <span class="badge text-bg-danger" id="errCountBadge">0</span>
+                  </div>
+                  <hr>
+                  <div id="errTopList" class="vstack gap-2 small"></div>
+                  <hr>
+                  <div class="small-muted">
+                    Cliquez sur un item pour filtrer la liste des erreurs.
+                  </div>
+                </div>
+              </div>
+			  <div id="int19Card" class="card shadow-soft mt-3 d-none">
+				  <div class="card-body">
+					<div class="d-flex justify-content-between align-items-center">
+					  <h2 class="h6 mb-0">Synthèse métier – INT_19</h2>
+					  <span class="badge text-bg-secondary" id="int19StatusBadge">N/A</span>
+					</div>
+					<hr>
+					<div id="int19Summary" class="small"></div>
+				  </div>
+				</div>
+            </div>
+
+            <div class="col-12 col-lg-8">
+              <div class="card shadow-soft">
+                <div class="card-body">
+                  <div class="d-flex flex-column flex-lg-row gap-2 justify-content-between align-items-lg-center">
+                    <div>
+                      <h2 class="h6 mb-0">Liste des erreurs</h2>
+                      <div class="small-muted">Messages niveau ERROR. Regroupement doublons optionnel.</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button id="btnClearErrFilter" class="btn btn-outline-secondary btn-sm">Effacer filtre</button>
+                    </div>
+                  </div>
+                  <hr>
+                  <div id="errorsList" class="vstack gap-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All -->
+        <div class="tab-pane fade" id="pane-all" role="tabpanel" aria-labelledby="tab-all">
+          <div class="card shadow-soft mt-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="h6 mb-0">Tous les messages</h2>
+                  <div class="small-muted">Filtrés par niveau/module/recherche (barre en haut).</div>
+                </div>
+                <span class="small-muted">Cliquez une ligne pour copier le détail.</span>
+              </div>
+              <hr>
+              <div id="allList" class="vstack gap-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modules -->
+        <div class="tab-pane fade" id="pane-modules" role="tabpanel" aria-labelledby="tab-modules">
+          <div class="card shadow-soft mt-3">
+            <div class="card-body">
+              <div>
+                <h2 class="h6 mb-0">Regroupement par module</h2>
+                <div class="small-muted">Répartition INFO/WARN/ERROR par module (RESP, ELEVE, TIERS...).</div>
+              </div>
+              <hr>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Module</th>
+                      <th class="text-end">INFO</th>
+                      <th class="text-end">WARN</th>
+                      <th class="text-end">ERROR</th>
+                      <th class="text-end">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="modulesTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="toastArea" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"></div>
+	<footer class="text-center">
+		<small id="app-version"></small>
+	</footer>
+  </div>
+<!-- Modal: Guide utilisateur -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="helpModalLabel">Guide utilisateur – Analyseur YCRINT (OP@LE)</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="alert alert-info mb-4">
+          Cet outil vous aide à analyser un fichier plat issu de <strong>YCRINT</strong> afin d’identifier rapidement les
+          <strong>INFO</strong>, <strong>WARNING</strong> et surtout les <strong>ERROR</strong> à corriger.
+        </div>
+
+        <h3 class="h6">1) Démarrage rapide</h3>
+        <ol class="mb-4">
+          <li>Cliquez sur <strong>Choisir un fichier</strong> puis sélectionnez votre fichier log (TXT/LOG).</li>
+          <li>Cliquez sur <strong>Analyser</strong>.</li>
+          <li>Consultez l’onglet <strong>Erreurs à corriger</strong> pour traiter en priorité les rejets.</li>
+        </ol>
+
+        <h3 class="h6">2) Lecture du tableau de bord</h3>
+        <ul class="mb-4">
+          <li><strong>Lignes analysées</strong> : volume total pris en compte (avec ou sans regroupement des doublons).</li>
+          <li><strong>INFO / WARN / ERROR</strong> : compte par niveau, avec une barre de répartition.</li>
+          <li><strong>ERROR</strong> : à traiter en priorité. Le compteur et l’onglet “Erreurs à corriger” mettent ces lignes en exergue.</li>
+        </ul>
+
+        <h3 class="h6">3) Onglet “Erreurs à corriger” (mode correction)</h3>
+        <div class="mb-4">
+          <p class="mb-2">
+            Cet onglet liste uniquement les <strong>ERROR</strong> et extrait une <strong>signature d’erreur</strong> (ex. “Champ [CodePostal] … non renseigné”)
+            pour regrouper les occurrences similaires.
+          </p>
+          <ul class="mb-0">
+            <li><strong>Colonne gauche</strong> : top des erreurs les plus fréquentes. Cliquez pour filtrer la liste.</li>
+            <li><strong>Liste des erreurs</strong> : chaque erreur affiche une zone <strong>À corriger</strong> (signature) + la ligne complète en détail.</li>
+            <li><strong>Copier</strong> : copie la ligne brute dans le presse-papiers pour l’envoyer/coller ailleurs.</li>
+            <li><strong>Filtrer même erreur</strong> : applique un filtre sur la signature correspondante.</li>
+          </ul>
+        </div>
+
+        <h3 class="h6">4) Filtres (barre de pilotage)</h3>
+        <ul class="mb-4">
+          <li><strong>Filtre niveau</strong> : Tous / INFO / WARN / ERROR.</li>
+          <li><strong>Module</strong> : filtre sur la catégorie (ex. <code>ELEVE</code>, <code>RESP</code>, <code>TIERS</code>).</li>
+          <li><strong>Recherche</strong> : recherche plein texte (INE, personneID, mots-clés : CodePostal, Commune, etc.).</li>
+        </ul>
+
+        <h3 class="h6">5) Regroupement par module (navigation rapide)</h3>
+        <div class="mb-4">
+          <p class="mb-2">
+            Le tableau présente le nombre de messages par module et par niveau. Les <strong>chiffres sont cliquables</strong>.
+          </p>
+          <ul class="mb-0">
+            <li>Cliquez sur un <strong>nombre ERROR</strong> (ex. ELEVE → ERROR) pour appliquer automatiquement :
+              <strong>Niveau = ERROR</strong> et <strong>Module = ELEVE</strong>, puis afficher le résultat.</li>
+            <li>Cliquez sur un nombre INFO/WARN pour la même logique.</li>
+            <li>Cliquez sur le <strong>nom du module</strong> pour filtrer le module (tous niveaux).</li>
+          </ul>
+        </div>
+
+        <h3 class="h6">6) Options d’analyse (recommandées)</h3>
+        <ul class="mb-4">
+          <li><strong>Ignorer lignes vides</strong> : évite le bruit (recommandé).</li>
+          <li><strong>Regrouper doublons</strong> : regroupe les lignes identiques et ajoute un indicateur <code>xN</code> (recommandé sur gros fichiers).</li>
+          <li><strong>Extraire clé (INE / personneID)</strong> : met en évidence les identifiants pour accélérer le traitement.</li>
+          <li><strong>Focus erreurs</strong> : ouvre automatiquement l’onglet des erreurs après analyse.</li>
+        </ul>
+
+        <h3 class="h6">7) Export et partage</h3>
+        <ul class="mb-4">
+          <li><strong>Exporter erreurs (CSV)</strong> : exporte la liste des erreurs (et filtres actifs) au format CSV.</li>
+          <li><strong>Copier résumé</strong> : copie un résumé (INFO/WARN/ERROR + top erreurs) dans le presse-papiers.</li>
+        </ul>
+
+        <h3 class="h6">8) Conseils de correction (pratiques)</h3>
+        <ul class="mb-0">
+          <li>Commencez par les erreurs les plus fréquentes (colonne gauche “Synthèse erreurs”).</li>
+          <li>Traitez ensuite par module (table “Regroupement par module” → clic sur ERROR).</li>
+          <li>Utilisez la recherche sur un mot-clé métier (ex. <code>CodePostal</code>, <code>CommuneEtrangere</code>) pour isoler une famille d’anomalies.</li>
+        </ul>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /**
+ * Analyser les CR de YCRINT Op@le - Corriger erreurs fonctionnelles
+ * Basé sur exports Op@le : YCRINT
+ *
+ * @version 0.1.0
+ * @author Yann Bogdanovic
+ * @description
+ *  - Outil OP@LE pour analyser et corriger des erreurs fonctionnelles
+ */
+	const APP_VERSION = "YCRINT OP@LE - 0.1.1";
+	window.addEventListener("DOMContentLoaded", () => {
+		const el = document.getElementById("app-version");
+		if (el) el.textContent = APP_VERSION;
+	});
+    // ----------------------------
+    // Demo text (your example)
+    // ----------------------------
+    const DEMO_TEXT = `[01:13 21:01:39.954] [ INFO] - TIERS | Traitement de l'établissement : [ 0000000X ]
+[01:13 21:01:39.954] [ INFO] - TIERS | Tiers reçus [ 2 (Elève(s) :4, Responsable(s) :6) ]
+[01:13 21:01:41.986] [ INFO] - RESP  | Numéro INE : [1*********H] ; X__X X | personneID : [xxxxxxx] ; X__X X | Modification | Modification du tiers dans OP@LE
+[01:13 21:01:41.987] [ERROR] - RESP  | Numéro INE : [1*********H] ; X__X X | personneID : [yyyyyyy] ; X__X X  | Erreur       | Erreur fonctionnelle : Champ [CodePostal] ou champ [CommuneEtrangere] non renseigné
+[01:13 21:01:41.987] [ERROR] - ELEVE | Numéro INE : [1*********H] ; X__X X | Erreur       | Erreur fonctionnelle : Un des responsables de l'élève a été rejeté ou n'existe pas dans le fichier reçu, élève rejeté
+[01:13 21:01:42.068] [ INFO] - RESP  | Numéro INE : [1*********J] ; X__X X | personneID : [zzzzzzz] ; X__X X | Modification | Modification du tiers dans OP@LE
+[01:13 21:01:42.129] [ INFO] - RESP  | Numéro INE : [1*********J] ; X__X X | personneID : [wwwwwww] ; X__X X   | Modification | Modification du tiers dans OP@LE
+[01:13 21:01:42.259] [ INFO] - ELEVE | Numéro INE : [1*********J] ; X__X X | Modification | Modification du tiers dans OP@LE
+[01:13 21:01:59.730] [ INFO] - TIERS | Bilan pour l'établissement : [ 0000000X ], Tiers reçus [ 2 (Elève(s) :4, Responsable(s) :6)  ], Tiers en erreur [ Elève(s) :1 ,Responsable(s) :1 ], Tiers en warning [0]`;
+
+    // ----------------------------
+    // DOM references
+    // ----------------------------
+    const el = (id) => document.getElementById(id);
+
+    const fileInput = el('fileInput');
+    const btnAnalyze = el('btnAnalyze');
+    const btnDemo = el('btnDemo');
+    const btnReset = el('btnReset');
+
+    const optIgnoreEmpty = el('optIgnoreEmpty');
+    const optCollapseDup = el('optCollapseDup');
+    const optExtractKey = el('optExtractKey');
+    const optFocusErrors = el('optFocusErrors');
+
+    const dashboard = el('dashboard');
+    const tabsBlock = el('tabsBlock');
+
+    const statLines = el('statLines');
+    const statInfo = el('statInfo');
+    const statWarn = el('statWarn');
+    const statError = el('statError');
+
+    const barInfo = el('barInfo');
+    const barWarn = el('barWarn');
+    const barError = el('barError');
+
+    const pctInfo = el('pctInfo');
+    const pctWarn = el('pctWarn');
+    const pctError = el('pctError');
+
+    const badgeErrTab = el('badgeErrTab');
+    const badgeAllTab = el('badgeAllTab');
+
+    const moduleFilter = el('moduleFilter');
+    const searchBox = el('searchBox');
+
+    const errorsList = el('errorsList');
+    const allList = el('allList');
+    const errTopList = el('errTopList');
+    const modulesTable = el('modulesTable');
+	const int19Card = el('int19Card');
+	const int19Summary = el('int19Summary');
+	const int19StatusBadge = el('int19StatusBadge');
+
+    const btnExportErrors = el('btnExportErrors');
+    const btnCopyTop = el('btnCopyTop');
+    const btnClearErrFilter = el('btnClearErrFilter');
+
+    const fileName = el('fileName');
+
+    // Level radio buttons
+    const lvlAll = el('lvlAll');
+    const lvlInfo = el('lvlInfo');
+    const lvlWarn = el('lvlWarn');
+    const lvlError = el('lvlError');
+
+    // ----------------------------
+    // State
+    // ----------------------------
+    let rawText = '';
+    let entries = [];     // parsed log entries
+    let view = { level: 'ALL', module: '', q: '', errSignature: '' };
+
+    // ----------------------------
+    // Parsing helpers
+    // ----------------------------
+    // Example lines:
+    // [01:13 21:01:41.987] [ERROR] - RESP  | ... | Erreur fonctionnelle : ...
+    // [01:13 21:01:39.954] [ INFO] - TIERS | ...
+    //
+	// Supporte 2 formats :
+	// 1) "- MOD | message"
+	// 2) "- message" (sans module explicite)
+	const reLine = /^\s*\[(?<t>[^\]]+)\]\s*\[(?<lvl>[^\]]+)\]\s*-\s*(?:(?<mod>[^|]+?)\s*\|\s*)?(?<msg>.*)\s*$/;
+
+    function normalizeLevel(lvlRaw) {
+      const x = (lvlRaw || '').toUpperCase().replace(/\s+/g,'').trim();
+      if (x.includes('ERROR')) return 'ERROR';
+      if (x.includes('WARN')) return 'WARN';
+      if (x.includes('INFO')) return 'INFO';
+      // sometimes could be "[ WARNING]" etc.
+      if (x.includes('WARNING')) return 'WARN';
+      return 'OTHER';
+    }
+
+    function extractKeyFields(line) {
+      // Try to capture INE and personneID if present
+      const ine = /Numéro\s+INE\s*:\s*\[(?<ine>[^\]]+)\]/i.exec(line)?.groups?.ine || '';
+      const pid = /personneID\s*:\s*\[(?<pid>[^\]]+)\]/i.exec(line)?.groups?.pid || '';
+      return { ine, pid };
+    }
+
+    function extractErrorSignature(msg) {
+      // Aim: group similar errors regardless of INE/personneID.
+      // Strategy:
+      // - if "Erreur fonctionnelle :" -> take remainder
+      // - else if contains "Champ [X]" etc -> take that segment
+      // - fallback: first 140 chars of msg
+      let s = msg || '';
+      const m1 = /Erreur\s+fonctionnelle\s*:\s*(.*)$/i.exec(s);
+      if (m1 && m1[1]) return m1[1].trim();
+      const m2 = /Champ\s*\[[^\]]+\].*$/i.exec(s);
+      if (m2) return m2[0].trim();
+      return s.trim().slice(0, 140);
+    }
+
+	function parseText(text) {
+	  const ignoreEmpty = optIgnoreEmpty.checked;
+	  const doExtract = optExtractKey.checked;
+
+	  const lines = text.split(/\r?\n/);
+	  const out = [];
+
+	  // Contexte "module" (ex: INT_19) déduit des lignes d'entête
+	  let ctxModule = '';
+
+	  // Détection interface : "Interface Sortante INT_19" / "Interface Entrante INT_12"
+	  const reInterface = /Interface\s+(?:Sortante|Entrante)\s+(?<int>INT_\d+)/i;
+
+	  // Lignes INFO mais qui signent un échec de traitement
+	  const reForceError = /(Traitement\s+termin[eé]\s+avec\s+erreurs|Interrompu)/i;
+
+	  for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		if (ignoreEmpty && !line.trim()) continue;
+
+		const m = reLine.exec(line);
+
+		if (m?.groups) {
+		  // Niveau brut -> normalisé
+		  let lvl = normalizeLevel(m.groups.lvl);
+
+		  // Message et module (module optionnel selon format)
+		  const msg = (m.groups.msg || '').trim();
+		  let mod = (m.groups.mod || '').trim();
+
+		  // Mise à jour du contexte si on rencontre l'entête d'interface
+		  const mi = reInterface.exec(msg);
+		  if (mi?.groups?.int) {
+			ctxModule = mi.groups.int.trim();
+		  }
+
+		  // Si aucun module explicite, on applique le contexte (INT_19)
+		  if (!mod && ctxModule) mod = ctxModule;
+
+		  // Requalification en ERROR sur mots-clés (même si tag INFO)
+		  if (reForceError.test(msg)) lvl = 'ERROR';
+
+		  const base = {
+			idx: out.length,
+			raw: line,
+			time: (m.groups.t || '').trim(),
+			level: lvl,
+			module: mod,
+			message: msg,
+			ine: '',
+			personneID: '',
+			errorSig: ''
+		  };
+
+		  if (doExtract) {
+			const k = extractKeyFields(line);
+			base.ine = k.ine;
+			base.personneID = k.pid;
+		  }
+
+		  if (lvl === 'ERROR') {
+			base.errorSig = extractErrorSignature(msg);
+		  }
+
+		  out.push(base);
+		} else {
+		  // fallback: unparsed line
+		  out.push({
+			idx: out.length,
+			raw: line,
+			time: '',
+			level: 'OTHER',
+			module: ctxModule || '',
+			message: line.trim(),
+			ine: '',
+			personneID: '',
+			errorSig: ''
+		  });
+		}
+	  }
+
+	  return out;
+	}
+
+    function collapseDuplicates(list) {
+      // Collapse by (level + module + message) and count occurrences
+      const map = new Map();
+      const keyOf = (e) => `${e.level}||${e.module}||${e.message}`;
+      for (const e of list) {
+        const k = keyOf(e);
+        if (!map.has(k)) {
+          map.set(k, { ...e, count: 1, firstIdx: e.idx, occurrences: [e.idx] });
+        } else {
+          const cur = map.get(k);
+          cur.count += 1;
+          cur.occurrences.push(e.idx);
+        }
+      }
+      return Array.from(map.values()).sort((a,b) => a.firstIdx - b.firstIdx);
+    }
+
+    // ----------------------------
+    // Rendering helpers
+    // ----------------------------
+    function pct(part, total) {
+      if (!total) return 0;
+      return Math.round((part / total) * 1000) / 10; // 1 decimal
+    }
+
+    function toast(msg, type='secondary') {
+      const id = `t${Date.now()}${Math.random().toString(16).slice(2)}`;
+      const html = `
+        <div id="${id}" class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">${escapeHtml(msg)}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>`;
+      el('toastArea').insertAdjacentHTML('beforeend', html);
+      const t = new bootstrap.Toast(document.getElementById(id), { delay: 2500 });
+      t.show();
+      setTimeout(() => document.getElementById(id)?.remove(), 3500);
+    }
+
+    function escapeHtml(s) {
+      return (s ?? '').toString()
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    function levelBadge(level) {
+      if (level === 'INFO') return `<span class="badge text-bg-primary badge-level">INFO</span>`;
+      if (level === 'WARN') return `<span class="badge text-bg-warning text-dark badge-level">WARN</span>`;
+      if (level === 'ERROR') return `<span class="badge text-bg-danger badge-level">ERROR</span>`;
+      return `<span class="badge text-bg-secondary badge-level">OTHER</span>`;
+    }
+
+    function rowClass(level) {
+      if (level === 'INFO') return 'info';
+      if (level === 'WARN') return 'warn';
+      if (level === 'ERROR') return 'error';
+      return '';
+    }
+
+    function buildModuleOptions(list) {
+      const mods = new Set();
+      for (const e of list) {
+        if (e.module) mods.add(e.module);
+      }
+      const sorted = Array.from(mods).sort((a,b) => a.localeCompare(b));
+      moduleFilter.innerHTML = `<option value="">Tous</option>` + sorted.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+    }
+
+    function getFiltered(list) {
+      const q = (view.q || '').trim().toLowerCase();
+      return list.filter(e => {
+        if (view.level !== 'ALL' && e.level !== view.level) return false;
+        if (view.module && e.module !== view.module) return false;
+
+        if (view.errSignature && e.level === 'ERROR') {
+          const sig = (e.errorSig || '').toLowerCase();
+          if (!sig.includes(view.errSignature.toLowerCase())) return false;
+        } else if (view.errSignature && e.level !== 'ERROR') {
+          return false;
+        }
+
+        if (!q) return true;
+        const hay = [
+          e.raw, e.message, e.module, e.level, e.time,
+          e.ine || '', e.personneID || '', e.errorSig || ''
+        ].join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function renderDashboard(list) {
+      const total = list.length;
+      const info = list.filter(x => x.level === 'INFO').reduce((a,e)=>a+(e.count||1),0);
+      const warn = list.filter(x => x.level === 'WARN').reduce((a,e)=>a+(e.count||1),0);
+      const err  = list.filter(x => x.level === 'ERROR').reduce((a,e)=>a+(e.count||1),0);
+
+      const sum = info + warn + err;
+      // total lines shown in dashboard: keep "sum" as meaningful log lines; fallback to total
+      statLines.textContent = sum || total;
+      statInfo.textContent = info;
+      statWarn.textContent = warn;
+      statError.textContent = err;
+
+      const pInfo = pct(info, sum);
+      const pWarn = pct(warn, sum);
+      const pErr  = pct(err,  sum);
+
+      barInfo.style.width = `${pInfo}%`;
+      barWarn.style.width = `${pWarn}%`;
+      barError.style.width = `${pErr}%`;
+
+      pctInfo.textContent = `${pInfo}%`;
+      pctWarn.textContent = `${pWarn}%`;
+      pctError.textContent = `${pErr}%`;
+
+      badgeErrTab.textContent = err;
+      badgeAllTab.textContent = sum || total;
+
+      dashboard.classList.remove('d-none');
+      tabsBlock.classList.remove('d-none');
+    }
+
+	function fmtMoneyFR(n) {
+	  const v = Number(n || 0);
+	  return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
+	}
+
+	function computeInt19Summary(list) {
+	  // list = entries (éventuellement avec count si doublons regroupés)
+	  const int19 = list.filter(e => (e.module || '').trim().toUpperCase() === 'INT_19');
+	  if (!int19.length) return null;
+
+	  // Patterns INT_19
+	  const reNbAEnvoyer = /Nombre\s+de\s+cr[eé]ances\s+à\s+envoyer\s*:\s*(?<n>\d+)/i;
+	  const reNbXml = /Nombre\s+de\s+cr[eé]ance\(s\)\s+[ée]crite\s+dans\s+le\s+fichier\s+xml\s*:\s*(?<n>\d+)/i;
+
+	  const reCreanceLine = /Num[ée]ro\s+cr[eé]ance\s*:\s*(?<num>[^,]+),\s*El[èe]ve\s*:\s*(?<eleve>[^,]+),\s*Montant\s*:\s*(?<mnt>[\d.,]+)/i;
+
+	  const reXmlGen = /Fichier\s+XML\s+g[eé]n[eé]r[eé]\s*:\s*\[(?<path>[^\]]+)\]/i;
+	  const reSendFile = /Envoi\s+du\s+fichier\s*:\s*(?<path>\/\S+)/i;
+
+	  const reEtape = /Etape\s+(?<n>\d+)\s*-\s*(?<label>.+)$/i;
+	  const reInterrompu = /Interrompu/i;
+	  const reTermineErreurs = /Traitement\s+termin[eé]\s+avec\s+erreurs/i;
+
+	  let nbAEnvoyer = null;
+	  let nbXml = null;
+
+	  let xmlFile = '';
+	  let totalMontant = 0;
+	  let nbCreancesDetail = 0;
+
+	  let lastEtape = '';
+	  let failingEtape = '';
+	  let hasError = false;
+
+	  // Parcours dans l’ordre d’apparition (firstIdx si présent, sinon idx)
+	  const sorted = [...int19].sort((a,b) => (a.firstIdx ?? a.idx) - (b.firstIdx ?? b.idx));
+
+	  for (const e of sorted) {
+		const msg = (e.message || '').trim();
+		const k = (e.count || 1);
+
+		// Compteurs
+		const m1 = reNbAEnvoyer.exec(msg);
+		if (m1?.groups?.n) nbAEnvoyer = parseInt(m1.groups.n, 10);
+
+		const m2 = reNbXml.exec(msg);
+		if (m2?.groups?.n) nbXml = parseInt(m2.groups.n, 10);
+
+		// Détails créances
+		const mc = reCreanceLine.exec(msg);
+		if (mc?.groups?.mnt) {
+		  const raw = mc.groups.mnt.replace(',', '.');
+		  const montant = parseFloat(raw);
+		  if (!Number.isNaN(montant)) {
+			totalMontant += montant * k;
+			nbCreancesDetail += 1 * k;
+		  }
+		}
+
+		// Fichier XML
+		const mx = reXmlGen.exec(msg);
+		if (mx?.groups?.path) xmlFile = mx.groups.path.trim();
+
+		const ms = reSendFile.exec(msg);
+		if (!xmlFile && ms?.groups?.path) xmlFile = ms.groups.path.trim();
+
+		// Suivi étape + échec
+		const me = reEtape.exec(msg);
+		if (me?.groups?.n && me?.groups?.label) {
+		  lastEtape = `Etape ${me.groups.n} - ${me.groups.label.trim()}`;
+		  if (reInterrompu.test(me.groups.label)) {
+			failingEtape = `Etape ${me.groups.n} - ${me.groups.label.trim()}`;
+		  }
+		}
+
+		if ((e.level || '').toUpperCase() === 'ERROR') {
+		  hasError = true;
+		  // Si "Traitement terminé avec erreurs", on attribue l’étape courante si on ne l’a pas déjà.
+		  if (reTermineErreurs.test(msg) && !failingEtape) {
+			failingEtape = lastEtape || 'Traitement terminé avec erreurs';
+		  }
+		  // Si "Interrompu" isolé (au cas où), idem
+		  if (reInterrompu.test(msg) && !failingEtape) {
+			failingEtape = lastEtape || msg;
+		  }
+		}
+	  }
+
+	  // Choix nb “métier” : priorité à l’entête, sinon au détail, sinon au nb XML.
+	  const nbCreances =
+		(typeof nbAEnvoyer === 'number' ? nbAEnvoyer :
+		(nbCreancesDetail ? nbCreancesDetail :
+		(typeof nbXml === 'number' ? nbXml : 0)));
+
+	  return {
+		nbCreances,
+		totalMontant,
+		xmlFile,
+		failingEtape: failingEtape || (hasError ? 'Traitement en erreur (étape non déterminée)' : ''),
+		hasError
+	  };
+	}
+
+	function renderInt19Summary(list) {
+	  const s = computeInt19Summary(list);
+
+	  if (!s) {
+		int19Card.classList.add('d-none');
+		int19Summary.innerHTML = '';
+		int19StatusBadge.textContent = 'N/A';
+		int19StatusBadge.className = 'badge text-bg-secondary';
+		return;
+	  }
+
+	  int19Card.classList.remove('d-none');
+
+	  if (s.hasError) {
+		int19StatusBadge.textContent = 'ERREUR';
+		int19StatusBadge.className = 'badge text-bg-danger';
+	  } else {
+		int19StatusBadge.textContent = 'OK';
+		int19StatusBadge.className = 'badge text-bg-success';
+	  }
+
+	  const html = `
+		<div class="vstack gap-2">
+		  <div><span class="small-muted">Créances :</span> <strong>${s.nbCreances}</strong></div>
+		  <div><span class="small-muted">Total montants :</span> <strong>${fmtMoneyFR(s.totalMontant)} €</strong></div>
+		  <div><span class="small-muted">Fichier XML :</span><br>
+			<code style="word-break:break-all;">${escapeHtml(s.xmlFile || '—')}</code>
+		  </div>
+		  <div><span class="small-muted">Étape d’échec :</span><br>
+			<strong>${escapeHtml(s.failingEtape || '—')}</strong>
+		  </div>
+		</div>
+	  `;
+
+	  int19Summary.innerHTML = html;
+	}
+
+    function renderAllList(list) {
+      const filtered = getFiltered(list);
+      const html = filtered.map(e => {
+        const count = e.count && e.count > 1 ? `<span class="badge text-bg-secondary ms-2">x${e.count}</span>` : '';
+        const key = [];
+        if (e.ine) key.push(`INE: ${escapeHtml(e.ine)}`);
+        if (e.personneID) key.push(`personneID: ${escapeHtml(e.personneID)}`);
+        const keyHtml = key.length ? `<div class="small-muted">${key.join(' • ')}</div>` : '';
+
+        return `
+          <div class="p-2 rounded bg-white rowline ${rowClass(e.level)} clickable" data-copy="${escapeHtml(e.raw)}" title="Cliquer pour copier">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div class="w-100">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                  ${levelBadge(e.level)}
+                  <span class="badge text-bg-light text-dark">${escapeHtml(e.module || '—')}</span>
+                  <span class="small-muted mono">${escapeHtml(e.time || '')}</span>
+                  ${count}
+                </div>
+                ${keyHtml}
+                <div class="mt-1 mono wrap-any">${escapeHtml(e.message || e.raw)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      allList.innerHTML = html || `<div class="text-muted">Aucun message ne correspond au filtre.</div>`;
+
+      // Copy on click
+      allList.querySelectorAll('[data-copy]').forEach(node => {
+        node.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(node.getAttribute('data-copy'));
+            toast('Ligne copiée dans le presse-papiers.', 'secondary');
+          } catch {
+            toast('Impossible de copier automatiquement (droits navigateur).', 'warning');
+          }
+        });
+      });
+    }
+
+    function renderErrors(list) {
+      const errOnly = list.filter(e => e.level === 'ERROR');
+      const filtered = getFiltered(errOnly);
+
+      // Left: top error signatures
+      const sigMap = new Map();
+      for (const e of errOnly) {
+        const sig = e.errorSig || '(Erreur non qualifiée)';
+        const inc = (e.count || 1);
+        sigMap.set(sig, (sigMap.get(sig) || 0) + inc);
+      }
+      const sigTop = Array.from(sigMap.entries())
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, 12);
+
+      errTopList.innerHTML = sigTop.map(([sig, n]) => `
+        <div class="d-flex justify-content-between align-items-start gap-2">
+          <button class="btn btn-outline-danger btn-sm text-start w-100" data-sig="${escapeHtml(sig)}">
+            <div class="fw-semibold">Erreur fonctionnelle</div>
+            <div class="small wrap-any">${escapeHtml(sig)}</div>
+          </button>
+          <span class="badge text-bg-danger align-self-center nowrap">${n}</span>
+        </div>
+      `).join('') || `<div class="text-muted">Aucune erreur détectée.</div>`;
+
+      // Right: errors list
+      const html = filtered.map(e => {
+        const count = e.count && e.count > 1 ? `<span class="badge text-bg-secondary ms-2">x${e.count}</span>` : '';
+        const key = [];
+        if (e.ine) key.push(`<span class="badge text-bg-light text-dark">INE: ${escapeHtml(e.ine)}</span>`);
+        if (e.personneID) key.push(`<span class="badge text-bg-light text-dark">personneID: ${escapeHtml(e.personneID)}</span>`);
+
+        const sig = e.errorSig || '(Erreur non qualifiée)';
+
+        return `
+          <div class="p-3 rounded bg-white rowline error">
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-2">
+              <div class="w-100">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                  ${levelBadge('ERROR')}
+                  <span class="badge text-bg-light text-dark">${escapeHtml(e.module || '—')}</span>
+                  <span class="small-muted mono">${escapeHtml(e.time || '')}</span>
+                  ${count}
+                </div>
+                <div class="mt-2 d-flex flex-wrap gap-2">${key.join('')}</div>
+
+                <div class="mt-2">
+                  <div class="small-muted">À corriger :</div>
+                  <div class="fw-semibold wrap-any">${escapeHtml(sig)}</div>
+                </div>
+
+                <details class="mt-2">
+                  <summary class="clickable small-muted">Voir la ligne complète</summary>
+                  <div class="mt-2 mono small wrap-any">${escapeHtml(e.raw)}</div>
+                </details>
+              </div>
+
+              <div class="d-flex flex-row flex-lg-column gap-2 justify-content-end">
+                <button class="btn btn-outline-secondary btn-sm" data-copy="${escapeHtml(e.raw)}">Copier</button>
+                <button class="btn btn-outline-danger btn-sm" data-filter-sig="${escapeHtml(sig)}">Filtrer même erreur</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      errorsList.innerHTML = html || `<div class="text-muted">Aucune erreur ne correspond au filtre.</div>`;
+
+      // Bind actions
+      errorsList.querySelectorAll('[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(btn.getAttribute('data-copy'));
+            toast('Erreur copiée.', 'secondary');
+          } catch {
+            toast('Impossible de copier automatiquement (droits navigateur).', 'warning');
+          }
+        });
+      });
+
+      errorsList.querySelectorAll('[data-filter-sig]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          view.errSignature = btn.getAttribute('data-filter-sig') || '';
+          renderAll();
+          toast('Filtre sur signature d’erreur appliqué.', 'danger');
+        });
+      });
+
+      errTopList.querySelectorAll('[data-sig]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          view.errSignature = btn.getAttribute('data-sig') || '';
+          // Force level to ERROR for clarity
+          view.level = 'ERROR';
+          lvlError.checked = true;
+          renderAll();
+          toast('Filtre sur une erreur fréquente appliqué.', 'danger');
+        });
+      });
+
+      el('errCountBadge').textContent = errOnly.reduce((a,e)=>a+(e.count||1),0);
+    }
+
+	function renderModules(list) {
+		const map = new Map(); // module -> counts
+		for (const e of list) {
+			const mod = e.module || '—';
+			if (!map.has(mod)) map.set(mod, { INFO:0, WARN:0, ERROR:0, OTHER:0 });
+			const row = map.get(mod);
+			row[e.level] = (row[e.level] || 0) + (e.count || 1);
+		}
+		const rows = Array.from(map.entries()).sort((a,b) => a[0].localeCompare(b[0]));
+
+		function cellLink(mod, level, value, extraClasses='') {
+		// value=0 -> show 0 but keep non-clickable for clarity
+			if (!value) return `<span class="${extraClasses}">${value}</span>`;
+			return `
+				<button class="btn btn-link p-0 ${extraClasses}" data-mod="${escapeHtml(mod)}" data-level="${level}">
+				${value}
+				</button>`;
+		}
+
+		modulesTable.innerHTML = rows.map(([mod, c]) => {
+			const total = (c.INFO||0)+(c.WARN||0)+(c.ERROR||0)+(c.OTHER||0);
+
+			return `
+				<tr>
+				<td>
+					<button class="btn btn-link p-0" data-mod="${escapeHtml(mod)}" data-level="ALL">
+					${escapeHtml(mod)}
+					</button>
+				</td>
+				<td class="text-end">
+					${cellLink(mod, 'INFO', c.INFO||0)}
+				</td>
+				<td class="text-end">
+					${cellLink(mod, 'WARN', c.WARN||0)}
+				</td>
+				<td class="text-end fw-semibold text-danger">
+					${cellLink(mod, 'ERROR', c.ERROR||0, 'text-danger fw-semibold')}
+				</td>
+				<td class="text-end">${total}</td>
+				</tr>
+			`;
+		}).join('') || `<tr><td colspan="5" class="text-muted">Aucune donnée.</td></tr>`;
+
+		// Bind clicks: module name or counts
+		modulesTable.querySelectorAll('button[data-mod][data-level]').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const mod = btn.getAttribute('data-mod') || '';
+				const level = btn.getAttribute('data-level') || 'ALL';
+
+				// Apply module filter (— means "no module")
+				view.module = (mod === '—') ? '' : mod;
+				moduleFilter.value = view.module;
+
+				// Apply level filter
+				view.level = level;
+				if (level === 'INFO') lvlInfo.checked = true;
+				else if (level === 'WARN') lvlWarn.checked = true;
+				else if (level === 'ERROR') lvlError.checked = true;
+				else lvlAll.checked = true;
+
+				// Clear signature filter when using module/level pivots
+				view.errSignature = '';
+
+				// Choose best tab for display
+				if (level === 'ERROR') {
+					bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-errors')).show();
+				} else {
+					bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-all')).show();
+				}
+
+				renderAll();
+
+				const msgLevel = (level === 'ALL') ? 'Tous niveaux' : level;
+				toast(`Filtre appliqué : ${msgLevel} / module ${view.module || 'Tous'}.`, level === 'ERROR' ? 'danger' : 'secondary');
+			});
+		});
+	}
+
+    function renderAll() {
+      const list = entries;
+
+      renderDashboard(list);
+	  renderInt19Summary(list);
+      renderErrors(list);
+      renderAllList(list);
+      renderModules(list);
+    }
+
+    // ----------------------------
+    // Export CSV (errors)
+    // ----------------------------
+    function downloadText(filename, content, mime='text/plain;charset=utf-8') {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportErrorsCsv() {
+      const errOnly = entries.filter(e => e.level === 'ERROR');
+      const filtered = getFiltered(errOnly);
+
+      const header = ['count','time','module','ine','personneID','error_signature','raw_line'];
+      const rows = filtered.map(e => [
+        (e.count || 1),
+        e.time || '',
+        e.module || '',
+        e.ine || '',
+        e.personneID || '',
+        e.errorSig || '',
+        e.raw || ''
+      ].map(v => `"${String(v).replaceAll('"','""')}"`).join(','));
+
+      const csv = header.join(',') + '\n' + rows.join('\n');
+      downloadText('ycrint_errors.csv', csv, 'text/csv;charset=utf-8');
+      toast('Export CSV généré.', 'secondary');
+    }
+
+    // ----------------------------
+    // Summary copy
+    // ----------------------------
+    async function copySummary() {
+      const info = entries.filter(x => x.level === 'INFO').reduce((a,e)=>a+(e.count||1),0);
+      const warn = entries.filter(x => x.level === 'WARN').reduce((a,e)=>a+(e.count||1),0);
+      const err  = entries.filter(x => x.level === 'ERROR').reduce((a,e)=>a+(e.count||1),0);
+
+      const topErrMap = new Map();
+      for (const e of entries.filter(x => x.level === 'ERROR')) {
+        const sig = e.errorSig || '(Erreur non qualifiée)';
+        topErrMap.set(sig, (topErrMap.get(sig) || 0) + (e.count || 1));
+      }
+      const top3 = Array.from(topErrMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+      const summary =
+`Résumé YCRINT
+- INFO   : ${info}
+- WARN   : ${warn}
+- ERROR  : ${err}
+
+Top erreurs:
+${top3.map(([s,n],i)=>`${i+1}) (${n}) ${s}`).join('\n') || '(aucune)'}`;
+
+      try {
+        await navigator.clipboard.writeText(summary);
+        toast('Résumé copié.', 'secondary');
+      } catch {
+        toast('Impossible de copier automatiquement (droits navigateur).', 'warning');
+      }
+    }
+
+    // ----------------------------
+    // Wiring (events)
+    // ----------------------------
+    function applyLevelFromUI() {
+      if (lvlInfo.checked) view.level = 'INFO';
+      else if (lvlWarn.checked) view.level = 'WARN';
+      else if (lvlError.checked) view.level = 'ERROR';
+      else view.level = 'ALL';
+    }
+
+    [lvlAll, lvlInfo, lvlWarn, lvlError].forEach(r => {
+      r.addEventListener('change', () => {
+        applyLevelFromUI();
+        // Clear error signature if leaving error mode
+        if (view.level !== 'ERROR') view.errSignature = '';
+        renderAll();
+      });
+    });
+
+    moduleFilter.addEventListener('change', () => {
+      view.module = moduleFilter.value;
+      renderAll();
+    });
+
+    searchBox.addEventListener('input', () => {
+      view.q = searchBox.value || '';
+      renderAll();
+    });
+
+    btnClearErrFilter.addEventListener('click', () => {
+      view.errSignature = '';
+      view.q = '';
+      searchBox.value = '';
+      renderAll();
+      toast('Filtres erreurs effacés.', 'secondary');
+    });
+
+    btnExportErrors.addEventListener('click', exportErrorsCsv);
+    btnCopyTop.addEventListener('click', copySummary);
+
+    btnReset.addEventListener('click', () => {
+      rawText = '';
+      entries = [];
+      view = { level: 'ALL', module: '', q: '', errSignature: '' };
+      fileInput.value = '';
+      fileName.textContent = '';
+      dashboard.classList.add('d-none');
+      tabsBlock.classList.add('d-none');
+      errorsList.innerHTML = '';
+      allList.innerHTML = '';
+      errTopList.innerHTML = '';
+      modulesTable.innerHTML = '';
+      moduleFilter.innerHTML = `<option value="">Tous</option>`;
+      searchBox.value = '';
+      lvlAll.checked = true;
+      toast('Réinitialisé.', 'secondary');
+    });
+
+    btnDemo.addEventListener('click', () => {
+      rawText = DEMO_TEXT;
+      fileName.textContent = 'Exemple chargé (démo)';
+      runAnalysis();
+    });
+
+    btnAnalyze.addEventListener('click', async () => {
+      if (fileInput.files && fileInput.files[0]) {
+        const f = fileInput.files[0];
+        fileName.textContent = `${f.name} (${Math.round(f.size/1024)} Ko)`;
+        rawText = await f.text();
+        runAnalysis();
+      } else if (rawText) {
+        runAnalysis();
+      } else {
+        toast('Veuillez sélectionner un fichier (ou charger l’exemple).', 'warning');
+      }
+    });
+
+    function runAnalysis() {
+      // Parse
+      let parsed = parseText(rawText);
+
+      // Collapse duplicates if selected
+      if (optCollapseDup.checked) parsed = collapseDuplicates(parsed);
+
+      entries = parsed;
+
+      // Populate module filter
+      buildModuleOptions(entries);
+
+      // Default focus
+      applyLevelFromUI();
+
+      renderAll();
+
+      // Optionally focus errors tab
+      if (optFocusErrors.checked) {
+        bootstrap.Tab.getOrCreateInstance(document.querySelector('#tab-errors')).show();
+      }
+
+      toast('Analyse terminée.', 'secondary');
+    }
+  </script>
+</body>
+</html>

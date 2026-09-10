@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cap Mobilités — Voyages, mobilités &amp; projets</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxyZWN0IHg9IjIiIHk9IjIiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcng9IjE0IiBmaWxsPSIjMEIxRjNBIi8+CjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iNCIvPgo8cGF0aCBkPSJNMzIgNiBMMzggMjYgTDU4IDMyIEwzOCAzOCBMMzIgNTggTDI2IDM4IEw2IDMyIEwyNiAyNiBaIgogICAgICBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMwQjFGM0EiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjYuNSIgZmlsbD0iIzE2QzdCNyIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+:root{
+  --bg:#f4f7fb;--panel:#ffffff;--ink:#172033;--muted:#6f7890;--line:#dfe5ef;
+  --primary:#1d4ed8;--primary-2:#3b82f6;--accent:#0f766e;--warn:#b45309;--danger:#b91c1c;
+  --ord:#f59e0b;--account:#2563eb;--mix:#64748b;--shadow:0 8px 24px rgba(15,23,42,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:#0f172a;color:#fff;padding:22px 18px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:28px}.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#22c55e);display:grid;place-items:center;font-weight:800}.brand h1{font-size:16px;margin:0}.brand small{color:#b7c1d6}
+.nav a{display:flex;align-items:center;gap:10px;color:#cbd5e1;text-decoration:none;padding:11px 12px;border-radius:10px;margin:4px 0;font-size:14px}.nav a.active,.nav a:hover{background:#1e293b;color:#fff}.footnote{position:absolute;bottom:20px;left:18px;right:18px;color:#94a3b8;font-size:11px;line-height:1.45}
+.main{padding:24px 28px 40px;min-width:0}.topbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}.topbar h2{margin:0;font-size:28px}.sub{color:var(--muted);margin-top:4px;font-size:14px}.stamp{font-size:12px;color:var(--muted);text-align:right}
+.filters{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));gap:10px;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:16px;box-shadow:var(--shadow);margin-bottom:16px}.filters label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px}.filters select,.filters input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;color:var(--ink)}.check-filter{align-self:end;height:38px;display:flex!important;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:#fff;color:var(--ink)!important;cursor:pointer}.check-filter input{width:auto!important;accent-color:var(--primary)}.check-filter span{display:flex;flex-direction:column;line-height:1.05}.check-filter small{font-size:9px;color:var(--muted)}.erasmus-badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:800;background:#dbeafe;color:#1d4ed8}.non-erasmus{background:#f1f5f9;color:#64748b}.filters button{align-self:end;height:38px;border:0;border-radius:9px;background:#e2e8f0;color:#334155;font-weight:600;cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.kpi .value{font-size:24px;font-weight:800;margin:7px 0 3px}.kpi .hint{font-size:12px;color:var(--muted)}.kpi .bar{height:6px;background:#edf2f7;border-radius:999px;margin-top:10px;overflow:hidden}.kpi .bar span{display:block;height:100%;background:var(--primary);border-radius:999px}
+.grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);min-width:0}.panel h3{margin:0 0 4px;font-size:15px}.panel .panel-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.project-bars{display:grid;gap:12px}.pbar-row{display:grid;grid-template-columns:160px 1fr 60px;gap:10px;align-items:center}.pbar-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track{height:10px;background:#edf2f7;border-radius:999px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa)}.pct{text-align:right;font-weight:700;font-size:12px}.legend-row{display:flex;flex-wrap:wrap;gap:8px}.pill{padding:7px 9px;border-radius:999px;background:#eef2ff;font-size:12px}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{border:1px solid var(--line);border-radius:12px;padding:12px}.mini b{font-size:20px}.mini span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+#map{height:430px;border-radius:14px;overflow:hidden}.leaflet-popup-content-wrapper{border-radius:12px}.popup h4{margin:0 0 6px}.popup p{margin:3px 0;font-size:12px}.popup button{margin-top:8px;border:0;border-radius:8px;padding:7px 9px;background:#1d4ed8;color:#fff;font-weight:600;cursor:pointer}
+.timeline{overflow:auto}.months{display:grid;grid-template-columns:180px repeat(12,90px);gap:0;min-width:1260px}.months div{font-size:11px;color:var(--muted);padding:6px;border-bottom:1px solid var(--line)}.timeline-row{display:grid;grid-template-columns:180px 1080px;min-width:1260px;align-items:center;border-bottom:1px solid #eef2f7}.timeline-row .name{padding:10px 6px;font-size:12px;font-weight:600}.lane{position:relative;height:38px;background:repeating-linear-gradient(to right,transparent,transparent 89px,#edf2f7 89px,#edf2f7 90px)}.event{position:absolute;top:9px;height:20px;border-radius:999px;background:linear-gradient(90deg,#1d4ed8,#60a5fa);color:#fff;font-size:10px;padding:3px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.today-line{position:absolute;top:0;bottom:0;width:2px;background:#dc2626;opacity:.65}
+.alerts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.alert{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}.alert strong{display:block;font-size:16px;margin-bottom:3px}.alert.warn{background:#fff7ed}.alert.info{background:#eff6ff}.alert.ok{background:#f0fdf4}
+.table-wrap{overflow:auto}.projects-table{width:100%;border-collapse:collapse;font-size:12px}.projects-table th,.projects-table td{padding:10px 8px;border-bottom:1px solid #edf2f7;text-align:left;white-space:nowrap}.projects-table th{color:var(--muted);font-weight:600}.status{display:inline-flex;align-items:center;gap:6px}.dot{width:8px;height:8px;border-radius:50%;background:#22c55e}.dot.warn{background:#f59e0b}.dot.danger{background:#ef4444}
+.drawer{position:fixed;top:0;right:-460px;width:440px;max-width:94vw;height:100vh;background:#fff;border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(15,23,42,.14);z-index:9999;transition:.25s ease;padding:22px;overflow:auto}.drawer.open{right:0}.drawer-close{float:right;border:0;background:#eef2f7;border-radius:8px;width:34px;height:34px;cursor:pointer}.drawer h3{font-size:22px;margin:10px 0 4px}.drawer .meta{color:var(--muted);font-size:12px}.drawer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.drawer-card{border:1px solid var(--line);border-radius:12px;padding:12px}.drawer-card span{display:block;color:var(--muted);font-size:11px}.drawer-card b{font-size:18px}.drawer-section{margin-top:18px}.drawer-section h4{margin:0 0 8px}.drawer-section ul{margin:0;padding-left:18px;font-size:13px;color:#334155}
+@media(max-width:1200px){.app{grid-template-columns:78px 1fr}.sidebar{padding:18px 10px}.brand h1,.brand small,.nav span,.footnote{display:none}.brand{justify-content:center}.nav a{justify-content:center}.filters{grid-template-columns:repeat(3,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}}
+
+.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.budget-col{border:1px solid var(--line);border-radius:14px;overflow:hidden}.budget-head{padding:10px 12px;background:#f8fafc;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em}.budget-row{display:grid;grid-template-columns:1fr 100px;gap:10px;padding:8px 12px;border-top:1px solid #eef2f7;font-size:12px}.budget-row b{text-align:right}.budget-total{background:#f8fafc;font-weight:800}.balance{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700}.balance.ok{background:#ecfdf5;color:#166534}.balance.bad{background:#fef2f2;color:#991b1b}.finance-tags{display:flex;flex-wrap:wrap;gap:7px}.finance-tag{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:999px;padding:6px 9px;font-size:11px}.ca-box{border:1px solid var(--line);border-radius:14px;padding:12px}.ca-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ca-item{padding:9px;border-radius:10px;background:#f8fafc}.ca-item span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.ca-item b{display:block;margin-top:3px;font-size:12px}.decision{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}.decision.go{background:#dcfce7;color:#166534}.decision.nogo{background:#fee2e2;color:#991b1b}.decision.pending{background:#fef3c7;color:#92400e}.docs{display:grid;gap:8px}.doc{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px}.doc a{text-decoration:none;color:var(--primary);font-weight:700;font-size:12px}.doc small{color:var(--muted)}.btn-primary,.btn-soft{border:0;border-radius:9px;padding:9px 11px;font-weight:700;cursor:pointer}.btn-primary{background:var(--primary);color:#fff}.btn-soft{background:#eef2f7;color:#334155}.drawer-actions{display:flex;gap:8px;margin-top:14px}.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}.modal.open{display:flex}.modal-card{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(15,23,42,.25);padding:20px}.modal-top{display:flex;justify-content:space-between;align-items:center;gap:16px}.modal-top h3{margin:0}.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px}.field textarea{min-height:72px;resize:vertical}.span2{grid-column:span 2}.span3{grid-column:1/-1}.edit-table{width:100%;border-collapse:collapse;margin-top:8px}.edit-table th,.edit-table td{border-bottom:1px solid #eef2f7;padding:7px;font-size:11px;text-align:left}.edit-table input{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px}.edit-table .money{width:110px}.row-del{border:0;background:#fee2e2;color:#991b1b;border-radius:7px;padding:6px 8px;cursor:pointer}.section-title{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.section-title h4{margin:0}.source-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.source-card{border:1px solid var(--line);border-radius:12px;padding:10px}.source-card span{display:block;font-size:10px;color:var(--muted)}.source-card b{display:block;margin-top:3px}.muted{color:var(--muted)}.funding-split{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.funding-split .split-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}.funding-split .split-card span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}.funding-split .split-card b{display:block;margin-top:4px;font-size:14px}.funding-split .split-card small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.hint{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.35}
+@media(max-width:800px){.app{display:block}.sidebar{display:none}.main{padding:16px}.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.alerts{grid-template-columns:1fr}.topbar{display:block}.stamp{text-align:left;margin-top:8px}.budget-grid,.form-grid,.ca-grid,.source-summary,.funding-split{grid-template-columns:1fr}.span2,.span3{grid-column:auto}}
+
+.budget-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 6px}.budget-tab{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer}.budget-tab.active{background:#eaf2ff;color:#1d4ed8;border-color:#93c5fd}.version-box{display:none}.version-box.active{display:block}.variance-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.variance-card{border:1px solid var(--line);border-radius:12px;padding:10px}.variance-card span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.variance-card b{display:block;margin-top:4px;font-size:14px}.variance-card small{display:block;margin-top:3px;color:var(--muted);font-size:10px}.trace-note{padding:10px 12px;border-left:3px solid #2563eb;background:#f8fafc;border-radius:8px;font-size:11px;margin-top:8px}.version-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.version-meta .field input{background:#fff}.budget-status{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;background:#eef2ff;color:#3730a3}@media(max-width:800px){.variance-grid,.version-meta{grid-template-columns:1fr}}
+
+/* ===== Export PDF / Impression ===== */
+.pdf-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.pdf-btn{border:0;border-radius:9px;padding:9px 12px;background:#0f172a;color:#fff;font-weight:700;cursor:pointer}
+.pdf-btn.soft{background:#e2e8f0;color:#334155}
+
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  html,body{background:#fff!important}
+  body{font-size:10px}
+  .app{display:block!important}
+  .sidebar,.pdf-actions,.drawer,.modal,.leaflet-control-container{display:none!important}
+  .main{padding:0!important}
+  .topbar{margin-bottom:8px!important}
+  .topbar h2{font-size:20px!important}
+  .filters{box-shadow:none!important;border:1px solid #bbb!important;margin-bottom:8px!important;padding:8px!important}
+  .filters button{display:none!important}
+  .kpis{gap:6px!important;margin-bottom:8px!important}
+  .kpi{box-shadow:none!important;padding:9px!important;border:1px solid #bbb!important}
+  .kpi .value{font-size:17px!important}
+  .grid2{gap:8px!important;margin-bottom:8px!important}
+  .panel{box-shadow:none!important;border:1px solid #bbb!important;padding:9px!important;break-inside:avoid}
+  #map{height:230px!important}
+  #timeline-panel{break-before:auto}
+  .months,.timeline-row{min-width:0!important}
+  .projects-table{font-size:8px!important}
+  .projects-table th,.projects-table td{padding:4px 3px!important;white-space:normal!important}
+  .source-summary{grid-template-columns:repeat(4,1fr)!important}
+  .alerts{grid-template-columns:repeat(3,1fr)!important}
+  a{text-decoration:none!important;color:inherit!important}
+
+  body.print-project .app{display:none!important}
+  body.print-project .drawer{
+    display:block!important;
+    position:static!important;
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    border:0!important;
+    box-shadow:none!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  body.print-project .drawer-close,
+  body.print-project .drawer-actions,
+  body.print-project .budget-tabs button{display:none!important}
+  body.print-project #drawerContent{display:block!important}
+  body.print-project .drawer-section,
+  body.print-project .drawer-card,
+  body.print-project .budget-col,
+  body.print-project .ca-box{break-inside:avoid}
+  body.print-project .budget-grid{grid-template-columns:1fr 1fr!important}
+  body.print-project .funding-split,
+  body.print-project .source-summary{grid-template-columns:repeat(4,1fr)!important}
+  body.print-project .version-box{display:block!important}
+  body.print-project .version-box:not(.active){display:none!important}
+}
+
+
+/* ===== v2.9.1 Compact cockpit ===== */
+.main{padding:18px 20px 28px}
+.compact-topbar{align-items:center;margin-bottom:12px}
+.compact-topbar h2{font-size:25px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.compact-filters{
+  grid-template-columns:1.1fr 1.1fr 1fr .9fr .9fr 150px 120px;
+  padding:10px 12px;margin-bottom:10px;border-radius:13px;
+}
+.compact-filters select,.compact-filters input{padding:7px 8px}
+.compact-filters .check-filter,.compact-filters button{height:34px}
+.compact-kpis{grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:10px}
+.compact-kpis .kpi{padding:11px 12px;border-radius:13px}
+.compact-kpis .kpi .value{font-size:20px;margin:4px 0 2px}
+.compact-kpis .kpi .bar{margin-top:6px}
+.hero-map{padding:10px;margin-bottom:10px;border-radius:14px}
+.hero-map #map{height:365px}
+.panel-head-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.map-legend{display:flex;gap:14px;align-items:center;font-size:11px;color:var(--muted)}
+.map-legend span{display:flex;gap:6px;align-items:center}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.erasmus-dot{background:#2563eb}.other-dot{background:#f59e0b}
+.dashboard-bottom{display:grid;grid-template-columns:1.05fr .95fr;gap:10px;align-items:start}
+.dashboard-bottom>.panel{padding:10px;border-radius:14px;min-height:315px}
+.compact-table th,.compact-table td{padding:7px 6px;font-size:10.5px}
+.compact-table th{position:sticky;top:0;background:#fff;z-index:1}
+.compact-table tbody tr:hover{background:#f8fafc}
+.compact-timeline{max-height:265px;overflow:auto}
+.secondary-zone{margin-top:10px}
+.secondary-zone>summary{
+  cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:9px 12px;font-weight:700;font-size:12px;color:#334155;
+}
+.secondary-zone[open]>summary{margin-bottom:10px}
+.secondary-grid{margin-bottom:10px}
+.map-student-marker{
+  border-radius:999px;
+  border:2px solid white;
+  box-shadow:0 2px 8px rgba(15,23,42,.28);
+  display:flex!important;align-items:center;justify-content:center;
+  font-weight:800;font-size:11px;color:white;
+}
+.map-student-marker.erasmus{background:#2563eb}
+.map-student-marker.other{background:#f59e0b}
+.marker-label{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(100% + 4px);
+  background:white;border:1px solid #cbd5e1;border-radius:5px;
+  padding:2px 5px;font-size:10px;font-weight:700;color:#334155;
+  white-space:nowrap;box-shadow:0 1px 4px rgba(15,23,42,.12);
+  pointer-events:none;
+}
+.timeline .event.erasmus-event{background:#2563eb}
+.timeline .event.other-event{background:#f59e0b}
+@media(max-width:1200px){
+  .compact-filters{grid-template-columns:repeat(4,1fr)}
+  .dashboard-bottom{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  .compact-kpis{grid-template-columns:1fr 1fr}
+  .compact-filters{grid-template-columns:1fr 1fr}
+  .hero-map #map{height:320px}
+  .top-actions{align-items:flex-start;flex-direction:column}
+}
+
+
+@media print{
+  body:not(.print-project) #timeline-panel{display:none!important}
+}
+
+
+/* ===== v2.9.1 Frise : centrage aujourd'hui + hauteur dynamique ===== */
+.compact-timeline{
+  max-height:none!important;
+  height:auto!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-behavior:smooth;
+}
+#timeline-panel{
+  min-height:0!important;
+}
+
+
+/* ===== v2.9.1 Sauvegarde HTML ===== */
+.save-html-btn{
+  border:0;border-radius:9px;padding:9px 12px;background:#0f766e;color:#fff;
+  font-weight:700;cursor:pointer
+}
+.save-html-btn:hover{filter:brightness(.96)}
+.save-toast{
+  position:fixed;right:18px;bottom:18px;z-index:12000;
+  background:#0f172a;color:#fff;padding:10px 14px;border-radius:10px;
+  box-shadow:0 10px 30px rgba(15,23,42,.25);font-size:12px;font-weight:700;
+  opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s ease
+}
+.save-toast.show{opacity:1;transform:translateY(0)}
+@media print{.save-html-btn,.save-toast{display:none!important}}
+
+
+/* ===== v2.9.1 Identité Cap Mobilités ===== */
+.compass-logo{color:#fff}
+.compass-logo svg{width:31px;height:31px;display:block}
+.compass-logo .compass-center{fill:#0ea5a8}
+.brand small{display:block;line-height:1.25;margin-top:2px}
+
+</style>
+
+<style id="eple-tools-cap-mobilites-home-theme">
+  :root{
+    --bg:#f7f8fb;
+    --panel:#ffffff;
+    --ink:#172033;
+    --muted:#6c7587;
+    --line:#e7eaf0;
+    --primary:#0f766e;
+    --primary-2:#14b8a6;
+    --accent:#0f766e;
+    --warn:#b45309;
+    --danger:#b91c1c;
+    --shadow:0 .25rem 1rem rgba(15,23,42,.045);
+  }
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+
+  .app{
+    grid-template-columns:220px 1fr;
+    background:var(--bg);
+  }
+
+  .sidebar{
+    background:#fff;
+    color:var(--ink);
+    border-right:1px solid var(--line);
+    box-shadow:.15rem 0 .9rem rgba(15,23,42,.025);
+    padding:18px 14px;
+  }
+
+  .brand{
+    margin-bottom:1rem;
+    padding:.45rem .4rem .9rem;
+    border-bottom:1px solid var(--line);
+  }
+
+  .logo{
+    width:43px;
+    height:43px;
+    border-radius:.7rem;
+    background:color-mix(in srgb,var(--accent) 10%,white);
+    color:var(--accent);
+  }
+
+  .compass-logo{
+    color:var(--accent);
+  }
+
+  .compass-logo .compass-center{
+    fill:#14b8a6;
+  }
+
+  .brand h1{
+    font-size:.95rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .brand small{
+    color:var(--muted);
+    font-size:.68rem;
+  }
+
+  .nav a{
+    color:#667085;
+    border-radius:.6rem;
+    padding:.62rem .7rem;
+    margin:.15rem 0;
+    font-size:.8rem;
+  }
+
+  .nav a:hover{
+    background:#f8fafc;
+    color:var(--accent);
+  }
+
+  .nav a.active{
+    background:color-mix(in srgb,var(--accent) 9%,white);
+    color:var(--accent);
+    font-weight:700;
+  }
+
+  .footnote{
+    color:#98a2b3;
+    border-top:1px solid var(--line);
+    padding-top:.7rem;
+  }
+
+  .main{
+    padding:1.5rem;
+  }
+
+  .topbar{
+    background:linear-gradient(145deg,#fff,#f3fcf9);
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    box-shadow:var(--shadow);
+    padding:1rem 1.25rem;
+    margin-bottom:1rem;
+    align-items:center;
+  }
+
+  .topbar h2{
+    font-size:1.15rem;
+    font-weight:700;
+    letter-spacing:-.015em;
+    color:var(--ink);
+  }
+
+  .topbar h2::before{
+    content:"Projets & mobilités";
+    display:block;
+    margin-bottom:.15rem;
+    color:var(--accent);
+    font-size:.66rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .sub{
+    color:var(--muted);
+    font-size:.76rem;
+  }
+
+  .stamp{
+    color:var(--muted);
+    font-size:.68rem;
+  }
+
+  .filters,
+  .kpi,
+  .panel,
+  .budget-col,
+  .ca-box,
+  .drawer-card,
+  .source-card,
+  .split-card,
+  .variance-card,
+  .modal-card{
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+  }
+
+  .filters{
+    border-radius:.8rem;
+    padding:.8rem;
+  }
+
+  .filters label{
+    color:var(--muted);
+  }
+
+  .filters select,
+  .filters input,
+  .field input,
+  .field select,
+  .field textarea{
+    border-color:#dde2ea;
+    border-radius:.55rem;
+  }
+
+  .filters select:focus,
+  .filters input:focus,
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus{
+    outline:none;
+    border-color:#6fb5a9;
+    box-shadow:0 0 0 .2rem rgba(15,118,110,.10);
+  }
+
+  .check-filter{
+    border-color:var(--line);
+    border-radius:.55rem;
+  }
+
+  .filters button,
+  .btn-soft,
+  .pdf-btn,
+  .save-html-btn,
+  .btn-primary,
+  .budget-tab,
+  .drawer-close{
+    border-radius:.55rem;
+  }
+
+  .save-html-btn,
+  .btn-primary{
+    background:var(--accent);
+  }
+
+  .pdf-btn{
+    background:#334155;
+  }
+
+  .kpi{
+    border-radius:.8rem;
+    padding:.8rem .9rem;
+  }
+
+  .kpi .label{
+    color:var(--muted);
+    font-size:.68rem;
+    letter-spacing:.035em;
+  }
+
+  .kpi .value{
+    font-size:1.35rem;
+    color:var(--ink);
+  }
+
+  .panel{
+    border-radius:.8rem;
+    padding:.9rem;
+  }
+
+  .panel h3{
+    font-size:.9rem;
+    font-weight:700;
+    color:#344054;
+  }
+
+  .panel .panel-sub{
+    color:var(--muted);
+    font-size:.72rem;
+  }
+
+  .hero-map{
+    border-radius:.85rem;
+  }
+
+  #map{
+    border-radius:.7rem;
+  }
+
+  .secondary-zone>summary{
+    border:1px solid var(--line);
+    border-radius:.65rem;
+    color:#475467;
+    box-shadow:var(--shadow);
+  }
+
+  .projects-table th{
+    color:var(--muted);
+    font-weight:650;
+    background:#f8fafc;
+  }
+
+  .projects-table tbody tr:hover{
+    background:#f7f8fb;
+  }
+
+  .drawer{
+    border-left:1px solid var(--line);
+    box-shadow:-.6rem 0 1.5rem rgba(15,23,42,.10);
+  }
+
+  .modal{
+    background:rgba(15,23,42,.38);
+  }
+
+  .modal-card{
+    border-radius:.85rem;
+  }
+
+  .budget-tab.active{
+    background:color-mix(in srgb,var(--accent) 9%,white);
+    color:var(--accent);
+    border-color:color-mix(in srgb,var(--accent) 24%,white);
+  }
+
+  .trace-note{
+    border-left-color:var(--accent);
+    background:#f8fafc;
+  }
+
+  .finance-tag{
+    background:color-mix(in srgb,var(--accent) 8%,white);
+    color:var(--accent);
+    border-color:color-mix(in srgb,var(--accent) 20%,white);
+  }
+
+  .erasmus-badge{
+    background:color-mix(in srgb,var(--accent) 10%,white);
+    color:var(--accent);
+  }
+
+  .map-student-marker.erasmus,
+  .timeline .event.erasmus-event{
+    background:var(--accent);
+  }
+
+  .erasmus-dot{
+    background:var(--accent);
+  }
+
+  @media(max-width:1200px){
+    .app{grid-template-columns:78px 1fr}
+    .sidebar{padding:14px 8px}
+  }
+
+  @media(max-width:800px){
+    .main{padding:1rem}
+    .topbar{padding:.9rem 1rem}
+  }
+
+  @media print{
+    .topbar{
+      background:#fff!important;
+      border:0!important;
+      box-shadow:none!important;
+      padding:0!important;
+    }
+  }
+</style>
+
+
+<style id="new-project-button-theme">
+  .new-project-btn{
+    border:1px solid #0f766e;
+    border-radius:.55rem;
+    padding:9px 12px;
+    background:#0f766e;
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .new-project-btn:hover{background:#0d655e;border-color:#0d655e}
+  .new-project-btn:focus{outline:none;box-shadow:0 0 0 .2rem rgba(15,118,110,.12)}
+  @media print{.new-project-btn{display:none!important}}
+</style>
+
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo compass-logo" aria-label="Rose des vents">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="24 7"></circle>
+          <path d="M32 7 L38 27 L57 32 L38 37 L32 57 L26 37 L7 32 L26 27 Z" fill="currentColor"></path>
+          <circle cx="32" cy="32" r="5" class="compass-center"></circle>
+        </svg>
+      </div>
+      <div><h1>Cap Mobilités</h1><small>Voyages, mobilités &amp; projets</small></div>
+    </div>
+    <nav class="nav">
+      <a href="#cockpit" class="active">⌂ <span>Cockpit</span></a>
+      <a href="#map-panel">⌖ <span>Mobilités</span></a>
+      <a href="#timeline-panel">◷ <span>Calendrier</span></a>
+      <a href="#projects-panel">▤ <span>Projets</span></a>
+      <a href="#projects-panel">€ <span>Budgets &amp; CA</span></a>
+      <a href="#finance-panel">€ <span>Finances</span></a>
+    </nav>
+    <div class="footnote">Prototype local HTML/JS<br>Source future : import Excel / CSV</div>
+  </aside>
+  <main class="main" id="cockpit">
+    <div class="topbar compact-topbar">
+      <div>
+        <h2>Cap Mobilités</h2>
+        <div class="sub">Voyages, mobilités Erasmus+ et projets internationaux : budgets, participants, calendrier, destinations et documents.</div>
+      </div>
+      <div class="top-actions">
+        <div class="stamp">Données issues des budgets transmis<br><span id="dataDate">Actualisé le 09/09/2026</span></div>
+        <button class="new-project-btn" type="button" onclick="createNewProject()">＋ Nouveau projet</button>
+        <button class="save-html-btn" type="button" onclick="saveAsHtmlSnapshot()">💾 Enregistrer HTML</button>
+        <button class="pdf-btn" type="button" onclick="exportDashboardPdf()">⤓ Export PDF</button>
+      </div>
+    </div>
+
+    <section class="filters compact-filters">
+      <div><label>Établissement</label><select id="fEst"><option value="">Tous</option><option>Lycée Démonstration</option></select></div>
+      <div><label>Projet</label><select id="fProject"><option value="">Tous</option><option>Concours des Métiers 2026-2027 – France-Allemagne</option><option>Festival d’Angers</option><option>Intégration des BTS – Saint-Nazaire</option><option>KA220 « Calm in the storm » – Mersin</option><option>KA220 « L’art miroir des valeurs européennes » – Pinto</option><option>Mobilité Erasmus – Naples Sport</option><option>Mobilité Erasmus – Pombal GA &amp; Commerce</option><option>Voyage scolaire – Bilbao</option><option>Voyage scolaire – Canton (USA)</option><option>Voyage scolaire – Cork</option><option>Voyage scolaire – Dublin</option><option>Voyage scolaire – Midhurst</option><option>Voyage scolaire – Munich</option></select></div>
+      <div><label>Type</label><select id="fType"><option value="">Tous</option><option>Concours des métiers</option><option>Mobilité Erasmus</option><option>Mobilité adulte Erasmus</option><option>Voyage / intégration</option><option>Voyage scolaire</option></select></div>
+      <div><label>Pays</label><select id="fCountry"><option value="">Tous</option><option>Allemagne</option><option>Espagne</option><option>France</option><option>Irlande</option><option>Italie</option><option>Portugal</option><option>Royaume-Uni</option><option>Turquie</option><option>États-Unis</option></select></div>
+      <div><label>Statut</label><select id="fStatus"><option value="">Tous</option><option>Prévisionnel</option></select></div>
+      <label class="check-filter"><input type="checkbox" id="fErasmus"> <span><b>Erasmus+</b><small>uniquement</small></span></label>
+      <button id="resetBtn">↻ Réinitialiser</button>
+    </section>
+
+    <section class="kpis compact-kpis" id="kpis"><div class="kpi"><div class="label">Budget</div><div class="value">189 473&nbsp;€</div><div class="hint">13 projets</div><div class="bar"><span style="width:100%"></span></div></div><div class="kpi"><div class="label">Engagé</div><div class="value">0&nbsp;€</div><div class="hint">0 % du budget</div><div class="bar"><span style="width:0%"></span></div></div><div class="kpi"><div class="label">Réalisé</div><div class="value">0&nbsp;€</div><div class="hint">0 % du budget</div><div class="bar"><span style="width:0%"></span></div></div><div class="kpi"><div class="label">Bénéficiaires</div><div class="value">298 élèves</div><div class="hint">37 adultes</div><div class="bar"><span style="width:100%"></span></div></div><div class="kpi"><div class="label">Mobilités</div><div class="value">336</div><div class="hint">9 pays</div><div class="bar"><span style="width:100%"></span></div></div><div class="kpi"><div class="label">Panier moyen</div><div class="value">0&nbsp;€</div><div class="hint">par élève</div><div class="bar"><span style="width:0%"></span></div></div></section>
+
+    <section class="panel hero-map" id="map-panel">
+      <div class="panel-head-row">
+        <div>
+          <h3>Carte des destinations</h3>
+          <div class="panel-sub">Fond IGN · Bleu = Erasmus+ · Orange = autres voyages · nombre = élèves</div>
+        </div>
+        <div class="map-legend">
+          <span><i class="legend-dot erasmus-dot"></i>Erasmus+</span>
+          <span><i class="legend-dot other-dot"></i>Autres voyages</span>
+        </div>
+      </div>
+      <div id="map" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" style="position: relative;" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(346px, -55px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=8" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(719px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=8" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(719px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=7" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(463px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=9" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(975px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=8" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(719px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=7" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(463px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=9" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(975px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=7" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(463px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=9" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(975px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=6" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(207px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=10" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1231px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=6" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(207px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=10" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1231px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=6" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(207px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=10" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1231px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=5" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-49px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=11" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1487px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=5" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-49px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=11" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1487px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=5" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-49px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=11" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1487px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=4" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-305px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=4" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-305px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=4" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-305px, 312px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=5&amp;TILECOL=3" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-561px, 56px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=4&amp;TILECOL=3" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-561px, -200px, 0px); opacity: 1;"><img alt="" src="https://data.geopf.fr/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;STYLE=normal&amp;TILEMATRIXSET=PM&amp;FORMAT=image/png&amp;TILEMATRIX=4&amp;TILEROW=6&amp;TILECOL=3" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-561px, 312px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -20.7082px; margin-top: -20.7082px; width: 41.4164px; height: 41.4164px; transform: translate3d(851px, 198px, 0px); z-index: 198;" tabindex="0" role="button"><div class="map-student-marker other" style="width:41.41640786499874px;height:41.41640786499874px">
+              <span class="marker-label">Munich</span>45
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -19px; margin-top: -19px; width: 38px; height: 38px; transform: translate3d(-207px, 315px, 0px); z-index: 315;" tabindex="0" role="button"><div class="map-student-marker other" style="width:38px;height:38px">
+              <span class="marker-label">Canton, Ohio</span>25
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -17.873px; margin-top: -17.873px; width: 35.746px; height: 35.746px; transform: translate3d(713px, 209px, 0px); z-index: 209;" tabindex="0" role="button"><div class="map-student-marker other" style="width:35.74596669241483px;height:35.74596669241483px">
+              <span class="marker-label">Angers</span>15
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -20.7823px; margin-top: -20.7823px; width: 41.5647px; height: 41.5647px; transform: translate3d(623px, 131px, 0px); z-index: 131;" tabindex="0" role="button"><div class="map-student-marker other" style="width:41.56465996625054px;height:41.56465996625054px">
+              <span class="marker-label">Cork</span>46
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -21.9373px; margin-top: -21.9373px; width: 43.8745px; height: 43.8745px; transform: translate3d(686px, 277px, 0px); z-index: 277;" tabindex="0" role="button"><div class="map-student-marker other" style="width:43.874507866387546px;height:43.874507866387546px">
+              <span class="marker-label">Bilbao</span>63
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -19px; margin-top: -19px; width: 38px; height: 38px; transform: translate3d(711px, 148px, 0px); z-index: 148;" tabindex="0" role="button"><div class="map-student-marker other" style="width:38px;height:38px">
+              <span class="marker-label">Midhurst</span>25
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -17.4641px; margin-top: -17.4641px; width: 34.9282px; height: 34.9282px; transform: translate3d(881px, 314px, 0px); z-index: 314;" tabindex="0" role="button"><div class="map-student-marker erasmus" style="width:34.92820323027551px;height:34.92820323027551px">
+              <span class="marker-label">Naples</span>12
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -17.3166px; margin-top: -17.3166px; width: 34.6333px; height: 34.6333px; transform: translate3d(648px, 104px, 0px); z-index: 104;" tabindex="0" role="button"><div class="map-student-marker other" style="width:34.633249580710796px;height:34.633249580710796px">
+              <span class="marker-label">Dublin</span>11
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -20.3246px; margin-top: -20.3246px; width: 40.6491px; height: 40.6491px; transform: translate3d(694px, 212px, 0px); z-index: 212;" tabindex="0" role="button"><div class="map-student-marker other" style="width:40.64911064067352px;height:40.64911064067352px">
+              <span class="marker-label">Saint-Nazaire</span>40
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -16.4495px; margin-top: -16.4495px; width: 32.899px; height: 32.899px; transform: translate3d(847px, 128px, 0px); z-index: 128;" tabindex="0" role="button"><div class="map-student-marker erasmus" style="width:32.89897948556636px;height:32.89897948556636px">
+              <span class="marker-label">Oschersleben</span>6
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -15px; margin-top: -15px; width: 30px; height: 30px; transform: translate3d(1113px, 373px, 0px); z-index: 373;" tabindex="0" role="button"><div class="map-student-marker erasmus" style="width:30px;height:30px">
+              <span class="marker-label">Mersin</span>0
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -16px; margin-top: -16px; width: 32px; height: 32px; transform: translate3d(677px, 323px, 0px); z-index: 323;" tabindex="0" role="button"><div class="map-student-marker erasmus" style="width:32px;height:32px">
+              <span class="marker-label">Pinto</span>4
+            </div></div><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" style="margin-left: -16.4495px; margin-top: -16.4495px; width: 32.899px; height: 32.899px; transform: translate3d(621px, 328px, 0px); z-index: 328;" tabindex="0" role="button"><div class="map-student-marker erasmus" style="width:32.89897948556636px;height:32.89897948556636px">
+              <span class="marker-label">Pombal</span>6
+            </div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(1782px, 1461.5px, 0px) scale(8);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © IGN – Géoplateforme</div></div></div></div>
+    </section>
+
+    <section class="dashboard-bottom">
+      <section class="panel" id="projects-panel">
+        <div class="panel-head-row">
+          <div>
+            <h3>Liste des projets / voyages</h3>
+            <div class="panel-sub">Cliquez sur une ligne pour ouvrir la fiche projet.</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="projects-table compact-table">
+            <thead><tr><th>Dest.</th><th>Projet / voyage</th><th>Type</th><th>Dates</th><th>Élèves</th><th>Budget</th><th>Statut</th></tr></thead>
+            <tbody id="projectTable"><tr onclick="openDrawer('V01')" style="cursor:pointer">
+      <td><b>Munich</b></td>
+      <td>Voyage scolaire – Munich</td>
+      <td>Voyage scolaire</td>
+      <td>30/11/25 → 06/12/25</td>
+      <td><b>45</b></td>
+      <td>27 184&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V02')" style="cursor:pointer">
+      <td><b>Canton, Ohio</b></td>
+      <td>Voyage scolaire – Canton (USA)</td>
+      <td>Voyage scolaire</td>
+      <td>06/02/26 → 19/02/26</td>
+      <td><b>25</b></td>
+      <td>46 260&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V03')" style="cursor:pointer">
+      <td><b>Angers</b></td>
+      <td>Festival d’Angers</td>
+      <td>Voyage scolaire</td>
+      <td>21/01/26 → 23/01/26</td>
+      <td><b>15</b></td>
+      <td>2 122&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V04')" style="cursor:pointer">
+      <td><b>Cork</b></td>
+      <td>Voyage scolaire – Cork</td>
+      <td>Voyage scolaire</td>
+      <td>09/02/26 → 14/02/26</td>
+      <td><b>46</b></td>
+      <td>23 186&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V05')" style="cursor:pointer">
+      <td><b>Bilbao</b></td>
+      <td>Voyage scolaire – Bilbao</td>
+      <td>Voyage scolaire</td>
+      <td>08/02/26 → 13/02/26</td>
+      <td><b>63</b></td>
+      <td>24 341&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V06')" style="cursor:pointer">
+      <td><b>Midhurst</b></td>
+      <td>Voyage scolaire – Midhurst</td>
+      <td>Voyage scolaire</td>
+      <td>11/05/26 → 16/05/26</td>
+      <td><b>25</b></td>
+      <td>12 761&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V07')" style="cursor:pointer">
+      <td><b>Naples</b></td>
+      <td>Mobilité Erasmus – Naples Sport</td>
+      <td><b style="color:#2563eb">Erasmus+</b></td>
+      <td>31/01/26 → 07/02/26</td>
+      <td><b>12</b></td>
+      <td>10 950&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V08')" style="cursor:pointer">
+      <td><b>Dublin</b></td>
+      <td>Voyage scolaire – Dublin</td>
+      <td>Voyage scolaire</td>
+      <td>02/02/26 → 06/02/26</td>
+      <td><b>11</b></td>
+      <td>14 673&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V09')" style="cursor:pointer">
+      <td><b>Saint-Nazaire</b></td>
+      <td>Intégration des BTS – Saint-Nazaire</td>
+      <td>Voyage / intégration</td>
+      <td>24/09/26 → 26/09/26</td>
+      <td><b>40</b></td>
+      <td>5 486&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V10')" style="cursor:pointer">
+      <td><b>Oschersleben</b></td>
+      <td>Concours des Métiers 2026-2027 – France-Allemagne</td>
+      <td><b style="color:#2563eb">Erasmus+</b></td>
+      <td>07/12/26 → 11/12/26</td>
+      <td><b>6</b></td>
+      <td>6 757&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V11')" style="cursor:pointer">
+      <td><b>Mersin</b></td>
+      <td>KA220 « Calm in the storm » – Mersin</td>
+      <td><b style="color:#2563eb">Erasmus+</b></td>
+      <td>26/10/26 → 30/10/26</td>
+      <td><b>0</b></td>
+      <td>3 800&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V12')" style="cursor:pointer">
+      <td><b>Pinto</b></td>
+      <td>KA220 « L’art miroir des valeurs européennes » – Pinto</td>
+      <td><b style="color:#2563eb">Erasmus+</b></td>
+      <td>09/11/26 → 11/11/26</td>
+      <td><b>4</b></td>
+      <td>6 200&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr><tr onclick="openDrawer('V13')" style="cursor:pointer">
+      <td><b>Pombal</b></td>
+      <td>Mobilité Erasmus – Pombal GA &amp; Commerce</td>
+      <td><b style="color:#2563eb">Erasmus+</b></td>
+      <td>20/09/26 → 26/09/26</td>
+      <td><b>6</b></td>
+      <td>5 753&nbsp;€</td>
+      <td><span class="status"><span class="dot "></span>Prévisionnel</span></td>
+    </tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="timeline-panel">
+        <div class="panel-head-row">
+          <div>
+            <h3>Frise temporelle des projets</h3>
+            <div class="panel-sub">Vue synthétique des départs et mobilités.</div>
+          </div>
+        </div>
+        <div class="timeline compact-timeline" id="timeline" style="height: 542px; max-height: none; overflow-y: hidden;"><div class="months" style="grid-template-columns:180px repeat(24,90px);min-width:2340px">
+    <div>Projet</div>
+    <div>SEP 25</div><div>OCT</div><div>NOV</div><div>DÉC</div><div>JAN</div><div>FÉV</div><div>MAR</div><div>AVR</div><div>MAI</div><div>JUN</div><div>JUL</div><div>AOÛ</div><div>SEP 26</div><div>OCT</div><div>NOV</div><div>DÉC</div><div>JAN</div><div>FÉV</div><div>MAR</div><div>AVR</div><div>MAI</div><div>JUN</div><div>JUL</div><div>AOÛ</div>
+  </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Munich</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V01')" style="left:12.340182648401827%;width:0.9589041095890412%" title="Munich · Voyage scolaire">
+          Munich (45)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Festival d’Angers</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V03')" style="left:19.463470319634705%;width:0.7%" title="Angers · Voyage scolaire">
+          Angers (15)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Mobilité Erasmus – Naples Sport</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event erasmus-event" onclick="openDrawer('V07')" style="left:20.833333333333336%;width:1.095890410958904%" title="Naples · Mobilité Erasmus">
+          Naples (12)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Dublin</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V08')" style="left:21.107305936073057%;width:0.7%" title="Dublin · Voyage scolaire">
+          Dublin (11)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Canton (USA)</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V02')" style="left:21.65525114155251%;width:1.9178082191780823%" title="Canton, Ohio · Voyage scolaire">
+          Canton, Ohio (25)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Bilbao</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V05')" style="left:21.929223744292237%;width:0.821917808219178%" title="Bilbao · Voyage scolaire">
+          Bilbao (63)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Cork</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V04')" style="left:22.0662100456621%;width:0.821917808219178%" title="Cork · Voyage scolaire">
+          Cork (46)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Voyage scolaire – Midhurst</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V06')" style="left:34.53196347031963%;width:0.821917808219178%" title="Midhurst · Voyage scolaire">
+          Midhurst (25)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Mobilité Erasmus – Pombal GA &amp; Commerce</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event erasmus-event" onclick="openDrawer('V13')" style="left:52.61415525114155%;width:0.9589041095890412%" title="Pombal · Mobilité Erasmus">
+          Pombal (6)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Intégration des BTS – Saint-Nazaire</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event other-event" onclick="openDrawer('V09')" style="left:53.16210045662101%;width:0.7%" title="Saint-Nazaire · Voyage / intégration">
+          Saint-Nazaire (40)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">KA220 « Calm in the storm » – Mersin</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event erasmus-event" onclick="openDrawer('V11')" style="left:57.54566210045662%;width:0.7%" title="Mersin · Mobilité adulte Erasmus">
+          Mersin (0)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">KA220 « L’art miroir des valeurs européennes » – Pinto</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event erasmus-event" onclick="openDrawer('V12')" style="left:59.4634703196347%;width:0.7%" title="Pinto · Mobilité Erasmus">
+          Pinto (4)
+        </div>
+      </div>
+    </div><div class="timeline-row" style="grid-template-columns:180px 2160px;min-width:2340px">
+      <div class="name">Concours des Métiers 2026-2027 – France-Allemagne</div>
+      <div class="lane" style="background-size:90px 100%">
+        <div class="today-line" style="left:51.1616627584348%"></div>
+        <div class="event erasmus-event" onclick="openDrawer('V10')" style="left:63.299086757990864%;width:0.7%" title="Oschersleben · Concours des métiers">
+          Oschersleben (6)
+        </div>
+      </div>
+    </div></div>
+      </section>
+    </section>
+
+    <details class="secondary-zone">
+      <summary>Analyses complémentaires</summary>
+      <section class="grid2 secondary-grid">
+        <div class="panel" id="finance-panel"><h3>Consommation des crédits</h3><div class="panel-sub">Budget, engagements et dépenses réalisés par projet</div><div class="project-bars" id="projectBars"><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Munich">Voyage scolaire – Munich</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Canton (USA)">Voyage scolaire – Canton (USA)</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Festival d’Angers">Festival d’Angers</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Cork">Voyage scolaire – Cork</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Bilbao">Voyage scolaire – Bilbao</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Midhurst">Voyage scolaire – Midhurst</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Mobilité Erasmus – Naples Sport">Mobilité Erasmus – Naples Sport</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Voyage scolaire – Dublin">Voyage scolaire – Dublin</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Intégration des BTS – Saint-Nazaire">Intégration des BTS – Saint-Nazaire</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Concours des Métiers 2026-2027 – France-Allemagne">Concours des Métiers 2026-2027 – France-Allemagne</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="KA220 « Calm in the storm » – Mersin">KA220 « Calm in the storm » – Mersin</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="KA220 « L’art miroir des valeurs européennes » – Pinto">KA220 « L’art miroir des valeurs européennes » – Pinto</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div><div class="pbar-row"><div class="pbar-name" title="Mobilité Erasmus – Pombal GA &amp; Commerce">Mobilité Erasmus – Pombal GA &amp; Commerce</div><div class="track"><div class="fill" style="width:0%"></div></div><div class="pct">0 %</div></div></div></div>
+        <div class="panel"><h3>Impact &amp; typologie</h3><div class="panel-sub">Qui bénéficie des projets et sous quelle forme ?</div><div class="mini-grid" id="impactGrid"><div class="mini"><b>298</b><span>Élèves</span></div><div class="mini"><b>37</b><span>Adultes</span></div><div class="mini"><b>336</b><span>Mobilités</span></div><div class="mini"><b>2109</b><span>Jours-mobilité</span></div></div><div style="height:12px"></div><div class="legend-row" id="typeLegend"><span class="pill">Voyage scolaire · 253</span><span class="pill">Voyage / intégration · 42</span><span class="pill">Mobilité Erasmus · 30</span><span class="pill">Concours des métiers · 8</span><span class="pill">Mobilité adulte Erasmus · 3</span></div></div>
+      </section>
+      <section class="panel" style="margin-bottom:12px"><h3>Sources de financement</h3><div class="panel-sub">Répartition des recettes prévisionnelles sur le portefeuille filtré.</div><div class="source-summary" id="sourceSummary"><div class="source-card"><span>Familles</span><b>99 378,40&nbsp;€</b><small>52 % des recettes</small></div><div class="source-card"><span>Erasmus+</span><b>28 782,00&nbsp;€</b><small>15 % des recettes</small></div><div class="source-card"><span>Collectivités</span><b>26 325,00&nbsp;€</b><small>14 % des recettes</small></div><div class="source-card"><span>Fonds de roulement – accompagnateurs</span><b>15 339,48&nbsp;€</b><small>8 % des recettes</small></div><div class="source-card"><span>Établissement / fonds propres</span><b>7 088,10&nbsp;€</b><small>4 % des recettes</small></div><div class="source-card"><span>Taxe d’apprentissage</span><b>5 200,62&nbsp;€</b><small>3 % des recettes</small></div><div class="source-card"><span>MDL</span><b>2 909,81&nbsp;€</b><small>2 % des recettes</small></div><div class="source-card"><span>État</span><b>2 500,00&nbsp;€</b><small>1 % des recettes</small></div><div class="source-card"><span>Don / autre</span><b>1 000,00&nbsp;€</b><small>1 % des recettes</small></div><div class="source-card"><span>Don / association</span><b>500,00&nbsp;€</b><small>0 % des recettes</small></div><div class="source-card"><span>État / DRAC</span><b>450,00&nbsp;€</b><small>0 % des recettes</small></div></div></section>
+      <section class="panel" style="margin-bottom:12px"><h3>À surveiller</h3><div class="panel-sub">Alertes calculées à partir du portefeuille filtré</div><div class="alerts" id="alerts"><div class="alert warn"><strong>13</strong>projet(s) sous 50 % de consommation</div><div class="alert info"><strong>0</strong>projet(s) à clôturer</div><div class="alert ok"><strong>189 473&nbsp;€</strong>reste à engager sur le portefeuille</div></div></section>
+    </details>
+  </main>
+</div>
+
+<aside class="drawer" id="drawer"><button class="drawer-close" onclick="closeDrawer()">✕</button><div id="drawerContent"></div></aside>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo" crossorigin=""></script>
+
+<div class="modal" id="editModal" onclick="if(event.target===this)closeEdit()"><div class="modal-card"><div class="modal-top"><h3 id="editTitle">Budget &amp; gouvernance</h3><button class="drawer-close" onclick="closeEdit()">✕</button></div><div class="section-title"><h4>Nature du projet</h4></div><label class="check-filter" style="width:max-content;min-width:180px"><input type="checkbox" id="eErasmus"> <span><b>Projet ERASMUS</b><small>cocher si financé / rattaché à Erasmus+</small></span></label><div class="section-title"><h4>Participants &amp; ventilation du financement</h4></div><div class="form-grid"><div class="field"><label>Nombre d’élèves</label><input id="eStudents" type="number" min="0" step="1" oninput="updateFundingSplitPreview()"></div><div class="field"><label>Nombre d’accompagnateurs</label><input id="eAdults" type="number" min="0" step="1" oninput="updateFundingSplitPreview()"></div><div class="field"><label>Nombre de mobilités</label><input id="eMobilities" type="number" min="0" step="1"></div><div class="field"><label>Part affectée aux élèves (€)</label><input id="eStudentFunding" type="number" min="0" step="0.01" oninput="updateFundingSplitPreview()"><div class="hint">Montant total du projet affecté aux élèves.</div></div><div class="field"><label>Part affectée aux accompagnateurs (€)</label><input id="eAdultFunding" type="number" min="0" step="0.01" oninput="updateFundingSplitPreview()"><div class="hint">Montant total du projet affecté aux accompagnateurs.</div></div><div class="field"><label>Dépenses / financement commun (€)</label><input id="eSharedFunding" type="number" min="0" step="0.01" oninput="updateFundingSplitPreview()"><div class="hint">Dépenses non ventilées individuellement.</div></div></div><div id="fundingSplitPreview" class="funding-split"></div><div class="section-title"><h4>Suivi budgétaire &amp; traçabilité</h4></div>
+<div class="hint">Le budget voté au CA reste figé comme référence. Le prévisionnel révisé porte les modifications en cours de projet. Le réalisé retrace l’exécution finale : aucun historique n’est écrasé.</div>
+<div class="form-grid"><div class="field"><label>Montant engagé (€)</label><input id="eCommitted" type="number" step="0.01"></div><div class="field"><label>Date dernière révision</label><input id="eRevisionDate" type="date"></div><div class="field"><label>Référence modification / décision</label><input id="eRevisionRef" placeholder="CA, acte, décision, avenant…"></div><div class="field span3"><label>Motif de la révision</label><textarea id="eRevisionReason" placeholder="Évolution transport, effectifs, hébergement, financement complémentaire…"></textarea></div></div>
+<div class="budget-tabs"><button type="button" class="budget-tab active" data-v="voted" onclick="switchBudgetTab('voted')">1 · Prévisionnel voté CA</button><button type="button" class="budget-tab" data-v="revised" onclick="switchBudgetTab('revised')">2 · Prévisionnel révisé</button><button type="button" class="budget-tab" data-v="actual" onclick="switchBudgetTab('actual')">3 · Réalisé</button></div>
+<div id="budget-voted" class="version-box active"><div class="trace-note">Référence historique : une fois le projet passé au CA, cette version doit rester inchangée pour permettre l’analyse des écarts.</div><div class="section-title"><h4>Dépenses votées</h4><button class="btn-soft" onclick="addBudgetRow('voted','expenses')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Montant</th><th></th></tr></thead><tbody id="votedExpensesRows"></tbody></table><div class="section-title"><h4>Recettes votées / sources</h4><button class="btn-soft" onclick="addBudgetRow('voted','funding')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Source</th><th>Montant</th><th></th></tr></thead><tbody id="votedFundingRows"></tbody></table><div id="votedBalance" class="balance"></div></div>
+<div id="budget-revised" class="version-box"><div class="trace-note">Version de pilotage : elle peut évoluer sans modifier le budget voté. Toute évolution significative doit être rapprochée de la décision ou du CA correspondant.</div><div class="section-title"><h4>Dépenses révisées</h4><button class="btn-soft" onclick="addBudgetRow('revised','expenses')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Montant</th><th></th></tr></thead><tbody id="revisedExpensesRows"></tbody></table><div class="section-title"><h4>Recettes révisées / sources</h4><button class="btn-soft" onclick="addBudgetRow('revised','funding')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Source</th><th>Montant</th><th></th></tr></thead><tbody id="revisedFundingRows"></tbody></table><div id="revisedBalance" class="balance"></div></div>
+<div id="budget-actual" class="version-box"><div class="trace-note">Exécution constatée : renseigner les dépenses et recettes réellement réalisées pour calculer automatiquement les écarts avec le voté et le révisé.</div><div class="section-title"><h4>Dépenses réalisées</h4><button class="btn-soft" onclick="addBudgetRow('actual','expenses')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Montant</th><th></th></tr></thead><tbody id="actualExpensesRows"></tbody></table><div class="section-title"><h4>Recettes réalisées / sources</h4><button class="btn-soft" onclick="addBudgetRow('actual','funding')">+ Ligne</button></div><table class="edit-table"><thead><tr><th>Libellé</th><th>Source</th><th>Montant</th><th></th></tr></thead><tbody id="actualFundingRows"></tbody></table><div id="actualBalance" class="balance"></div></div>
+<div id="budgetVariancePreview" class="variance-grid"></div><div class="section-title"><h4>Conseil d’administration</h4></div><div class="form-grid"><div class="field"><label>Date de passage CA</label><input id="eCaDate" type="date"></div><div class="field"><label>N° / libellé de séance</label><input id="eCaSession"></div><div class="field"><label>Décision</label><select id="eDecision"><option value="pending">À renseigner / attente</option><option value="go">GO</option><option value="nogo">NO GO</option></select></div><div class="field"><label>Libellé décision</label><input id="eDecisionLabel" placeholder="GO, ajourné, refusé…"></div><div class="field span2"><label>Compte rendu / référence</label><input id="eCr" placeholder="Lien, numéro, emplacement…"></div><div class="field span3"><label>Modifications / avenants votés</label><textarea id="eMods"></textarea></div></div><div class="section-title"><h4>Documents</h4><button class="btn-soft" onclick="addDocRow()">+ Document</button></div><table class="edit-table"><thead><tr><th>Nom</th><th>Lien / chemin relatif</th><th>Type</th><th></th></tr></thead><tbody id="docRows"></tbody></table><div class="meta" style="margin-top:6px">Pour un fichier local, placez-le dans le même dossier que la page HTML puis utilisez un chemin tel que <b>./mon_document.pdf</b>.</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button class="btn-soft" onclick="closeEdit()">Annuler</button><button class="btn-primary" onclick="saveEdit()">Enregistrer</button></div></div></div>
+
+<script>
+const defaultProjects=[{"id":"V01","name":"Voyage scolaire – Munich","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Allemagne","city":"Munich","lat":48.1351,"lng":11.582,"start":"2025-11-30","end":"2025-12-06","students":45,"adults":4,"mobilities":49,"erasmus":false,"classes":"Élèves de 2nde GT","financingSplit":{"students":5400,"adults":2219.13,"shared":19565.1},"budget":27184.23,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 1","notes":["Date de CA manuscrite sur la source : à confirmer avant saisie définitive."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":26884.23},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"Collectivités","amount":14850,"source":"Collectivités"},{"label":"MDL 2 %","amount":499.5,"source":"MDL"},{"label":"FdR – part accompagnateurs","amount":2219.13,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation de l’établissement","amount":4215.6,"source":"Établissement / fonds propres"},{"label":"Participation des familles – 45 × 120 €","amount":5400,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_MUNICH.pdf","type":"PDF"}]},{"id":"V02","name":"Voyage scolaire – Canton (USA)","est":"Lycée Démonstration","type":"Voyage scolaire","country":"États-Unis","city":"Canton, Ohio","lat":40.7989,"lng":-81.3784,"start":"2026-02-06","end":"2026-02-19","students":25,"adults":3,"mobilities":28,"erasmus":false,"classes":"Première section euro","financingSplit":{"students":40477.5,"adults":4956.5,"shared":826.0},"budget":46260,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 2","notes":[],"expenses":[{"label":"Voyage clé en main – PROMETOUR (1 520 € × 28)","amount":42560},{"label":"Assurance spéciale garantie des prix","amount":700},{"label":"Wild Center","amount":180.4},{"label":"Transport en bus","amount":2436.8},{"label":"Musée canadien de l’Histoire","amount":161.04},{"label":"Musée Remington","amount":73.92},{"label":"ESTA","amount":147.84}],"funding":[{"label":"Maison des lycéens (2 %)","amount":826,"source":"MDL"},{"label":"FdR – part accompagnateurs","amount":4956.5,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation des familles – 25 × 1 619,10 €","amount":40477.5,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./BUDGET_MOBILITES_USA.pdf","type":"PDF"}]},{"id":"V03","name":"Festival d’Angers","est":"Lycée Démonstration","type":"Voyage scolaire","country":"France","city":"Angers","lat":47.4784,"lng":-0.5632,"start":"2026-01-21","end":"2026-01-23","students":15,"adults":2,"mobilities":17,"erasmus":false,"classes":"Classes de terminales","financingSplit":{"students":1290,"adults":342,"shared":490},"budget":2122,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 10","notes":[],"expenses":[{"label":"SNCF","amount":170},{"label":"Frais restauration","amount":850},{"label":"Frais hébergement","amount":1002},{"label":"Places de cinéma enseignants","amount":100}],"funding":[{"label":"DRAC","amount":450,"source":"État / DRAC"},{"label":"MDL 2 %","amount":40,"source":"MDL"},{"label":"FdR – part accompagnateurs","amount":342,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation des familles – 15 × 86 €","amount":1290,"source":"Familles"}],"ca":{"date":"2025-09-23","session":"CA du 23 septembre 2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./FESTIVAL_D_ANGERS.pdf","type":"PDF"}]},{"id":"V04","name":"Voyage scolaire – Cork","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Irlande","city":"Cork","lat":51.8985,"lng":-8.4756,"start":"2026-02-09","end":"2026-02-14","students":46,"adults":4,"mobilities":50,"erasmus":false,"classes":"1ère STMG et 1ère SI","financingSplit":{"students":5520,"adults":1854.9,"shared":15811.2},"budget":23186.1,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 11","notes":["La source indique également « Part établissement = 4 727,40 € », correspondant à la somme FdR accompagnateurs + participation établissement."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":23186.1}],"funding":[{"label":"Collectivités – 100 % mobilité","amount":11475,"source":"Collectivités"},{"label":"MDL 2 %","amount":463.7,"source":"MDL"},{"label":"Autre don","amount":1000,"source":"Don / autre"},{"label":"FdR – part accompagnateurs","amount":1854.9,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation de l’établissement","amount":2872.5,"source":"Établissement / fonds propres"},{"label":"Participation familles – 46 × 120 €","amount":5520,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_CORK_2025_2026.pdf","type":"PDF"}]},{"id":"V05","name":"Voyage scolaire – Bilbao","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Espagne","city":"Bilbao","lat":43.263,"lng":-2.935,"start":"2026-02-08","end":"2026-02-13","students":63,"adults":4,"mobilities":67,"erasmus":false,"classes":"2nde et 1ère euro, 1ère LLCE, 2nde tronc commun","financingSplit":{"students":21905.1,"adults":1455.57,"shared":980.0},"budget":24340.67,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 7","notes":[],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":24040.67},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"MDL 2 %","amount":480,"source":"MDL"},{"label":"Les Amis de Rémi Belleau","amount":500,"source":"Don / association"},{"label":"FdR – part accompagnateurs","amount":1455.57,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation familles – 63 × 347,70 €","amount":21905.1,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_BILBAO_2025_2026.pdf","type":"PDF"}]},{"id":"V06","name":"Voyage scolaire – Midhurst","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Royaume-Uni","city":"Midhurst","lat":50.9856,"lng":-0.7404,"start":"2026-05-11","end":"2026-05-16","students":25,"adults":3,"mobilities":28,"erasmus":false,"classes":"Élèves de 2nde euro","financingSplit":{"students":8640,"adults":1366.18,"shared":2755.0},"budget":12761.18,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 8","notes":["Le document source libelle la séance « mardi 27 novembre 2025 » ; la date est reprise telle quelle, le jour de semaine est à vérifier."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":12561.18},{"label":"Menues dépenses","amount":200}],"funding":[{"label":"État","amount":2500,"source":"État"},{"label":"MDL 2 %","amount":255,"source":"MDL"},{"label":"FdR – part accompagnateurs","amount":1366.18,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation familles – 25 × 345,60 €","amount":8640,"source":"Familles"}],"ca":{"date":"2025-11-27","session":"CA du 27 novembre 2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_MIDHURST_25_26.pdf","type":"PDF"}]},{"id":"V07","name":"Mobilité Erasmus – Naples Sport","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Italie","city":"Naples","lat":40.8518,"lng":14.2681,"start":"2026-01-31","end":"2026-02-07","students":12,"adults":3,"mobilities":16,"erasmus":true,"classes":"ERASMUS","financingSplit":{"students":1800,"adults":0,"shared":9150},"budget":10950,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 4","notes":["La source indique 12 élèves + 3 accompagnateurs mais 16 participants. Cette incohérence est conservée dans le nombre de mobilités et doit être vérifiée."],"expenses":[{"label":"Billets avion","amount":3322.99},{"label":"Transferts aéroports","amount":2000},{"label":"Hébergement","amount":827.01},{"label":"Visites","amount":2400},{"label":"Repas","amount":2400}],"funding":[{"label":"Erasmus – Accréditation","amount":2000,"source":"Erasmus+"},{"label":"Erasmus IFPRA EFP-SEP","amount":4950,"source":"Erasmus+"},{"label":"Erasmus IFPRA SCO-LGT","amount":2200,"source":"Erasmus+"},{"label":"Participation familles – 12 × 150 €","amount":1800,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_NAPLES_SPORT.pdf","type":"PDF"}]},{"id":"V08","name":"Voyage scolaire – Dublin","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Irlande","city":"Dublin","lat":53.3498,"lng":-6.2603,"start":"2026-02-02","end":"2026-02-06","students":11,"adults":3,"mobilities":14,"erasmus":false,"classes":"Élèves de TCAP","financingSplit":{"students":9545.8,"adults":3145.2,"shared":1981.75},"budget":14672.75,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"À renseigner","notes":[],"expenses":[{"label":"Voyage clé en main – RICHOU SA (863 × 14)","amount":12082},{"label":"Assurance annulation – 25 €/pers.","amount":350},{"label":"Transport aéroport","amount":2104},{"label":"Assurance assistance 1,1 %","amount":136.75}],"funding":[{"label":"MDL 2 %","amount":230.55,"source":"MDL"},{"label":"Taxe d’apprentissage","amount":1751.2,"source":"Taxe d’apprentissage"},{"label":"FdR – part accompagnateurs","amount":3145.2,"source":"Fonds de roulement – accompagnateurs"},{"label":"Participation familles – 11 × 867,80 €","amount":9545.8,"source":"Familles"}],"ca":{"date":"2025-11-27","session":"CA du 27/11/2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_DUBLIN_2025_2026.pdf","type":"PDF"}]},{"id":"V09","name":"Intégration des BTS – Saint-Nazaire","est":"Lycée Démonstration","type":"Voyage / intégration","country":"France","city":"Saint-Nazaire","lat":47.2735,"lng":-2.2134,"start":"2026-09-24","end":"2026-09-26","students":40,"adults":2,"mobilities":42,"erasmus":false,"classes":"BTS CG1 · BTS CG2 · BTS MCO1 · BTS MCO2","financingSplit":{"students":2400,"adults":0,"shared":3086.45},"budget":5486.45,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 12","notes":["La source indique seulement « fin septembre 2026 ». Les dates 24–26/09 sont provisoires pour permettre l’affichage sur la frise et doivent être corrigées.","La destination Saint-Nazaire est déduite des lignes de dépenses ; le champ Destination est vide sur le document."],"expenses":[{"label":"Hébergements","amount":3060.45},{"label":"Visite chantier naval St-Nazaire","amount":960},{"label":"Transport Nogent-le-Rotrou → St-Nazaire","amount":300},{"label":"Transport St-Nazaire → Nogent-le-Rotrou","amount":300},{"label":"Billets de bus","amount":216},{"label":"Cadeaux pour les challenges","amount":300},{"label":"Prise en charge repas accompagnateurs","amount":350}],"funding":[{"label":"Taxe d’apprentissage","amount":3086.45,"source":"Taxe d’apprentissage"},{"label":"Participation familles – 40 × 60 €","amount":2400,"source":"Familles"}],"ca":{"date":"2026-06-30","session":"CA du 30 juin 2026","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./INTEGRATION_BTS_2026.pdf","type":"PDF"}]},{"id":"V10","name":"Concours des Métiers 2026-2027 – France-Allemagne","est":"Lycée Démonstration","type":"Concours des métiers","country":"Allemagne","city":"Oschersleben","lat":52.0309,"lng":11.2287,"start":"2026-12-07","end":"2026-12-11","students":6,"adults":2,"mobilities":8,"erasmus":true,"classes":"ERASMUS","financingSplit":{"students":900,"adults":0,"shared":5857},"budget":6757,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 6","notes":[],"expenses":[{"label":"Transports","amount":3640},{"label":"Hébergement","amount":1592},{"label":"Repas","amount":1225},{"label":"Visites + matériel","amount":300}],"funding":[{"label":"Financement Erasmus","amount":5857,"source":"Erasmus+"},{"label":"Participation des familles","amount":900,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_CONCOURS_METIERS_2026.pdf","type":"PDF"}]},{"id":"V11","name":"KA220 « Calm in the storm » – Mersin","est":"Lycée Démonstration","type":"Mobilité adulte Erasmus","country":"Turquie","city":"Mersin","lat":36.8121,"lng":34.6415,"start":"2026-10-26","end":"2026-10-30","students":0,"adults":3,"mobilities":3,"erasmus":true,"classes":"Aucune","financingSplit":{"students":0,"adults":0,"shared":3800},"budget":3800,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 3","notes":["Mobilité adulte de finalisation du projet, sans présence d’élèves, comme indiqué sur la source."],"expenses":[{"label":"Transports","amount":1300},{"label":"Diverses visites","amount":900},{"label":"Hébergement + repas accompagnateurs","amount":1600}],"funding":[{"label":"Financement Erasmus – subvention KA220","amount":3800,"source":"Erasmus+"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_KA220_MERSIN.pdf","type":"PDF"}]},{"id":"V12","name":"KA220 « L’art miroir des valeurs européennes » – Pinto","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Espagne","city":"Pinto","lat":40.2415,"lng":-3.6999,"start":"2026-11-09","end":"2026-11-11","students":4,"adults":2,"mobilities":6,"erasmus":true,"classes":"Club Erasmus","financingSplit":{"students":600,"adults":0,"shared":5600},"budget":6200,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 5","notes":[],"expenses":[{"label":"Transports","amount":3000},{"label":"Repas élèves + visites","amount":1200},{"label":"Hébergement + repas accompagnateurs","amount":2000}],"funding":[{"label":"Financement Erasmus","amount":5600,"source":"Erasmus+"},{"label":"Participation des familles","amount":600,"source":"Familles"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_PINTO_ESPAGNE.pdf","type":"PDF"}]},{"id":"V13","name":"Mobilité Erasmus – Pombal GA & Commerce","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Portugal","city":"Pombal","lat":39.9167,"lng":-8.6333,"start":"2026-09-20","end":"2026-09-26","students":6,"adults":2,"mobilities":8,"erasmus":true,"classes":"GA et Commerce","financingSplit":{"students":900,"adults":0,"shared":4853.03},"budget":5753.03,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 9","notes":[],"expenses":[{"label":"Billets avion","amount":1997.43},{"label":"Hébergement + repas","amount":2860},{"label":"Transferts aéroports","amount":160},{"label":"Train","amount":90},{"label":"Matériel activité / stand / accueil","amount":45.6},{"label":"Activités sur place","amount":600}],"funding":[{"label":"Financement Erasmus","amount":4375,"source":"Erasmus+"},{"label":"Taxe d’apprentissage","amount":362.97,"source":"Taxe d’apprentissage"},{"label":"MDL 2 %","amount":115.06,"source":"MDL"},{"label":"Participation des familles","amount":900,"source":"Familles"},{"label":"FdR – part accompagnateurs","amount":0,"source":"Fonds de roulement – accompagnateurs"},{"label":"Part établissement","amount":0,"source":"Établissement / fonds propres"}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_POMBAL_PORTUGAL.pdf","type":"PDF"}]}];
+let projects=[{"id":"V01","name":"Voyage scolaire – Munich","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Allemagne","city":"Munich","lat":48.1351,"lng":11.582,"start":"2025-11-30","end":"2025-12-06","students":45,"adults":4,"mobilities":49,"erasmus":false,"classes":"Élèves de 2nde GT","financingSplit":{"students":5400,"adults":2219.13,"shared":19565.1},"budget":27184.23,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 1","notes":["Date de CA manuscrite sur la source : à confirmer avant saisie définitive."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":26884.23},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"Collectivités","source":"Collectivités","amount":14850},{"label":"MDL 2 %","source":"MDL","amount":499.5},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":2219.13},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":4215.6},{"label":"Participation des familles – 45 × 120 €","source":"Familles","amount":5400}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_MUNICH.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":26884.23},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"Collectivités","source":"Collectivités","amount":14850},{"label":"MDL 2 %","source":"MDL","amount":499.5},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":2219.13},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":4215.6},{"label":"Participation des familles – 45 × 120 €","source":"Familles","amount":5400}]},"revised":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":26884.23},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"Collectivités","source":"Collectivités","amount":14850},{"label":"MDL 2 %","source":"MDL","amount":499.5},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":2219.13},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":4215.6},{"label":"Participation des familles – 45 × 120 €","source":"Familles","amount":5400}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V02","name":"Voyage scolaire – Canton (USA)","est":"Lycée Démonstration","type":"Voyage scolaire","country":"États-Unis","city":"Canton, Ohio","lat":40.7989,"lng":-81.3784,"start":"2026-02-06","end":"2026-02-19","students":25,"adults":3,"mobilities":28,"erasmus":false,"classes":"Première section euro","financingSplit":{"students":40477.5,"adults":4956.5,"shared":826},"budget":46260,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 2","notes":[],"expenses":[{"label":"Voyage clé en main – PROMETOUR (1 520 € × 28)","amount":42560},{"label":"Assurance spéciale garantie des prix","amount":700},{"label":"Wild Center","amount":180.4},{"label":"Transport en bus","amount":2436.8},{"label":"Musée canadien de l’Histoire","amount":161.04},{"label":"Musée Remington","amount":73.92},{"label":"ESTA","amount":147.84}],"funding":[{"label":"Maison des lycéens (2 %)","source":"MDL","amount":826},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":4956.5},{"label":"Participation des familles – 25 × 1 619,10 €","source":"Familles","amount":40477.5}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./BUDGET_MOBILITES_USA.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – PROMETOUR (1 520 € × 28)","amount":42560},{"label":"Assurance spéciale garantie des prix","amount":700},{"label":"Wild Center","amount":180.4},{"label":"Transport en bus","amount":2436.8},{"label":"Musée canadien de l’Histoire","amount":161.04},{"label":"Musée Remington","amount":73.92},{"label":"ESTA","amount":147.84}],"funding":[{"label":"Maison des lycéens (2 %)","source":"MDL","amount":826},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":4956.5},{"label":"Participation des familles – 25 × 1 619,10 €","source":"Familles","amount":40477.5}]},"revised":{"expenses":[{"label":"Voyage clé en main – PROMETOUR (1 520 € × 28)","amount":42560},{"label":"Assurance spéciale garantie des prix","amount":700},{"label":"Wild Center","amount":180.4},{"label":"Transport en bus","amount":2436.8},{"label":"Musée canadien de l’Histoire","amount":161.04},{"label":"Musée Remington","amount":73.92},{"label":"ESTA","amount":147.84}],"funding":[{"label":"Maison des lycéens (2 %)","source":"MDL","amount":826},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":4956.5},{"label":"Participation des familles – 25 × 1 619,10 €","source":"Familles","amount":40477.5}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V03","name":"Festival d’Angers","est":"Lycée Démonstration","type":"Voyage scolaire","country":"France","city":"Angers","lat":47.4784,"lng":-0.5632,"start":"2026-01-21","end":"2026-01-23","students":15,"adults":2,"mobilities":17,"erasmus":false,"classes":"Classes de terminales","financingSplit":{"students":1290,"adults":342,"shared":490},"budget":2122,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 10","notes":[],"expenses":[{"label":"SNCF","amount":170},{"label":"Frais restauration","amount":850},{"label":"Frais hébergement","amount":1002},{"label":"Places de cinéma enseignants","amount":100}],"funding":[{"label":"DRAC","source":"État / DRAC","amount":450},{"label":"MDL 2 %","source":"MDL","amount":40},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":342},{"label":"Participation des familles – 15 × 86 €","source":"Familles","amount":1290}],"ca":{"date":"2025-09-23","session":"CA du 23 septembre 2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./FESTIVAL_D_ANGERS.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"SNCF","amount":170},{"label":"Frais restauration","amount":850},{"label":"Frais hébergement","amount":1002},{"label":"Places de cinéma enseignants","amount":100}],"funding":[{"label":"DRAC","source":"État / DRAC","amount":450},{"label":"MDL 2 %","source":"MDL","amount":40},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":342},{"label":"Participation des familles – 15 × 86 €","source":"Familles","amount":1290}]},"revised":{"expenses":[{"label":"SNCF","amount":170},{"label":"Frais restauration","amount":850},{"label":"Frais hébergement","amount":1002},{"label":"Places de cinéma enseignants","amount":100}],"funding":[{"label":"DRAC","source":"État / DRAC","amount":450},{"label":"MDL 2 %","source":"MDL","amount":40},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":342},{"label":"Participation des familles – 15 × 86 €","source":"Familles","amount":1290}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V04","name":"Voyage scolaire – Cork","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Irlande","city":"Cork","lat":51.8985,"lng":-8.4756,"start":"2026-02-09","end":"2026-02-14","students":46,"adults":4,"mobilities":50,"erasmus":false,"classes":"1ère STMG et 1ère SI","financingSplit":{"students":5520,"adults":1854.9,"shared":15811.2},"budget":23186.1,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 11","notes":["La source indique également « Part établissement = 4 727,40 € », correspondant à la somme FdR accompagnateurs + participation établissement."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":23186.1}],"funding":[{"label":"Collectivités – 100 % mobilité","source":"Collectivités","amount":11475},{"label":"MDL 2 %","source":"MDL","amount":463.7},{"label":"Autre don","source":"Don / autre","amount":1000},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1854.9},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":2872.5},{"label":"Participation familles – 46 × 120 €","source":"Familles","amount":5520}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_CORK_2025_2026.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":23186.1}],"funding":[{"label":"Collectivités – 100 % mobilité","source":"Collectivités","amount":11475},{"label":"MDL 2 %","source":"MDL","amount":463.7},{"label":"Autre don","source":"Don / autre","amount":1000},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1854.9},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":2872.5},{"label":"Participation familles – 46 × 120 €","source":"Familles","amount":5520}]},"revised":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":23186.1}],"funding":[{"label":"Collectivités – 100 % mobilité","source":"Collectivités","amount":11475},{"label":"MDL 2 %","source":"MDL","amount":463.7},{"label":"Autre don","source":"Don / autre","amount":1000},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1854.9},{"label":"Participation de l’établissement","source":"Établissement / fonds propres","amount":2872.5},{"label":"Participation familles – 46 × 120 €","source":"Familles","amount":5520}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V05","name":"Voyage scolaire – Bilbao","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Espagne","city":"Bilbao","lat":43.263,"lng":-2.935,"start":"2026-02-08","end":"2026-02-13","students":63,"adults":4,"mobilities":67,"erasmus":false,"classes":"2nde et 1ère euro, 1ère LLCE, 2nde tronc commun","financingSplit":{"students":21905.1,"adults":1455.57,"shared":980},"budget":24340.67,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 7","notes":[],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":24040.67},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":480},{"label":"Les Amis de Rémi Belleau","source":"Don / association","amount":500},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1455.57},{"label":"Participation familles – 63 × 347,70 €","source":"Familles","amount":21905.1}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_BILBAO_2025_2026.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":24040.67},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":480},{"label":"Les Amis de Rémi Belleau","source":"Don / association","amount":500},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1455.57},{"label":"Participation familles – 63 × 347,70 €","source":"Familles","amount":21905.1}]},"revised":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":24040.67},{"label":"Menues dépenses","amount":300}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":480},{"label":"Les Amis de Rémi Belleau","source":"Don / association","amount":500},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1455.57},{"label":"Participation familles – 63 × 347,70 €","source":"Familles","amount":21905.1}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V06","name":"Voyage scolaire – Midhurst","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Royaume-Uni","city":"Midhurst","lat":50.9856,"lng":-0.7404,"start":"2026-05-11","end":"2026-05-16","students":25,"adults":3,"mobilities":28,"erasmus":false,"classes":"Élèves de 2nde euro","financingSplit":{"students":8640,"adults":1366.18,"shared":2755},"budget":12761.18,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 8","notes":["Le document source libelle la séance « mardi 27 novembre 2025 » ; la date est reprise telle quelle, le jour de semaine est à vérifier."],"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":12561.18},{"label":"Menues dépenses","amount":200}],"funding":[{"label":"État","source":"État","amount":2500},{"label":"MDL 2 %","source":"MDL","amount":255},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1366.18},{"label":"Participation familles – 25 × 345,60 €","source":"Familles","amount":8640}],"ca":{"date":"2025-11-27","session":"CA du 27 novembre 2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_MIDHURST_25_26.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":12561.18},{"label":"Menues dépenses","amount":200}],"funding":[{"label":"État","source":"État","amount":2500},{"label":"MDL 2 %","source":"MDL","amount":255},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1366.18},{"label":"Participation familles – 25 × 345,60 €","source":"Familles","amount":8640}]},"revised":{"expenses":[{"label":"Voyage clé en main – VERDIÉ","amount":12561.18},{"label":"Menues dépenses","amount":200}],"funding":[{"label":"État","source":"État","amount":2500},{"label":"MDL 2 %","source":"MDL","amount":255},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":1366.18},{"label":"Participation familles – 25 × 345,60 €","source":"Familles","amount":8640}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V07","name":"Mobilité Erasmus – Naples Sport","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Italie","city":"Naples","lat":40.8518,"lng":14.2681,"start":"2026-01-31","end":"2026-02-07","students":12,"adults":3,"mobilities":16,"erasmus":true,"classes":"ERASMUS","financingSplit":{"students":1800,"adults":0,"shared":9150},"budget":10950,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 4","notes":["La source indique 12 élèves + 3 accompagnateurs mais 16 participants. Cette incohérence est conservée dans le nombre de mobilités et doit être vérifiée."],"expenses":[{"label":"Billets avion","amount":3322.99},{"label":"Transferts aéroports","amount":2000},{"label":"Hébergement","amount":827.01},{"label":"Visites","amount":2400},{"label":"Repas","amount":2400}],"funding":[{"label":"Erasmus – Accréditation","source":"Erasmus+","amount":2000},{"label":"Erasmus IFPRA EFP-SEP","source":"Erasmus+","amount":4950},{"label":"Erasmus IFPRA SCO-LGT","source":"Erasmus+","amount":2200},{"label":"Participation familles – 12 × 150 €","source":"Familles","amount":1800}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_NAPLES_SPORT.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Billets avion","amount":3322.99},{"label":"Transferts aéroports","amount":2000},{"label":"Hébergement","amount":827.01},{"label":"Visites","amount":2400},{"label":"Repas","amount":2400}],"funding":[{"label":"Erasmus – Accréditation","source":"Erasmus+","amount":2000},{"label":"Erasmus IFPRA EFP-SEP","source":"Erasmus+","amount":4950},{"label":"Erasmus IFPRA SCO-LGT","source":"Erasmus+","amount":2200},{"label":"Participation familles – 12 × 150 €","source":"Familles","amount":1800}]},"revised":{"expenses":[{"label":"Billets avion","amount":3322.99},{"label":"Transferts aéroports","amount":2000},{"label":"Hébergement","amount":827.01},{"label":"Visites","amount":2400},{"label":"Repas","amount":2400}],"funding":[{"label":"Erasmus – Accréditation","source":"Erasmus+","amount":2000},{"label":"Erasmus IFPRA EFP-SEP","source":"Erasmus+","amount":4950},{"label":"Erasmus IFPRA SCO-LGT","source":"Erasmus+","amount":2200},{"label":"Participation familles – 12 × 150 €","source":"Familles","amount":1800}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V08","name":"Voyage scolaire – Dublin","est":"Lycée Démonstration","type":"Voyage scolaire","country":"Irlande","city":"Dublin","lat":53.3498,"lng":-6.2603,"start":"2026-02-02","end":"2026-02-06","students":11,"adults":3,"mobilities":14,"erasmus":false,"classes":"Élèves de TCAP","financingSplit":{"students":9545.8,"adults":3145.2,"shared":1981.75},"budget":14672.75,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"À renseigner","notes":[],"expenses":[{"label":"Voyage clé en main – RICHOU SA (863 × 14)","amount":12082},{"label":"Assurance annulation – 25 €/pers.","amount":350},{"label":"Transport aéroport","amount":2104},{"label":"Assurance assistance 1,1 %","amount":136.75}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":230.55},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":1751.2},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":3145.2},{"label":"Participation familles – 11 × 867,80 €","source":"Familles","amount":9545.8}],"ca":{"date":"2025-11-27","session":"CA du 27/11/2025","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./VOYAGE_DUBLIN_2025_2026.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Voyage clé en main – RICHOU SA (863 × 14)","amount":12082},{"label":"Assurance annulation – 25 €/pers.","amount":350},{"label":"Transport aéroport","amount":2104},{"label":"Assurance assistance 1,1 %","amount":136.75}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":230.55},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":1751.2},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":3145.2},{"label":"Participation familles – 11 × 867,80 €","source":"Familles","amount":9545.8}]},"revised":{"expenses":[{"label":"Voyage clé en main – RICHOU SA (863 × 14)","amount":12082},{"label":"Assurance annulation – 25 €/pers.","amount":350},{"label":"Transport aéroport","amount":2104},{"label":"Assurance assistance 1,1 %","amount":136.75}],"funding":[{"label":"MDL 2 %","source":"MDL","amount":230.55},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":1751.2},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":3145.2},{"label":"Participation familles – 11 × 867,80 €","source":"Familles","amount":9545.8}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V09","name":"Intégration des BTS – Saint-Nazaire","est":"Lycée Démonstration","type":"Voyage / intégration","country":"France","city":"Saint-Nazaire","lat":47.2735,"lng":-2.2134,"start":"2026-09-24","end":"2026-09-26","students":40,"adults":2,"mobilities":42,"erasmus":false,"classes":"BTS CG1 · BTS CG2 · BTS MCO1 · BTS MCO2","financingSplit":{"students":2400,"adults":0,"shared":3086.45},"budget":5486.45,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 12","notes":["La source indique seulement « fin septembre 2026 ». Les dates 24–26/09 sont provisoires pour permettre l’affichage sur la frise et doivent être corrigées.","La destination Saint-Nazaire est déduite des lignes de dépenses ; le champ Destination est vide sur le document."],"expenses":[{"label":"Hébergements","amount":3060.45},{"label":"Visite chantier naval St-Nazaire","amount":960},{"label":"Transport Nogent-le-Rotrou → St-Nazaire","amount":300},{"label":"Transport St-Nazaire → Nogent-le-Rotrou","amount":300},{"label":"Billets de bus","amount":216},{"label":"Cadeaux pour les challenges","amount":300},{"label":"Prise en charge repas accompagnateurs","amount":350}],"funding":[{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":3086.45},{"label":"Participation familles – 40 × 60 €","source":"Familles","amount":2400}],"ca":{"date":"2026-06-30","session":"CA du 30 juin 2026","decision":"go","decisionLabel":"GO / adopté","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./INTEGRATION_BTS_2026.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Hébergements","amount":3060.45},{"label":"Visite chantier naval St-Nazaire","amount":960},{"label":"Transport Nogent-le-Rotrou → St-Nazaire","amount":300},{"label":"Transport St-Nazaire → Nogent-le-Rotrou","amount":300},{"label":"Billets de bus","amount":216},{"label":"Cadeaux pour les challenges","amount":300},{"label":"Prise en charge repas accompagnateurs","amount":350}],"funding":[{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":3086.45},{"label":"Participation familles – 40 × 60 €","source":"Familles","amount":2400}]},"revised":{"expenses":[{"label":"Hébergements","amount":3060.45},{"label":"Visite chantier naval St-Nazaire","amount":960},{"label":"Transport Nogent-le-Rotrou → St-Nazaire","amount":300},{"label":"Transport St-Nazaire → Nogent-le-Rotrou","amount":300},{"label":"Billets de bus","amount":216},{"label":"Cadeaux pour les challenges","amount":300},{"label":"Prise en charge repas accompagnateurs","amount":350}],"funding":[{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":3086.45},{"label":"Participation familles – 40 × 60 €","source":"Familles","amount":2400}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V10","name":"Concours des Métiers 2026-2027 – France-Allemagne","est":"Lycée Démonstration","type":"Concours des métiers","country":"Allemagne","city":"Oschersleben","lat":52.0309,"lng":11.2287,"start":"2026-12-07","end":"2026-12-11","students":6,"adults":2,"mobilities":8,"erasmus":true,"classes":"ERASMUS","financingSplit":{"students":900,"adults":0,"shared":5857},"budget":6757,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 6","notes":[],"expenses":[{"label":"Transports","amount":3640},{"label":"Hébergement","amount":1592},{"label":"Repas","amount":1225},{"label":"Visites + matériel","amount":300}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5857},{"label":"Participation des familles","source":"Familles","amount":900}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_CONCOURS_METIERS_2026.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Transports","amount":3640},{"label":"Hébergement","amount":1592},{"label":"Repas","amount":1225},{"label":"Visites + matériel","amount":300}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5857},{"label":"Participation des familles","source":"Familles","amount":900}]},"revised":{"expenses":[{"label":"Transports","amount":3640},{"label":"Hébergement","amount":1592},{"label":"Repas","amount":1225},{"label":"Visites + matériel","amount":300}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5857},{"label":"Participation des familles","source":"Familles","amount":900}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V11","name":"KA220 « Calm in the storm » – Mersin","est":"Lycée Démonstration","type":"Mobilité adulte Erasmus","country":"Turquie","city":"Mersin","lat":36.8121,"lng":34.6415,"start":"2026-10-26","end":"2026-10-30","students":0,"adults":3,"mobilities":3,"erasmus":true,"classes":"Aucune","financingSplit":{"students":0,"adults":0,"shared":3800},"budget":3800,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 3","notes":["Mobilité adulte de finalisation du projet, sans présence d’élèves, comme indiqué sur la source."],"expenses":[{"label":"Transports","amount":1300},{"label":"Diverses visites","amount":900},{"label":"Hébergement + repas accompagnateurs","amount":1600}],"funding":[{"label":"Financement Erasmus – subvention KA220","source":"Erasmus+","amount":3800}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_KA220_MERSIN.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Transports","amount":1300},{"label":"Diverses visites","amount":900},{"label":"Hébergement + repas accompagnateurs","amount":1600}],"funding":[{"label":"Financement Erasmus – subvention KA220","source":"Erasmus+","amount":3800}]},"revised":{"expenses":[{"label":"Transports","amount":1300},{"label":"Diverses visites","amount":900},{"label":"Hébergement + repas accompagnateurs","amount":1600}],"funding":[{"label":"Financement Erasmus – subvention KA220","source":"Erasmus+","amount":3800}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V12","name":"KA220 « L’art miroir des valeurs européennes » – Pinto","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Espagne","city":"Pinto","lat":40.2415,"lng":-3.6999,"start":"2026-11-09","end":"2026-11-11","students":4,"adults":2,"mobilities":6,"erasmus":true,"classes":"Club Erasmus","financingSplit":{"students":600,"adults":0,"shared":5600},"budget":6200,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 5","notes":[],"expenses":[{"label":"Transports","amount":3000},{"label":"Repas élèves + visites","amount":1200},{"label":"Hébergement + repas accompagnateurs","amount":2000}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5600},{"label":"Participation des familles","source":"Familles","amount":600}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_PINTO_ESPAGNE.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Transports","amount":3000},{"label":"Repas élèves + visites","amount":1200},{"label":"Hébergement + repas accompagnateurs","amount":2000}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5600},{"label":"Participation des familles","source":"Familles","amount":600}]},"revised":{"expenses":[{"label":"Transports","amount":3000},{"label":"Repas élèves + visites","amount":1200},{"label":"Hébergement + repas accompagnateurs","amount":2000}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":5600},{"label":"Participation des familles","source":"Familles","amount":600}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}},{"id":"V13","name":"Mobilité Erasmus – Pombal GA & Commerce","est":"Lycée Démonstration","type":"Mobilité Erasmus","country":"Portugal","city":"Pombal","lat":39.9167,"lng":-8.6333,"start":"2026-09-20","end":"2026-09-26","students":6,"adults":2,"mobilities":8,"erasmus":true,"classes":"GA et Commerce","financingSplit":{"students":900,"adults":0,"shared":4853.03},"budget":5753.030000000001,"committed":0,"spent":0,"status":"Prévisionnel","partner":"À renseigner","responsibles":"Référent 9","notes":[],"expenses":[{"label":"Billets avion","amount":1997.43},{"label":"Hébergement + repas","amount":2860},{"label":"Transferts aéroports","amount":160},{"label":"Train","amount":90},{"label":"Matériel activité / stand / accueil","amount":45.6},{"label":"Activités sur place","amount":600}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":4375},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":362.97},{"label":"MDL 2 %","source":"MDL","amount":115.06},{"label":"Participation des familles","source":"Familles","amount":900},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":0},{"label":"Part établissement","source":"Établissement / fonds propres","amount":0}],"ca":{"date":"","session":"","decision":"pending","decisionLabel":"À renseigner","modifications":"","cr":""},"documents":[{"name":"Budget prévisionnel / source","href":"./ERASMUS_POMBAL_PORTUGAL.pdf","type":"PDF"}],"budgetVersions":{"voted":{"expenses":[{"label":"Billets avion","amount":1997.43},{"label":"Hébergement + repas","amount":2860},{"label":"Transferts aéroports","amount":160},{"label":"Train","amount":90},{"label":"Matériel activité / stand / accueil","amount":45.6},{"label":"Activités sur place","amount":600}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":4375},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":362.97},{"label":"MDL 2 %","source":"MDL","amount":115.06},{"label":"Participation des familles","source":"Familles","amount":900},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":0},{"label":"Part établissement","source":"Établissement / fonds propres","amount":0}]},"revised":{"expenses":[{"label":"Billets avion","amount":1997.43},{"label":"Hébergement + repas","amount":2860},{"label":"Transferts aéroports","amount":160},{"label":"Train","amount":90},{"label":"Matériel activité / stand / accueil","amount":45.6},{"label":"Activités sur place","amount":600}],"funding":[{"label":"Financement Erasmus","source":"Erasmus+","amount":4375},{"label":"Taxe d’apprentissage","source":"Taxe d’apprentissage","amount":362.97},{"label":"MDL 2 %","source":"MDL","amount":115.06},{"label":"Participation des familles","source":"Familles","amount":900},{"label":"FdR – part accompagnateurs","source":"Fonds de roulement – accompagnateurs","amount":0},{"label":"Part établissement","source":"Établissement / fonds propres","amount":0}]},"actual":{"expenses":[],"funding":[]}},"revision":{"date":"","ref":"","reason":""}}];
+
+const fmt=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const uniq=(arr,key)=>[...new Set(arr.map(x=>x[key]))].sort();
+const filters={est:document.getElementById('fEst'),project:document.getElementById('fProject'),type:document.getElementById('fType'),country:document.getElementById('fCountry'),status:document.getElementById('fStatus')}; const fErasmus=document.getElementById('fErasmus');
+function fillSelect(sel, values, label){sel.innerHTML=`<option value="">${label}</option>`+values.map(v=>`<option>${v}</option>`).join('')}
+fillSelect(filters.est,uniq(projects,'est'),'Tous'); fillSelect(filters.project,uniq(projects,'name'),'Tous'); fillSelect(filters.type,uniq(projects,'type'),'Tous'); fillSelect(filters.country,uniq(projects,'country'),'Tous'); fillSelect(filters.status,uniq(projects,'status'),'Tous');
+Object.values(filters).forEach(s=>s.addEventListener('change',renderAll)); fErasmus.addEventListener('change',renderAll); document.getElementById('resetBtn').onclick=()=>{Object.values(filters).forEach(s=>s.value='');fErasmus.checked=false;renderAll()};
+
+document.getElementById('dataDate').textContent='Actualisé le '+new Date().toLocaleDateString('fr-FR');
+let map=L.map('map',{worldCopyJump:true}).setView([49,7],4);
+
+// Fond IGN via la Géoplateforme (WMTS, sans clé).
+// PLAN IGN v2 est utilisé pour les zones couvertes par l'IGN.
+// Pour les destinations hors couverture, les marqueurs restent visibles
+// sur le fond neutre de la carte.
+const ignPlan=L.tileLayer(
+  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+  {
+    minZoom:0,
+    maxZoom:19,
+    tileSize:256,
+    attribution:'© IGN – Géoplateforme'
+  }
+).addTo(map);
+
+ignPlan.on('tileerror',()=>{
+  document.getElementById('map').style.background='#eef2f7';
+});
+
+let markers=L.layerGroup().addTo(map);
+function money2(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(n)||0)}
+function sumItems(items){return (items||[]).reduce((s,x)=>s+(Number(x.amount)||0),0)}
+
+function cloneBudgetItems(items){
+  return (items||[]).map(x=>({
+    label:String(x.label||''),
+    ...(Object.prototype.hasOwnProperty.call(x,'source') ? {source:String(x.source||x.label||'')} : {}),
+    amount:Number(x.amount)||0
+  }));
+}
+
+function ensureBudgetVersions(p){
+  if(!p) return p;
+
+  const legacyExpenses = cloneBudgetItems(p.expenses||[]);
+  const legacyFunding  = cloneBudgetItems(p.funding||[]);
+
+  if(!p.budgetVersions || typeof p.budgetVersions!=='object'){
+    p.budgetVersions = {};
+  }
+
+  if(!p.budgetVersions.voted){
+    p.budgetVersions.voted = {
+      expenses: cloneBudgetItems(legacyExpenses),
+      funding: cloneBudgetItems(legacyFunding)
+    };
+  } else {
+    p.budgetVersions.voted.expenses = cloneBudgetItems(p.budgetVersions.voted.expenses||legacyExpenses);
+    p.budgetVersions.voted.funding  = cloneBudgetItems(p.budgetVersions.voted.funding||legacyFunding);
+  }
+
+  if(!p.budgetVersions.revised){
+    p.budgetVersions.revised = {
+      expenses: cloneBudgetItems(p.budgetVersions.voted.expenses),
+      funding: cloneBudgetItems(p.budgetVersions.voted.funding)
+    };
+  } else {
+    p.budgetVersions.revised.expenses = cloneBudgetItems(p.budgetVersions.revised.expenses||[]);
+    p.budgetVersions.revised.funding  = cloneBudgetItems(p.budgetVersions.revised.funding||[]);
+  }
+
+  if(!p.budgetVersions.actual){
+    p.budgetVersions.actual = {expenses:[], funding:[]};
+
+    // Compatibilité avec d'anciennes versions qui ne stockaient qu'un total "spent".
+    if(Number(p.spent)>0){
+      p.budgetVersions.actual.expenses = [{
+        label:'Dépenses réalisées (reprise ancienne version)',
+        amount:Number(p.spent)
+      }];
+    }
+  } else {
+    p.budgetVersions.actual.expenses = cloneBudgetItems(p.budgetVersions.actual.expenses||[]);
+    p.budgetVersions.actual.funding  = cloneBudgetItems(p.budgetVersions.actual.funding||[]);
+  }
+
+  if(!p.revision || typeof p.revision!=='object'){
+    p.revision={date:'',ref:'',reason:''};
+  }
+
+  syncProjectFinancials(p);
+  return p;
+}
+
+function versionTotalRaw(p,version,kind){
+  if(!p) return 0;
+  ensureBudgetVersionsShallow(p);
+  const block=p.budgetVersions?.[version];
+  return sumItems(block?.[kind]||[]);
+}
+
+// Variante interne sans appel récursif à syncProjectFinancials.
+function ensureBudgetVersionsShallow(p){
+  if(!p.budgetVersions || typeof p.budgetVersions!=='object') p.budgetVersions={};
+  if(!p.budgetVersions.voted) p.budgetVersions.voted={expenses:cloneBudgetItems(p.expenses||[]),funding:cloneBudgetItems(p.funding||[])};
+  if(!p.budgetVersions.revised) p.budgetVersions.revised={expenses:cloneBudgetItems(p.budgetVersions.voted.expenses||[]),funding:cloneBudgetItems(p.budgetVersions.voted.funding||[])};
+  if(!p.budgetVersions.actual) p.budgetVersions.actual={expenses:[],funding:[]};
+}
+
+function syncProjectFinancials(p){
+  if(!p) return;
+  ensureBudgetVersionsShallow(p);
+
+  const revisedExpenses=p.budgetVersions.revised.expenses||[];
+  const revisedFunding=p.budgetVersions.revised.funding||[];
+  const votedExpenses=p.budgetVersions.voted.expenses||[];
+  const actualExpenses=p.budgetVersions.actual.expenses||[];
+
+  // Le cockpit pilote sur le budget révisé ; le voté reste la référence historique.
+  p.budget=sumItems(revisedExpenses) || sumItems(votedExpenses) || Number(p.budget)||0;
+  p.spent=sumItems(actualExpenses);
+
+  // Compatibilité avec les écrans historiques et le calcul des sources.
+  p.expenses=cloneBudgetItems(revisedExpenses.length?revisedExpenses:votedExpenses);
+  p.funding=cloneBudgetItems(revisedFunding.length?revisedFunding:(p.budgetVersions.voted.funding||[]));
+}
+function saveProjects(){localStorage.setItem('erasmusProjectsV291Sources',JSON.stringify(projects))}
+function decisionClass(d){return d==='go'?'go':d==='nogo'?'nogo':'pending'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function renderSources(data){const sums={};data.forEach(p=>(p.funding||[]).forEach(x=>sums[x.source||x.label]=(sums[x.source||x.label]||0)+(Number(x.amount)||0)));const total=Object.values(sums).reduce((a,b)=>a+b,0);document.getElementById('sourceSummary').innerHTML=Object.keys(sums).length?Object.entries(sums).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="source-card"><span>${esc(k)}</span><b>${money2(v)}</b><small>${pct(v,total)} % des recettes</small></div>`).join(''):'<div class="muted">Aucune source de financement renseignée.</div>'}
+function current(){return projects.filter(p=>(!filters.est.value||p.est===filters.est.value)&&(!filters.project.value||p.name===filters.project.value)&&(!filters.type.value||p.type===filters.type.value)&&(!filters.country.value||p.country===filters.country.value)&&(!filters.status.value||p.status===filters.status.value)&&(!fErasmus.checked||p.erasmus===true))}
+function renderKpis(data){const budget=data.reduce((s,p)=>s+p.budget,0), committed=data.reduce((s,p)=>s+p.committed,0), spent=data.reduce((s,p)=>s+p.spent,0), students=data.reduce((s,p)=>s+p.students,0), adults=data.reduce((s,p)=>s+p.adults,0), mobilities=data.reduce((s,p)=>s+p.mobilities,0), countries=new Set(data.map(p=>p.country)).size; const cards=[
+ ['Budget',fmt(budget),data.length+' projets',100],['Engagé',fmt(committed),pct(committed,budget)+' % du budget',pct(committed,budget)],['Réalisé',fmt(spent),pct(spent,budget)+' % du budget',pct(spent,budget)],['Bénéficiaires',students+' élèves',adults+' adultes',Math.min(100,students/2)],['Mobilités',mobilities,countries+' pays',Math.min(100,mobilities/2)],['Panier moyen',students?fmt(spent/students):'—','par élève',students?Math.min(100,(spent/students)/20):0]
+ ]; document.getElementById('kpis').innerHTML=cards.map(c=>`<div class="kpi"><div class="label">${c[0]}</div><div class="value">${c[1]}</div><div class="hint">${c[2]}</div><div class="bar"><span style="width:${c[3]}%"></span></div></div>`).join('')}
+function renderBars(data){document.getElementById('projectBars').innerHTML=data.length?data.slice().sort((a,b)=>pct(b.spent,b.budget)-pct(a.spent,a.budget)).map(p=>`<div class="pbar-row"><div class="pbar-name" title="${p.name}">${p.name}</div><div class="track"><div class="fill" style="width:${Math.min(100,pct(p.spent,p.budget))}%"></div></div><div class="pct">${pct(p.spent,p.budget)} %</div></div>`).join(''):'<div class="panel-sub">Aucun projet pour ces filtres.</div>'}
+function renderImpact(data){const students=data.reduce((s,p)=>s+p.students,0),adults=data.reduce((s,p)=>s+p.adults,0),mob=data.reduce((s,p)=>s+p.mobilities,0),days=data.reduce((s,p)=>s+((new Date(p.end)-new Date(p.start))/86400000+1)*p.mobilities,0); document.getElementById('impactGrid').innerHTML=[['Élèves',students],['Adultes',adults],['Mobilités',mob],['Jours-mobilité',Math.round(days)]].map(x=>`<div class="mini"><b>${x[1]}</b><span>${x[0]}</span></div>`).join(''); const types={};data.forEach(p=>types[p.type]=(types[p.type]||0)+p.mobilities); document.getElementById('typeLegend').innerHTML=Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="pill">${k} · ${v}</span>`).join('')}
+function renderMap(data){
+  markers.clearLayers();
+  if(!data.length)return;
+  const bounds=[];
+  data.forEach(p=>{
+    const students=Number(p.students)||0;
+    const size=Math.max(28,Math.min(48,28+Math.sqrt(Math.max(students,1))*2));
+    const cls=p.erasmus?'erasmus':'other';
+    const icon=L.divIcon({
+      className:'',
+      html:`<div class="map-student-marker ${cls}" style="width:${size}px;height:${size}px">
+              <span class="marker-label">${esc(p.city)}</span>${students}
+            </div>`,
+      iconSize:[size,size],
+      iconAnchor:[size/2,size/2],
+      popupAnchor:[0,-size/2]
+    });
+    const m=L.marker([p.lat,p.lng],{icon}).bindPopup(
+      `<div class="popup">
+        <h4>${esc(p.city)} · ${esc(p.name)}</h4>
+        <p><b>${p.erasmus?'Erasmus+':'Voyage hors Erasmus'}</b> · ${esc(p.type)}</p>
+        <p><b>${students}</b> élèves · <b>${p.adults}</b> accompagnateurs</p>
+        <p>${fmt(p.budget)} · conso. ${pct(p.spent,p.budget)} %</p>
+        <p>${new Date(p.start).toLocaleDateString('fr-FR')} → ${new Date(p.end).toLocaleDateString('fr-FR')}</p>
+        <button onclick="openDrawer('${p.id}')">Voir le projet</button>
+      </div>`
+    );
+    m.addTo(markers);
+    bounds.push([p.lat,p.lng]);
+  });
+  if(bounds.length===1)map.setView(bounds[0],6);
+  else map.fitBounds(bounds,{padding:[35,35],maxZoom:6});
+}
+function renderTimeline(data){
+  const timelineEl=document.getElementById('timeline');
+  if(!data.length){
+    timelineEl.innerHTML='<div class="panel-sub">Aucun voyage pour ces filtres.</div>';
+    timelineEl.style.height='auto';
+    return;
+  }
+
+  const monthNames=['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
+  const dates=data.flatMap(p=>[new Date(p.start),new Date(p.end)]);
+  const minD=new Date(Math.min(...dates)),maxD=new Date(Math.max(...dates));
+
+  const schoolStartYear=minD.getMonth()>=8?minD.getFullYear():minD.getFullYear()-1;
+  const schoolEndYear=maxD.getMonth()>=8?maxD.getFullYear()+1:maxD.getFullYear();
+
+  const start=new Date(schoolStartYear,8,1);
+  const end=new Date(schoolEndYear,8,1);
+  const total=end-start;
+
+  const months=[];
+  for(let d=new Date(start);d<end;d.setMonth(d.getMonth()+1)){
+    months.push({m:d.getMonth(),y:d.getFullYear()});
+  }
+
+  const laneWidth=months.length*90;
+  const minWidth=180+laneWidth;
+
+  let html=`<div class="months" style="grid-template-columns:180px repeat(${months.length},90px);min-width:${minWidth}px">
+    <div>Projet</div>
+    ${months.map((x,i)=>`<div>${monthNames[x.m]}${x.m===8||i===0?' '+String(x.y).slice(-2):''}</div>`).join('')}
+  </div>`;
+
+  const today=new Date();
+  const todayPct=Math.max(0,Math.min(100,(today-start)/total*100));
+
+  const visibleRows=[];
+  data.slice().sort((a,b)=>new Date(a.start)-new Date(b.start)).forEach(p=>{
+    const ps=new Date(p.start),pe=new Date(p.end);
+    if(pe<start||ps>=end)return;
+
+    const s=new Date(Math.max(start,ps));
+    const e=new Date(Math.min(end,pe));
+    const left=(s-start)/total*100;
+    const width=Math.max(.7,(e-s+86400000)/total*100);
+
+    visibleRows.push(p.id);
+
+    html+=`<div class="timeline-row" style="grid-template-columns:180px ${laneWidth}px;min-width:${minWidth}px">
+      <div class="name">${esc(p.name)}</div>
+      <div class="lane" style="background-size:90px 100%">
+        ${today>=start&&today<=end?`<div class="today-line" style="left:${todayPct}%"></div>`:''}
+        <div class="event ${p.erasmus?'erasmus-event':'other-event'}"
+             onclick="openDrawer('${p.id}')"
+             style="left:${left}%;width:${width}%"
+             title="${esc(p.city)} · ${esc(p.type)}">
+          ${esc(p.city)} (${p.students})
+        </div>
+      </div>
+    </div>`;
+  });
+
+  timelineEl.innerHTML=html;
+
+  // Hauteur calculée pour afficher toutes les lignes sans ascenseur vertical.
+  const headerHeight=31;
+  const rowHeight=39;
+  timelineEl.style.height=(headerHeight + visibleRows.length*rowHeight + 4)+'px';
+  timelineEl.style.maxHeight='none';
+  timelineEl.style.overflowY='hidden';
+
+  // Positionnement par défaut autour de la date du jour.
+  requestAnimationFrame(()=>{
+    const viewport=timelineEl.clientWidth;
+    const labelWidth=180;
+    let targetX;
+
+    if(today>=start && today<=end){
+      targetX=labelWidth + (today-start)/total*laneWidth;
+    }else if(today<start){
+      targetX=labelWidth;
+    }else{
+      targetX=labelWidth + laneWidth;
+    }
+
+    timelineEl.scrollLeft=Math.max(0,targetX - viewport/2);
+  });
+}
+function renderAlerts(data){const under=data.filter(p=>pct(p.spent,p.budget)<50),closing=data.filter(p=>p.status==='À clôturer'),uncommitted=data.reduce((s,p)=>s+(p.budget-p.committed),0); document.getElementById('alerts').innerHTML=`<div class="alert warn"><strong>${under.length}</strong>projet(s) sous 50 % de consommation</div><div class="alert info"><strong>${closing.length}</strong>projet(s) à clôturer</div><div class="alert ok"><strong>${fmt(uncommitted)}</strong>reste à engager sur le portefeuille</div>`}
+function statusDot(s){return s==='Préparation'?'warn':s==='À clôturer'?'danger':''}
+function renderTable(data){
+  document.getElementById('projectTable').innerHTML=data.map(p=>{
+    const start=new Date(p.start).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const end=new Date(p.end).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    return `<tr onclick="openDrawer('${p.id}')" style="cursor:pointer">
+      <td><b>${esc(p.city)}</b></td>
+      <td>${esc(p.name)}</td>
+      <td>${p.erasmus?'<b style="color:#2563eb">Erasmus+</b>':esc(p.type)}</td>
+      <td>${start} → ${end}</td>
+      <td><b>${p.students}</b></td>
+      <td>${fmt(p.budget)}</td>
+      <td><span class="status"><span class="dot ${statusDot(p.status)}"></span>${esc(p.status)}</span></td>
+    </tr>`;
+  }).join('');
+}
+function drawerBudgetVersion(btn,v){const p=projects.find(x=>x.id===editingId)||projects.find(x=>x.id===window.currentDrawerId);if(!p)return;btn?.parentElement?.querySelectorAll('.budget-tab').forEach(b=>b.classList.remove('active'));btn?.classList.add('active');const exp=p.budgetVersions?.[v]?.expenses||[],fund=p.budgetVersions?.[v]?.funding||[],te=exp.reduce((s,x)=>s+Number(x.amount||0),0),tr=fund.reduce((s,x)=>s+Number(x.amount||0),0);const labels={voted:'Prévisionnel voté au CA',revised:'Prévisionnel révisé',actual:'Réalisé'};document.getElementById('drawerBudgetDetail').innerHTML=`<div class="budget-grid"><div class="budget-col"><div class="budget-head">${labels[v]} · Dépenses</div>${exp.map(x=>`<div class="budget-row"><span>${esc(x.label)}</span><b>${money2(x.amount)}</b></div>`).join('')||'<div class="budget-row"><span>Aucune ligne</span><b>—</b></div>'}<div class="budget-row budget-total"><span>Total</span><b>${money2(te)}</b></div></div><div class="budget-col"><div class="budget-head">${labels[v]} · Recettes</div>${fund.map(x=>`<div class="budget-row"><span>${esc(x.label)}</span><b>${money2(x.amount)}</b></div>`).join('')||'<div class="budget-row"><span>Aucune ligne</span><b>—</b></div>'}<div class="budget-row budget-total"><span>Total</span><b>${money2(tr)}</b></div></div></div><div class="balance ${Math.abs(tr-te)<.01?'ok':'bad'}">${Math.abs(tr-te)<.01?'✓ Équilibré':'⚠ Écart : '+money2(tr-te)}</div>`}
+function openDrawer(id){window.currentDrawerId=id;const p=projects.find(x=>x.id===id);if(!p)return;const exp=sumItems(p.expenses),rec=sumItems(p.funding),delta=rec-exp;const split=p.financingSplit||{};const sf=Number(split.students||0),af=Number(split.adults||0),cf=Number(split.shared||0);const own=(p.funding||[]).filter(x=>/établissement|fonds propre/i.test((x.source||'')+' '+(x.label||''))).reduce((s,x)=>s+Number(x.amount||0),0);const family=(p.funding||[]).filter(x=>/famille/i.test((x.source||'')+' '+(x.label||''))).reduce((s,x)=>s+Number(x.amount||0),0);const erasmus=(p.funding||[]).filter(x=>/erasmus/i.test((x.source||'')+' '+(x.label||''))).reduce((s,x)=>s+Number(x.amount||0),0);const other=Math.max(0,rec-own-family-erasmus);const docs=(p.documents||[]).map(d=>`<div class="doc"><div><a href="${esc(d.href)}" target="_blank">📄 ${esc(d.name)}</a><br><small>${esc(d.type||'Document')}</small></div><span>↗</span></div>`).join('')||'<div class="muted">Aucun document référencé.</div>';document.getElementById('drawerContent').innerHTML=`<div class="meta">${esc(p.est)}</div><h3>${esc(p.name)}</h3><div class="meta"><span class="erasmus-badge ${p.erasmus?'':'non-erasmus'}">${p.erasmus?'✓ ERASMUS':'Hors ERASMUS'}</span> · ${esc(p.type)} · ${esc(p.city)}, ${esc(p.country)}</div><div class="drawer-actions"><button class="btn-primary" onclick="openEdit('${p.id}')">Modifier / construire le budget</button><button class="btn-soft" onclick="exportProjectPdf(window.currentDrawerId)">⤓ Export PDF</button></div><div class="drawer-grid"><div class="drawer-card"><span>Budget</span><b>${money2(p.budget)}</b></div><div class="drawer-card"><span>Consommation</span><b>${pct(p.spent,p.budget)} %</b></div><div class="drawer-card"><span>Bénéficiaires</span><b>${p.students+p.adults}</b></div><div class="drawer-card"><span>Mobilités</span><b>${p.mobilities}</b></div></div><div class="drawer-section"><h4>Responsables / calendrier</h4><div>${esc(p.responsibles||'À renseigner')}</div><div class="meta">${new Date(p.start).toLocaleDateString('fr-FR')} → ${new Date(p.end).toLocaleDateString('fr-FR')} · ${esc(p.partner||'')}</div>${p.classes?`<div class="meta" style="margin-top:4px"><b>Public / classes :</b> ${esc(p.classes)}</div>`:''}</div><div class="drawer-section"><h4>Participants & répartition</h4><div class="funding-split"><div class="split-card"><span>Élèves</span><b>${p.students}</b><small>${p.students?money2(sf/p.students)+' / élève':'—'}</small></div><div class="split-card"><span>Accompagnateurs</span><b>${p.adults}</b><small>${p.adults?money2(af/p.adults)+' / accompagnateur':'—'}</small></div><div class="split-card"><span>Part élèves</span><b>${money2(sf)}</b><small>affectation totale</small></div><div class="split-card"><span>Part accompagnateurs</span><b>${money2(af)}</b><small>affectation totale</small></div></div><div class="funding-split"><div class="split-card"><span>Erasmus+</span><b>${money2(erasmus)}</b></div><div class="split-card"><span>Familles</span><b>${money2(family)}</b><small>${p.students?money2(family/p.students)+' / élève':'—'}</small></div><div class="split-card"><span>Fonds propres</span><b>${money2(own)}</b></div><div class="split-card"><span>Autres sources</span><b>${money2(other)}</b></div></div>${cf?`<div class="meta" style="margin-top:7px">Financement / dépenses communs non ventilés : <b>${money2(cf)}</b></div>`:''}</div><div class="drawer-section"><h4>Trajectoire budgétaire</h4><div class="variance-grid"><div class="variance-card"><span>Voté CA</span><b>${money2(versionTotalRaw(p,'voted','expenses'))}</b><small>référence</small></div><div class="variance-card"><span>Révisé</span><b>${money2(versionTotalRaw(p,'revised','expenses'))}</b><small>${money2(versionTotalRaw(p,'revised','expenses')-versionTotalRaw(p,'voted','expenses'))} vs voté</small></div><div class="variance-card"><span>Réalisé</span><b>${money2(versionTotalRaw(p,'actual','expenses'))}</b><small>${money2(versionTotalRaw(p,'actual','expenses')-versionTotalRaw(p,'voted','expenses'))} vs voté</small></div><div class="variance-card"><span>Exécution</span><b>${versionTotalRaw(p,'voted','expenses')?pct(versionTotalRaw(p,'actual','expenses'),versionTotalRaw(p,'voted','expenses'))+' %':'—'}</b><small>réalisé / voté</small></div></div>${p.revision?.date||p.revision?.ref||p.revision?.reason?`<div class="trace-note"><b>Dernière révision :</b> ${p.revision?.date?new Date(p.revision.date).toLocaleDateString('fr-FR'):'date non renseignée'} · ${esc(p.revision?.ref||'sans référence')}<br>${esc(p.revision?.reason||'')}</div>`:''}<div class="budget-tabs"><button class="budget-tab active" onclick="drawerBudgetVersion(this,'voted')">Voté CA</button><button class="budget-tab" onclick="drawerBudgetVersion(this,'revised')">Révisé</button><button class="budget-tab" onclick="drawerBudgetVersion(this,'actual')">Réalisé</button></div><div id="drawerBudgetDetail"></div></div><div class="drawer-section"><h4>Conseil d’administration</h4><div class="ca-box"><div class="ca-grid"><div class="ca-item"><span>Date de passage</span><b>${p.ca?.date?new Date(p.ca.date).toLocaleDateString('fr-FR'):'À renseigner'}</b></div><div class="ca-item"><span>Séance</span><b>${esc(p.ca?.session||'À renseigner')}</b></div><div class="ca-item"><span>Prévisionnel</span><b><span class="decision ${decisionClass(p.ca?.decision)}">${esc(p.ca?.decisionLabel||'À renseigner')}</span></b></div><div class="ca-item"><span>Compte rendu</span><b>${esc(p.ca?.cr||'À renseigner')}</b></div></div><div style="margin-top:9px"><b style="font-size:12px">Modifications / avenants</b><div class="meta" style="margin-top:4px">${esc(p.ca?.modifications||'Aucune information')}</div></div></div></div><div class="drawer-section"><h4>Documents</h4><div class="docs">${docs}</div><div class="meta" style="margin-top:7px">Les chemins relatifs pointent vers des fichiers placés à côté de cette page HTML.</div></div><div class="drawer-section"><h4>Situation financière</h4><ul><li>Engagé : ${money2(p.committed)}</li><li>Réalisé : ${money2(p.spent)}</li><li>Disponible : ${money2(p.budget-p.committed)}</li></ul></div><div class="drawer-section"><h4>Points de vigilance</h4><ul>${(p.notes||[]).map(n=>`<li>${esc(n)}</li>`).join('')}</ul></div>`;document.getElementById('drawer').classList.add('open');setTimeout(()=>{const b=document.querySelector('#drawerContent .budget-tab');if(b)drawerBudgetVersion(b,'voted')},0)}
+let editingId=null;
+function openEdit(id){editingId=id;const p=projects.find(x=>x.id===id);if(!p)return;ensureBudgetVersions(p);document.getElementById('editTitle').textContent='Budget & gouvernance · '+p.name;document.getElementById('eErasmus').checked=!!p.erasmus;document.getElementById('eStudents').value=p.students||0;document.getElementById('eAdults').value=p.adults||0;document.getElementById('eMobilities').value=p.mobilities??((p.students||0)+(p.adults||0));const split=p.financingSplit||{};document.getElementById('eStudentFunding').value=split.students??0;document.getElementById('eAdultFunding').value=split.adults??0;document.getElementById('eSharedFunding').value=split.shared??0;document.getElementById('eCommitted').value=p.committed||0;document.getElementById('eRevisionDate').value=p.revision?.date||'';document.getElementById('eRevisionRef').value=p.revision?.ref||'';document.getElementById('eRevisionReason').value=p.revision?.reason||'';document.getElementById('eCaDate').value=p.ca?.date||'';document.getElementById('eCaSession').value=p.ca?.session||'';document.getElementById('eDecision').value=p.ca?.decision||'pending';document.getElementById('eDecisionLabel').value=p.ca?.decisionLabel||'';document.getElementById('eMods').value=p.ca?.modifications||'';document.getElementById('eCr').value=p.ca?.cr||'';['voted','revised','actual'].forEach(v=>{renderBudgetRows(v,'expenses',p.budgetVersions[v].expenses||[]);renderBudgetRows(v,'funding',p.budgetVersions[v].funding||[])});renderDocRows(p.documents||[]);document.getElementById('editModal').classList.add('open');switchBudgetTab('voted');updateAllBudgetBalances();updateFundingSplitPreview()}
+function closeEdit(){document.getElementById('editModal').classList.remove('open')}
+function budgetRowsId(v,kind){return v+(kind==='expenses'?'Expenses':'Funding')+'Rows'}
+function renderBudgetRows(v,kind,items){const target=document.getElementById(budgetRowsId(v,kind));target.innerHTML=items.map(x=>`<tr><td><input data-k="label" value="${esc(x.label)}"></td>${kind==='funding'?`<td><input data-k="source" value="${esc(x.source||x.label)}"></td>`:''}<td><input class="money" type="number" step="0.01" data-k="amount" value="${Number(x.amount)||0}" oninput="updateAllBudgetBalances()"></td><td><button class="row-del" onclick="this.closest('tr').remove();updateAllBudgetBalances()">✕</button></td></tr>`).join('')}
+function addBudgetRow(v,kind){const tr=document.createElement('tr');tr.innerHTML=`<td><input data-k="label" placeholder="Libellé"></td>${kind==='funding'?'<td><input data-k="source" placeholder="Source"></td>':''}<td><input class="money" type="number" step="0.01" data-k="amount" value="0" oninput="updateAllBudgetBalances()"></td><td><button class="row-del" onclick="this.closest('tr').remove();updateAllBudgetBalances()">✕</button></td>`;document.getElementById(budgetRowsId(v,kind)).appendChild(tr)}
+function budgetRowsToItems(v,kind){return [...document.querySelectorAll('#'+budgetRowsId(v,kind)+' tr')].map(tr=>{const o={};tr.querySelectorAll('input').forEach(i=>o[i.dataset.k]=i.dataset.k==='amount'?Number(i.value||0):i.value.trim());return o}).filter(o=>o.label)}
+function switchBudgetTab(v){document.querySelectorAll('.budget-tab').forEach(b=>b.classList.toggle('active',b.dataset.v===v));document.querySelectorAll('.version-box').forEach(b=>b.classList.toggle('active',b.id==='budget-'+v))}
+function updateAllBudgetBalances(){const vals={};['voted','revised','actual'].forEach(v=>{const exp=budgetRowsToItems(v,'expenses').reduce((s,x)=>s+x.amount,0),rec=budgetRowsToItems(v,'funding').reduce((s,x)=>s+x.amount,0);vals[v]={exp,rec};const el=document.getElementById(v+'Balance');el.className='balance '+(Math.abs(rec-exp)<.01?'ok':'bad');el.textContent=(Math.abs(rec-exp)<.01?'✓ Équilibré · ':'⚠ Écart · ')+money2(rec-exp)+' | Dépenses '+money2(exp)+' | Recettes '+money2(rec)});const vr=vals.voted.exp,rr=vals.revised.exp,ar=vals.actual.exp;document.getElementById('budgetVariancePreview').innerHTML=`<div class="variance-card"><span>Voté CA</span><b>${money2(vr)}</b><small>référence historique</small></div><div class="variance-card"><span>Révisé</span><b>${money2(rr)}</b><small>${money2(rr-vr)} vs voté</small></div><div class="variance-card"><span>Réalisé</span><b>${money2(ar)}</b><small>${money2(ar-vr)} vs voté</small></div><div class="variance-card"><span>Taux réalisation</span><b>${vr?pct(ar,vr)+' %':'—'}</b><small>réalisé / voté</small></div>`}
+function updateFundingSplitPreview(){const students=Number(document.getElementById('eStudents')?.value||0),adults=Number(document.getElementById('eAdults')?.value||0),sf=Number(document.getElementById('eStudentFunding')?.value||0),af=Number(document.getElementById('eAdultFunding')?.value||0),cf=Number(document.getElementById('eSharedFunding')?.value||0),el=document.getElementById('fundingSplitPreview');if(!el)return;el.innerHTML=`<div class="split-card"><span>Coût / financement élève</span><b>${students?money2(sf/students):'—'}</b><small>${money2(sf)} pour ${students} élève(s)</small></div><div class="split-card"><span>Coût / financement accompagnateur</span><b>${adults?money2(af/adults):'—'}</b><small>${money2(af)} pour ${adults} accompagnateur(s)</small></div><div class="split-card"><span>Commun</span><b>${money2(cf)}</b><small>non ventilé par public</small></div><div class="split-card"><span>Total ventilé</span><b>${money2(sf+af+cf)}</b><small>à rapprocher du budget</small></div>`}
+function renderDocRows(items){document.getElementById('docRows').innerHTML=items.map(d=>`<tr><td><input data-k="name" value="${esc(d.name)}"></td><td><input data-k="href" value="${esc(d.href)}" placeholder="./document.pdf ou https://..."></td><td><input data-k="type" value="${esc(d.type||'PDF')}"></td><td><button class="row-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`).join('')}
+function addDocRow(){const tr=document.createElement('tr');tr.innerHTML='<td><input data-k="name" placeholder="Nom du document"></td><td><input data-k="href" placeholder="./document.pdf ou https://..."></td><td><input data-k="type" value="PDF"></td><td><button class="row-del" onclick="this.closest(\'tr\').remove()">✕</button></td>';document.getElementById('docRows').appendChild(tr)}
+function docRowsToItems(){return [...document.querySelectorAll('#docRows tr')].map(tr=>{const o={};tr.querySelectorAll('input').forEach(i=>o[i.dataset.k]=i.value.trim());return o}).filter(o=>o.name&&o.href)}
+function saveEdit(){const p=projects.find(x=>x.id===editingId);if(!p)return;p.erasmus=!!document.getElementById('eErasmus').checked;p.students=Math.max(0,Number(document.getElementById('eStudents').value||0));p.adults=Math.max(0,Number(document.getElementById('eAdults').value||0));p.mobilities=Math.max(0,Number(document.getElementById('eMobilities').value||0));p.financingSplit={students:Math.max(0,Number(document.getElementById('eStudentFunding').value||0)),adults:Math.max(0,Number(document.getElementById('eAdultFunding').value||0)),shared:Math.max(0,Number(document.getElementById('eSharedFunding').value||0))};p.committed=Number(document.getElementById('eCommitted').value||0);p.budgetVersions={};['voted','revised','actual'].forEach(v=>p.budgetVersions[v]={expenses:budgetRowsToItems(v,'expenses'),funding:budgetRowsToItems(v,'funding')});p.revision={date:document.getElementById('eRevisionDate').value,ref:document.getElementById('eRevisionRef').value,reason:document.getElementById('eRevisionReason').value};syncProjectFinancials(p);p.ca={date:document.getElementById('eCaDate').value,session:document.getElementById('eCaSession').value,decision:document.getElementById('eDecision').value,decisionLabel:document.getElementById('eDecisionLabel').value,modifications:document.getElementById('eMods').value,cr:document.getElementById('eCr').value};p.documents=docRowsToItems();saveProjects();closeEdit();renderAll();openDrawer(editingId)}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open')}
+function renderAll(){const d=current();renderKpis(d);renderBars(d);renderImpact(d);renderSources(d);renderMap(d);renderTimeline(d);renderAlerts(d);renderTable(d)}
+projects.forEach(ensureBudgetVersions); saveProjects(); renderAll(); setTimeout(()=>map.invalidateSize(),250);
+
+
+function exportDashboardPdf(){
+  document.body.classList.remove('print-project');
+  const oldTitle=document.title;
+  const suffix=fErasmus?.checked?' - ERASMUS':' - Tous voyages';
+  document.title='Cap Mobilités'+suffix;
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{document.title=oldTitle},300);
+  },100);
+}
+
+function exportProjectPdf(id){
+  const p=projects.find(x=>x.id===id);
+  if(!p) return;
+  window.currentDrawerId=id;
+  openDrawer(id);
+  document.body.classList.add('print-project');
+  const oldTitle=document.title;
+  document.title='Fiche projet - '+p.name;
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{
+      document.body.classList.remove('print-project');
+      document.title=oldTitle;
+    },300);
+  },120);
+}
+
+window.addEventListener('afterprint',()=>{
+  document.body.classList.remove('print-project');
+});
+
+
+
+function showSaveToast(message){
+  const el=document.getElementById('saveToast');
+  if(!el)return;
+  el.textContent=message||'Sauvegarde créée';
+  el.classList.add('show');
+  clearTimeout(window.__saveToastTimer);
+  window.__saveToastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+function originalHtmlFilename(){
+  try{
+    let raw=decodeURIComponent((window.location.pathname||'').split('/').pop()||'');
+    if(raw && /\.html?$/i.test(raw)) return raw;
+  }catch(e){}
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const ymd=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+  const ts=String(Date.now()).slice(-5);
+  return `${ymd}-${ts}-cap_mobilites.html`;
+}
+
+function snapshotFilename(){
+  const original=originalHtmlFilename();
+  if(original && /\.html?$/i.test(original)) return original;
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const ymd=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+  const ts=String(Date.now()).slice(-5);
+  return `${ymd}-${ts}-cap_mobilites.html`;
+}
+
+function buildHtmlSnapshot(){
+  // Synchronise les calculs avant sérialisation.
+  projects.forEach(p=>ensureBudgetVersions(p));
+  saveProjects();
+
+  const clone=document.documentElement.cloneNode(true);
+
+  // On ne conserve pas les états transitoires de l'interface.
+  clone.querySelectorAll('.drawer.open,.modal.open').forEach(el=>el.classList.remove('open'));
+  clone.querySelectorAll('.save-toast').forEach(el=>el.classList.remove('show'));
+
+  // Injecte les données courantes directement dans le fichier HTML.
+  const scripts=[...clone.querySelectorAll('script')];
+  const appScript=scripts.find(s=>s.textContent.includes('const defaultProjects=') && s.textContent.includes('let projects='));
+  if(appScript){
+    const snapshot=JSON.stringify(projects);
+    let js=appScript.textContent;
+
+    const start=js.indexOf('let projects=');
+    if(start!==-1){
+      const after=js.indexOf(';',start);
+      if(after!==-1){
+        js=js.slice(0,start)+`let projects=${snapshot};`+js.slice(after+1);
+      }
+    }
+
+    // La nouvelle page utilisera ensuite son propre stockage local.
+    appScript.textContent=js;
+  }
+
+  return '<!DOCTYPE html>\n'+clone.outerHTML;
+}
+
+async function saveAsHtmlSnapshot(){
+  try{
+    const html=buildHtmlSnapshot();
+    const filename=snapshotFilename();
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+
+    // Chrome/Edge : permet de proposer le nom d'origine et, si l'utilisateur
+    // choisit le même fichier, de l'écraser explicitement.
+    if(window.showSaveFilePicker){
+      try{
+        const handle=await window.showSaveFilePicker({
+          suggestedName:filename,
+          types:[{
+            description:'Page HTML',
+            accept:{'text/html':['.html','.htm']}
+          }]
+        });
+        const writable=await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        showSaveToast('HTML enregistré : '+(handle.name||filename));
+        return;
+      }catch(err){
+        if(err && err.name==='AbortError') return;
+        // Repli sur téléchargement standard.
+      }
+    }
+
+    // Firefox et autres navigateurs : téléchargement d'un nouveau fichier HTML.
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    showSaveToast('Sauvegarde HTML générée');
+  }catch(err){
+    console.error(err);
+    alert('Impossible de générer la sauvegarde HTML : '+err.message);
+  }
+}
+
+</script>
+<div id="saveToast" class="save-toast">Sauvegarde créée</div>
+
+<script id="new-project-feature">
+function createNewProject(){
+  const id = 'P' + Date.now();
+  const today = new Date().toISOString().slice(0,10);
+  const project = {
+    id,
+    name:"Nouveau projet",
+    est:"Lycée Démonstration",
+    type:"À définir",
+    country:"France",
+    city:"",
+    lat:48.321,
+    lng:0.821,
+    start:today,
+    end:today,
+    students:0,
+    adults:0,
+    mobilities:0,
+    erasmus:false,
+    classes:"",
+    financingSplit:{students:0,adults:0,shared:0},
+    budget:0,
+    committed:0,
+    spent:0,
+    status:"Prévisionnel",
+    partner:"",
+    responsibles:"",
+    notes:[],
+    expenses:[],
+    funding:[],
+    ca:{date:"",session:"",decision:"pending",decisionLabel:"À renseigner",modifications:"",cr:""},
+    documents:[],
+    budgetVersions:{
+      voted:{expenses:[],funding:[]},
+      revised:{expenses:[],funding:[]},
+      actual:{expenses:[],funding:[]}
+    },
+    revision:{date:"",ref:"",reason:""}
+  };
+
+  projects.push(project);
+
+  try{
+    localStorage.setItem('erasmusProjectsV291Sources', JSON.stringify(projects));
+  }catch(e){}
+
+  // Actualise les listes et le cockpit si les fonctions sont disponibles.
+  if(typeof fillSelect === "function" && typeof uniq === "function" && typeof filters !== "undefined"){
+    fillSelect(filters.est,uniq(projects,'est'),'Tous');
+    fillSelect(filters.project,uniq(projects,'name'),'Tous');
+    fillSelect(filters.type,uniq(projects,'type'),'Tous');
+    fillSelect(filters.country,uniq(projects,'country'),'Tous');
+    fillSelect(filters.status,uniq(projects,'status'),'Tous');
+  }
+  if(typeof renderAll === "function") renderAll();
+
+  // Réutilise la fiche/modale d'édition existante.
+  if(typeof openEdit === "function"){
+    openEdit(id);
+  }else if(typeof openDrawer === "function"){
+    openDrawer(id);
+  }
+}
+</script>
+
+
+
+</body></html>

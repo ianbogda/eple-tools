@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Analyse financière du fonds de roulement — Annexe III</title>
+<style>
+:root{--bg:#f4f6f8;--ink:#111;--muted:#667085;--line:#111;--ui-line:#d0d5dd;--green:#e6efd8;--soft:#f8fafc;--accent:#315d46;--danger:#b42318;--ok:#027a48;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+.wrap{max-width:1120px;margin:24px auto;padding:0 18px 42px}.screen-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}.screen-head h1{margin:0 0 6px;font-size:1.5rem}.subtitle{color:var(--muted);font-size:.92rem}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button,.small-btn{border:1px solid var(--ui-line);background:#fff;border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}.actions .primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.panel{background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px;margin:12px 0;box-shadow:0 1px 2px rgba(16,24,40,.04)}.panel h2{font-size:1rem;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.c3{grid-column:span 3}.c4{grid-column:span 4}.c6{grid-column:span 6}.c12{grid-column:span 12}label{display:block;font-size:.8rem;font-weight:700;margin-bottom:5px}input,textarea{width:100%;border:1px solid var(--ui-line);border-radius:7px;padding:9px 10px;font:inherit;background:#fff}textarea{min-height:115px;resize:vertical}.hint{font-size:.76rem;color:var(--muted);margin-top:5px}
+.sheet{background:#fff;border:1px solid #d8dde3;padding:13mm 18mm 12mm;margin:16px auto 0;box-shadow:0 2px 9px rgba(0,0,0,.07);min-height:297mm;max-width:210mm}.annex{display:flex;justify-content:flex-end;margin-bottom:4mm}.annex span{border:1px solid #111;min-width:34mm;text-align:center;font-size:9pt;font-weight:700;padding:2px 8px}.doc-title{text-align:center;margin-bottom:4mm}.doc-title .main{font-size:10.5pt;font-weight:700}.doc-title .school-line{font-size:9.7pt;margin-top:1mm}.doc-title .bfdr-line{font-size:9.7pt;font-weight:700;margin-top:1mm}.doc-title .bfdr-negative{color:red}.meta-row{display:grid;grid-template-columns:1fr 50mm;margin-bottom:1.5mm;font-size:8.7pt}.meta-row .datebox{border:1px solid #111;text-align:center;padding:2px 4px;font-weight:700}
+.regtable{width:100%;border-collapse:collapse;font-size:8.35pt;line-height:1.15}.regtable th,.regtable td{border:1px solid #111;padding:2.1mm 2mm;vertical-align:middle}.regtable th{font-weight:700}.regtable .group th{background:var(--green);text-align:center}.regtable .rep{width:8mm;text-align:center;font-weight:700}.regtable .amount{width:36mm;text-align:right;white-space:nowrap}.regtable .result td{font-weight:700}
+.regtable .spacer td{border:0!important;background:#fff!important;height:3mm;padding:0!important}.regtable .note-inline{font-size:7.7pt;font-weight:400}.value{font-variant-numeric:tabular-nums}.value-empty{color:#777}
+.comments-print{border:1px solid #111;margin-top:4mm;padding:2.5mm 3mm;min-height:26mm;font-size:8.3pt;white-space:pre-wrap}.comments-print .label{font-weight:700;margin-bottom:2mm}.rules{border:1px solid #111;margin-top:4mm;padding:2.8mm 3mm;font-size:7.7pt;line-height:1.32}.rules ul{margin:0;padding-left:4mm}.recommendation{font-size:8pt;margin-top:3.2mm}.cofi-reminder{font-size:8pt;font-weight:700;margin-top:1.2mm}.footer-ref{margin-top:21mm;font-size:7.2pt;line-height:1.25}.status{margin-top:10px;padding:9px 11px;border-radius:7px;font-weight:700;font-size:.9rem}.status.ok{background:#ecfdf3;color:var(--ok)}.status.warn{background:#fff4e5;color:#934a00}.status.danger{background:#fff0f0;color:var(--danger)}
+.analysis-box{border:1px solid var(--ui-line);border-radius:8px;padding:12px;background:var(--soft);font-size:.88rem;line-height:1.45}.analysis-box strong{display:block;margin-bottom:6px}.analysis-box ul{margin:6px 0 0 18px;padding:0}.generated-note{font-size:.76rem;color:var(--muted);margin-top:6px} .red{color:red}
+@media(max-width:800px){.screen-head{flex-direction:column}.c3,.c4,.c6{grid-column:span 12}.sheet{padding:8mm 5mm;min-height:auto}.meta-row{grid-template-columns:1fr}.regtable{font-size:7.5pt}}
+@media print{
+ @page{size:A4 portrait;margin:8mm 0}
+ html,body{width:210mm;height:297mm;background:#fff}
+ body{margin:0;background:#fff}
+ .wrap{max-width:none;margin:0;padding:0}
+ .no-print,.panel,.screen-head{display:none!important}
+ /* Le document original occupe une colonne centrale étroite : marges latérales volontairement généreuses. */
+ .sheet{border:0;box-shadow:none;padding:0;margin:0 auto;min-height:0;width:158mm;max-width:158mm;max-height:281mm;overflow:hidden;page-break-after:avoid;break-after:avoid;background:#fff}
+ .annex{margin:0 0 2.2mm 0}.annex span{min-width:31mm;font-size:7.7pt;padding:.7mm 4mm;border:1px solid #111;background:#fff}
+ .doc-title{margin-bottom:2.1mm}.doc-title .main{font-size:9pt;line-height:1.05}.doc-title .school-line{font-size:8.3pt;margin-top:.5mm}.doc-title .bfdr-line{font-size:8.3pt;margin-top:.5mm}
+ .meta-row{grid-template-columns:1fr 34mm;margin-bottom:.7mm;font-size:7.5pt}.meta-row .datebox{padding:.8mm 1.2mm;border:1px solid #111}
+ .regtable{font-family:Arial,Helvetica,sans-serif;font-size:6.95pt;line-height:1.08;border:1px solid #111}
+ .regtable th,.regtable td{border:1px solid #111;padding:.9mm 1.15mm}
+ .regtable .group th{background:#dfe8cf!important;text-align:center;font-weight:700;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .regtable .rep{width:7.5mm;text-align:center;font-weight:700}.regtable .amount{width:31mm;text-align:right;white-space:nowrap;padding-right:1.7mm}
+ .regtable .note-inline{font-size:6.15pt;line-height:1.05}
+ .regtable .result td{font-weight:700}
+.regtable .spacer td{border:0!important;background:#fff!important;height:3mm;padding:0!important}
+ /* B/C/D reprennent la lecture visuelle de l'annexe, avec C et D renforcés. */
+ .regtable .result td:nth-child(2){background:#e7eed8!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ /* C et D : aucune cellule entourée ; seul B conserve le formalisme tabulaire. */
+ .regtable tr.result-c td,.regtable tr.result-d td{border:0!important;background:#fff!important}
+ .regtable tr.result:nth-last-child(2) td,.regtable tr.result:last-child td{font-size:7.8pt;line-height:1.12;padding-top:1.35mm;padding-bottom:1.35mm}
+ .regtable tr.result:nth-last-child(2) .rep,.regtable tr.result:last-child .rep{font-size:8.8pt}
+ .regtable tr.result:nth-last-child(2) .amount,.regtable tr.result:last-child .amount{font-size:9pt;font-weight:800}
+ .cofi-reminder{font-size:7pt;font-weight:700;margin-top:.8mm;color:#a40000}
+ .comments-print{margin-top:1.6mm;padding:1.4mm 1.8mm;min-height:12mm;max-height:24mm;font-size:6.9pt;line-height:1.12;overflow:hidden;border:1px solid #111}.comments-print .label{margin-bottom:.7mm;font-weight:700}
+ .rules{margin-top:1.6mm;padding:1.45mm 1.8mm;font-size:6.15pt;line-height:1.12;border:1px solid #111}.rules ul{padding-left:3.2mm;margin-top:.4mm}.rules li{margin:0}
+ .recommendation{font-size:6.6pt;margin-top:1.2mm}
+ .footer-ref{margin-top:2mm;font-size:5.9pt;line-height:1.08}
+ .regtable,.comments-print,.rules,.recommendation,.footer-ref{break-inside:avoid;page-break-inside:avoid}
+ *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+</style>
+
+<style id="eple-tools-analyse-fdr-home-theme">
+  :root{
+    --bg:#f7f8fb;
+    --ink:#172033;
+    --muted:#6c7587;
+    --line:#e7eaf0;
+    --ui-line:#d0d5dd;
+    --accent:#0891b2;
+    --accent-soft:#eef9fc;
+    --danger:#b42318;
+    --ok:#027a48;
+    --panel-shadow:0 .25rem 1rem rgba(15,23,42,.045);
+  }
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+
+  .wrap{
+    max-width:none;
+    margin:0;
+    padding:1.5rem;
+  }
+
+  .screen-head{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    box-shadow:var(--panel-shadow);
+    padding:1rem 1.25rem;
+    margin-bottom:1rem;
+    align-items:center;
+  }
+
+  .app-header{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+  }
+
+  .app-logo{
+    width:43px;
+    height:43px;
+    flex:0 0 43px;
+    display:grid;
+    place-items:center;
+    border-radius:.7rem;
+    background:color-mix(in srgb,var(--accent) 10%,white);
+    color:var(--accent);
+  }
+
+  .app-logo svg{
+    width:22px;
+    height:22px;
+    stroke-width:1.8;
+  }
+
+  .app-kicker{
+    font-size:.66rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--accent);
+    margin-bottom:.15rem;
+  }
+
+  .screen-head h1{
+    margin:0;
+    font-size:1.15rem;
+    font-weight:700;
+    letter-spacing:-.015em;
+    color:var(--ink);
+  }
+
+  .subtitle{
+    color:var(--muted);
+    font-size:.76rem;
+    margin-top:.2rem;
+  }
+
+  .panel{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    padding:1rem 1.1rem;
+    margin:0 0 1rem;
+    box-shadow:var(--panel-shadow);
+  }
+
+  .panel h2{
+    font-size:.95rem;
+    font-weight:700;
+    color:#344054;
+    margin:0 0 .85rem;
+  }
+
+  label{
+    color:#475467;
+    font-size:.78rem;
+    font-weight:650;
+  }
+
+  input,textarea{
+    border:1px solid #dde2ea;
+    border-radius:.55rem;
+    padding:.6rem .7rem;
+    background:#fff;
+  }
+
+  input:focus,textarea:focus{
+    outline:none;
+    border-color:#67c3d8;
+    box-shadow:0 0 0 .2rem rgba(8,145,178,.10);
+  }
+
+  .hint,.generated-note{
+    color:var(--muted);
+    font-size:.72rem;
+  }
+
+  .actions{
+    gap:.5rem;
+  }
+
+  .actions button,.small-btn{
+    border:1px solid #d0d5dd;
+    background:#fff;
+    color:#475467;
+    border-radius:.55rem;
+    padding:.55rem .8rem;
+    font-weight:600;
+  }
+
+  .actions button:hover,.small-btn:hover{
+    background:#f8fafc;
+  }
+
+  .actions .primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  .actions .primary:hover{
+    background:#0e7490;
+    border-color:#0e7490;
+  }
+
+  .status{
+    border-radius:.65rem;
+    font-size:.84rem;
+    border:1px solid var(--line);
+  }
+
+  .analysis-box{
+    border:1px solid var(--line);
+    border-radius:.7rem;
+    background:#f8fafc;
+  }
+
+  .sheet{
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    box-shadow:var(--panel-shadow);
+  }
+
+  @media(max-width:767.98px){
+    .wrap{padding:1rem}
+    .app-header{align-items:flex-start}
+    .screen-head h1{font-size:1.05rem}
+  }
+
+  @media print{
+    .screen-head{
+      background:transparent;
+      border:0;
+      box-shadow:none;
+      padding:0;
+    }
+    .sheet{
+      border:0;
+      border-radius:0;
+      box-shadow:none;
+    }
+  }
+</style>
+
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="screen-head no-print">
+    <div class="app-header">
+      <div class="app-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17 9 11l4 4 8-9"/>
+          <path d="M15 6h6v6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="app-kicker">Pilotage</div>
+        <h1>Analyse financière</h1>
+        <div class="subtitle">FdR, BFdR, trésorerie et marges mobilisables pour décider.</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="saveBtn">Enregistrer</button>
+      <button id="resetBtn">Réinitialiser</button>
+      <button class="primary" onclick="window.print()">Imprimer / PDF</button>
+    </div>
+  </header>
+
+  <section class="panel no-print">
+    <h2>Identification et données générales</h2>
+    <div class="grid">
+      <div class="c3"><label>Date des données</label><input type="date" id="dataDate"></div>
+      <div class="c3"><label>Nom de l’établissement</label><input id="school" placeholder="Nom de l’EPLE"></div>
+      <div class="c3"><label>Code établissement / UAI</label><input id="uai" placeholder="Ex. 0280036M"></div>
+      <div class="c3"><label>Agent comptable</label><input id="accountant" placeholder="Nom et prénom"></div>
+      <div class="c4"><label>BFdR au dernier COFI (€)</label><input class="money" id="bfdr" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>Rappel dernier COFI — Nb JFdR</label><input id="lastJfdr" type="number" step="0.01" placeholder="54,70"></div>
+      <div class="c4"><label>Classe 6 décaissable (€)</label><input class="money" id="classe6" inputmode="decimal" placeholder="0,00"><div class="hint">C = classe 6 décaissable / 174</div></div>
+    </div>
+  </section>
+
+  <section class="panel no-print">
+    <h2>Montants à saisir</h2>
+    <div class="grid">
+      <div class="c4"><label>A — FdR net comptable au dernier COFI</label><input class="money" id="A" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>1 — Provisions et dépréciations</label><input class="money" id="l1" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>2 — Dépôts et cautions reçus</label><input class="money" id="l2" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>3 — Stocks</label><input class="money" id="l3" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>4 — Créances douteuses</label><input class="money" id="l4" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>5 — Créances > 1 an non provisionnées</label><input class="money" id="l5" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>6 — Réserve de fonctionnement nécessaire</label><input class="money" id="l6" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>7a — Prélèvements sur FdR déjà votés (€)</label><input class="money" id="prvVoted" inputmode="decimal" placeholder="0,00"></div>
+      <div class="c4"><label>7b — Prélèvement sur FdR proposé (€)</label><input class="money" id="prvProposed" inputmode="decimal" placeholder="0,00"><div class="hint">La ligne 7 correspond automatiquement au total annuel : déjà voté + proposé.</div></div>
+      <div class="c12"><label>Préconisations de l’agent comptable</label><textarea id="comment" placeholder="Analyse, réserves, points de vigilance, préconisations…"></textarea><div class="generated-note">Vous pouvez partir de la proposition automatique ci-dessous puis la compléter, l’amender ou la supprimer.</div></div>
+    </div>
+    <div class="actions" style="margin-top:10px"><button type="button" id="suggestComment">Préremplir les préconisations</button></div>
+    <div id="status" class="status warn">Saisissez les données pour obtenir l’analyse.</div>
+    <div id="analysis" class="analysis-box" style="margin-top:10px"><strong>Orientations d’analyse</strong><div>Saisissez les données pour obtenir des orientations.</div></div>
+  </section>
+
+
+  <main class="sheet" aria-label="Aperçu de l’édition réglementaire">
+    <div class="annex"><span>Annexe III</span></div>
+    <div class="doc-title">
+      <div class="main">Analyse financière du Fonds de roulement</div>
+      <div class="school-line"><span id="pUai">—</span> - <span id="pSchool">Établissement</span></div>
+      <div class="bfdr-line" id="pBfdrLine">BFdR négatif ou positif : —</div>
+    </div>
+
+    <table class="regtable">
+      <tbody>
+        <tr class="group"><th colspan="2">Éléments à retraiter</th><th>Données au <span id="pDate">—</span></th></tr>
+        <tr><td class="rep">A</td><td>Fonds de roulement net comptable au dernier COFI</td><td class="amount value" id="pA">0,00</td></tr>
+        <tr class="group"><th colspan="3">Fonds de roulement lié à des dépenses futures, probables ou certaines</th></tr>
+        <tr><td class="rep">1</td><td>Provisions et dépréciations (15, 29, 39, 49, 59)</td><td class="amount value" id="p1">0,00</td></tr>
+        <tr><td class="rep">2</td><td>Dépôts et cautions reçus compte 165</td><td class="amount value" id="p2">0,00</td></tr>
+        <tr class="group"><th colspan="3">Fonds de roulement affecté à des activités particulières</th></tr>
+        <tr><td class="rep">3</td><td>Stocks</td><td class="amount value" id="p3">0,00</td></tr>
+        <tr class="group"><th colspan="3">Éléments de fragilité potentielle du fonds de roulement</th></tr>
+        <tr><td class="rep">4</td><td>Créances douteuses : compte 416</td><td class="amount value" id="p4">0,00</td></tr>
+        <tr><td class="rep">5</td><td>Créances supérieures à un an non provisionnées <span class="red">(comptes 4111…4121…4631…XXXX…)</span></td><td class="amount value" id="p5">0,00</td></tr>
+        <tr><td class="rep">6</td><td>Réserve de fonctionnement nécessaire à l’activité (si BFdR positif au dernier COFI)</td><td class="amount value" id="p6">0,00</td></tr>
+        <tr class="group"><th colspan="3">Part du fonds de roulement déjà mobilisée</th></tr>
+        <tr><td class="rep">7</td><td>Prélèvements sur FdR de l’exercice<br><span class="note-inline">Déjà votés : <span id="pPrvVoted">0,00</span> € — Prélèvement proposé : <span id="pPrvProposed">0,00</span> €</span></td><td class="amount value" id="p7">0,00</td></tr>
+        <tr class="group"><th colspan="3">Fonds de roulement disponible</th></tr>
+        <tr class="result"><td class="rep">B</td><td>Fonds de roulement disponible (= A-1-2-3-4-5-6-7)</td><td class="amount value" id="pB">0,00</td></tr>
+        <tr class="spacer" aria-hidden="true"><td colspan="3"></td></tr>
+        <tr class="result result-c"><td class="rep" style="border:0">C</td><td>Montant d’une journée de fonctionnement (classe 6 décaissable / 174)<br><span class="note-inline">Classe 6 décaissable retenue : <span id="pClasse6">0,00</span> €</span></td><td class="amount value" id="pC">0,00</td></tr>
+        <tr class="spacer" aria-hidden="true"><td colspan="3"></td></tr>
+        <tr class="result result-d"><td class="rep" style="border:0">D</td><td>Évaluation du FdR disponible en nombre de jours de fonctionnement (= B/C)</td><td class="amount value" id="pD">—</td></tr>
+		<tr style="border:none"><td style="border:0">&nbsp;</td><td style="border:0"><span class="red">Rappel dernier COFI : Nombre de jours FdR = <span id="pLastJfdr">—</span></span></td><td style="border:0">&nbsp;</tr>
+      </tbody>
+    </table>
+
+
+    <div class="rules">
+      Sont ainsi déduits du fonds de roulement net comptable (A) arrêté au 31 décembre :
+      <ul>
+        <li>les provisions (ligne 1) ;</li><li>les cautions (ligne 2) ;</li><li>les stocks (ligne 3) ;</li><li>les créances douteuses (ligne 4) ;</li>
+        <li>les créances non provisionnées de plus d’un an (ligne 5) selon état complémentaire justificatif ;</li>
+        <li>une réserve de fonctionnement nécessaire à l’activité lorsque le BFdR est positif (ligne 6), charges nettes 60 à 65 exprimées en nombre de jours de fonctionnement, de l’ordre de 30 jours (délai global de paiement) ;</li>
+        <li>les prélèvements sur FdR déjà votés au budget primitif ou lors de décisions budgétaires modificatives (ligne 7) ;</li>
+        <li>la classe 6 décaissable, montant net des charges 60 à 65 sauf comptes 658.</li>
+      </ul>
+      <div style="margin-top:1.5mm">Le ratio D est complémentaire des trois indicateurs (FdR, BFdR et Trésorerie).</div>
+    </div>
+    <div class="recommendation"><strong>Préconisations :</strong><div id="pComment">—</div></div>
+
+
+    <div class="footer-ref">(1) Préconisations du rapport 2016-071 « Évolution de la carte comptable : de la croisée des chemins à de nouveaux défis à relever », Mission IGAENR.</div>
+  </main>
+</div>
+<script>
+const ids=['dataDate','school','uai','accountant','bfdr','lastJfdr','classe6','A','l1','l2','l3','l4','l5','l6','prvVoted','prvProposed','comment'];
+const nf=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+function parseFR(v){if(v==null||String(v).trim()==='')return 0;return Number(String(v).replace(/\s/g,'').replace(/€/g,'').replace(',','.'))||0}
+function fmt(v){return nf.format(Number.isFinite(v)?v:0)}
+function fmtDate(v){if(!v)return '—'; const [y,m,d]=v.split('-'); return `${d}/${m}/${y}`}
+function val(id){return document.getElementById(id).value}
+function buildAnalysis({A,ls,B,C,D,bfdr,last,prvVoted,prvProposed}){
+ const points=[];
+ const totalPrv=prvVoted+prvProposed;
+ const BbeforeProposal=B+prvProposed;
+ const DbeforeProposal=C>0?BbeforeProposal/C:null;
+ if(D===null){points.push('La classe 6 décaissable doit être renseignée pour apprécier le fonds de roulement disponible en jours.');}
+ else if(D<0){points.push('Le fonds de roulement disponible devient négatif : les prélèvements et engagements nouveaux doivent être réexaminés avant décision.');}
+ else if(D<30){points.push(`Le fonds de roulement mobilisable ressort à ${fmt(D)} jours, sous la référence de 30 jours : privilégier la préservation du FdR et documenter précisément tout nouveau prélèvement.`);}
+ else if(D<45){points.push(`Le fonds de roulement mobilisable ressort à ${fmt(D)} jours : la marge existe mais reste modérée au regard de la référence de 30 jours.`);}
+ else {points.push(`Le fonds de roulement mobilisable ressort à ${fmt(D)} jours : la marge apparente est supérieure à la référence de 30 jours, sous réserve de l’analyse du BFdR et de la trésorerie.`);}
+ if(last && D!==null){const gap=D-last;if(gap<-5)points.push(`Le ratio se dégrade de ${fmt(Math.abs(gap))} jours par rapport au dernier COFI : identifier les causes de consommation du FdR et vérifier leur caractère ponctuel ou structurel.`);else if(gap>5)points.push(`Le ratio s’améliore de ${fmt(gap)} jours par rapport au dernier COFI : vérifier que cette amélioration est durable et non liée à des décalages d’encaissement ou de paiement.`);else points.push(`Le ratio reste proche du dernier COFI (écart de ${fmt(gap)} jour(s)).`)}
+ if(bfdr>0)points.push(`Le BFdR est positif (${fmt(bfdr)} €) : le cycle d’exploitation mobilise une partie des ressources ; l’analyse doit être rapprochée de la trésorerie disponible.`);
+ else if(bfdr<0)points.push(`Le BFdR est négatif (${fmt(bfdr)} €) : le cycle d’exploitation constitue à cette date une ressource de financement ; vérifier que cette situation n’est pas seulement liée à des décalages de flux.`);
+ if(prvProposed>0 && DbeforeProposal!==null){const impact=DbeforeProposal-D;points.push(`Le prélèvement proposé de ${fmt(prvProposed)} € réduit le FdR mobilisable d’environ ${fmt(impact)} jour(s), de ${fmt(DbeforeProposal)} à ${fmt(D)} jours.`)}
+ if(totalPrv>0 && A>0){const pct=totalPrv/A*100;if(pct>=20)points.push(`Les prélèvements de l’exercice représentent ${fmt(pct)} % du FdR net comptable du dernier COFI : leur soutenabilité doit être explicitement justifiée.`)}
+ const frag=ls[3]+ls[4]; if(A>0 && frag/A>=.10)points.push(`Les créances douteuses et anciennes représentent ${fmt(frag/A*100)} % du FdR du dernier COFI : renforcer le suivi du recouvrement et apprécier le besoin de provisionnement.`);
+ return {points,DbeforeProposal};
+}
+function suggestedComment(data){
+ const a=buildAnalysis(data); const D=data.D;
+ let head='Au regard des données renseignées, ';
+ if(D===null) head+='l’analyse du fonds de roulement disponible en jours ne peut pas être finalisée.';
+ else head+=`le fonds de roulement disponible est estimé à ${fmt(data.B)} €, soit ${fmt(D)} jours de fonctionnement.`;
+ return [head,...a.points.map(x=>'• '+x)].join('\n');
+}
+function calc(){
+ const A=parseFR(val('A')); const ls=[1,2,3,4,5,6].map(i=>parseFR(val('l'+i))); const prvVoted=parseFR(val('prvVoted')); const prvProposed=parseFR(val('prvProposed')); const l7=prvVoted+prvProposed; const allLs=[...ls,l7]; const B=A-allLs.reduce((a,b)=>a+b,0);
+ const c6=parseFR(val('classe6')); const C=c6/174; const D=C>0?B/C:null; const bfdr=parseFR(val('bfdr')); const last=parseFR(val('lastJfdr'));
+ const data={A,ls:allLs,B,C,D,bfdr,last,prvVoted,prvProposed};
+ document.getElementById('pSchool').textContent=val('school')||'Établissement'; document.getElementById('pUai').textContent=val('uai')||'—'; document.getElementById('pDate').textContent=fmtDate(val('dataDate'));
+ document.getElementById('pBfdrLine').textContent='BFdR négatif ou positif : '+fmt(bfdr)+' €'; document.getElementById('pBfdrLine').classList.toggle('bfdr-negative',bfdr<0);
+ document.getElementById('pA').textContent=fmt(A); ls.forEach((x,i)=>document.getElementById('p'+(i+1)).textContent=fmt(x)); document.getElementById('pPrvVoted').textContent=fmt(prvVoted); document.getElementById('pPrvProposed').textContent=fmt(prvProposed); document.getElementById('p7').textContent=fmt(l7); document.getElementById('pB').textContent=fmt(B); document.getElementById('pClasse6').textContent=fmt(c6); document.getElementById('pC').textContent=fmt(C); document.getElementById('pD').textContent=D===null?'—':fmt(D);
+ document.getElementById('pLastJfdr').textContent=val('lastJfdr')?fmt(last):'—'; document.getElementById('pComment').textContent=val('comment')||'—';
+ let msg=''; let cls='warn'; if(D===null){msg='Renseignez la classe 6 décaissable pour calculer D.'} else if(D<0){msg='Alerte : le fonds de roulement disponible est négatif.';cls='danger'} else if(D<30){msg=`Vigilance : ${fmt(D)} jours de FdR disponible, sous la référence de 30 jours.`;cls='danger'} else {msg=`Situation calculée : ${fmt(D)} jours de FdR disponible.`;cls='ok'} if(last&&D!==null)msg+=` Écart avec le dernier COFI : ${fmt(D-last)} jours.`; const st=document.getElementById('status');st.className='status '+cls;st.textContent=msg;
+ const analysis=buildAnalysis(data); document.getElementById('analysis').innerHTML='<strong>Orientations d’analyse</strong><ul>'+analysis.points.map(p=>'<li>'+p+'</li>').join('')+'</ul>';
+ window.__analysisData=data;
+}
+function save(){const d={};ids.forEach(id=>d[id]=val(id));localStorage.setItem('analyseFdrReglementaire',JSON.stringify(d));alert('Données enregistrées dans ce navigateur.');}
+function load(){const raw=localStorage.getItem('analyseFdrReglementaire')||localStorage.getItem('analyseFdrEple');if(!raw)return;try{const d=JSON.parse(raw);ids.forEach(id=>{if(d[id]!=null)document.getElementById(id).value=d[id]});if(d.prvVoted==null && d.l7!=null)document.getElementById('prvVoted').value=d.l7}catch(e){}}
+document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',calc));document.getElementById('suggestComment').addEventListener('click',()=>{calc();document.getElementById('comment').value=suggestedComment(window.__analysisData);calc();});document.getElementById('saveBtn').addEventListener('click',save);document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Effacer toutes les données ?')){ids.forEach(id=>document.getElementById(id).value='');localStorage.removeItem('analyseFdrReglementaire');calc()}});
+load();calc();
+</script>
+</body>
+</html>

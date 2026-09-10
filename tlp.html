@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Télépaiements OP@LE — Lecteur de flux</title>
+<style>
+  :root{
+    --bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--line:#e5e7eb;
+    --accent:#2563eb;--ok:#15803d;--warn:#b45309;--bad:#b91c1c;--soft:#eef2ff;
+    --shadow:0 8px 24px rgba(15,23,42,.07)
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  .topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .wrap{max-width:1500px;margin:0 auto;padding:18px 24px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#60a5fa);color:#fff;display:grid;place-items:center;font-weight:800}
+  h1{font-size:22px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .headrow{display:flex;justify-content:space-between;gap:18px;align-items:center}
+  button,.filebtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;font-weight:600;cursor:pointer}
+  button:hover,.filebtn:hover{background:#f9fafb}
+  .primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .kpi{padding:18px}.kpi .lab{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .kpi .val{font-size:28px;font-weight:750;margin-top:6px}.kpi .hint{font-size:12px;color:var(--muted);margin-top:5px}
+  .statusbar{padding:16px 18px;display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:14px}
+  .statuspill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:700}
+  .ok{background:#ecfdf5;color:var(--ok)}.warn{background:#fff7ed;color:var(--warn)}.bad{background:#fef2f2;color:var(--bad)}
+  .drop{border:2px dashed #cbd5e1;border-radius:14px;padding:26px;text-align:center;background:#fff;margin-bottom:18px;transition:.15s}
+  .drop.drag{border-color:var(--accent);background:#eff6ff}
+  .drop h3{margin:0 0 6px;font-size:16px}.drop p{margin:0;color:var(--muted);font-size:13px}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+  input[type="search"],select{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff}
+  input[type="search"]{min-width:280px;flex:1}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  tbody tr:nth-child(even){background:#fafcff}
+  tbody tr:hover{background:#f3f7ff}
+  th{background:#f8fafc;color:#475569;font-size:12px;position:sticky;top:0;z-index:1}
+  td.amount{text-align:right;font-weight:700;white-space:nowrap}
+  .tag{display:inline-block;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:700}
+  .tag-ok{background:#ecfdf5;color:var(--ok)}.tag-warn{background:#fff7ed;color:var(--warn)}
+  .sectiontitle{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .sectiontitle h2{font-size:16px;margin:0}
+  .tabs{display:flex;gap:6px;margin:18px 0 10px}
+  .tab{background:transparent;border:none;color:#64748b}.tab.active{background:#fff;color:#111827;box-shadow:var(--shadow)}
+  .panel{display:none}.panel.active{display:block}
+  .diag{padding:16px}.step{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}.dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800}
+  .raw{white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px;max-height:340px;overflow:auto;font-family:Consolas,monospace;font-size:12px}
+  .empty{padding:28px;text-align:center;color:var(--muted)}
+  .muted{color:var(--muted)}
+  .right{text-align:right}
+  .foot{color:var(--muted);font-size:12px;padding:18px 0 30px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.headrow{align-items:flex-start;flex-direction:column}th{position:static}}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}.wrap{padding:14px}.statusbar{align-items:flex-start;flex-direction:column}}
+</style>
+
+<style id="eple-tools-telepaiements-home-theme">
+:root{
+  --tp-bg:#f7f8fb;
+  --tp-ink:#172033;
+  --tp-muted:#6c7587;
+  --tp-line:#e7eaf0;
+  --tp-accent:#4f46e5;
+  --tp-accent-soft:#f1f0ff;
+  --tp-shadow:0 .25rem 1rem rgba(15,23,42,.045);
+}
+
+html,body{
+  background:var(--tp-bg)!important;
+  color:var(--tp-ink)!important;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+
+body{margin:0!important}
+
+.topbar{
+  position:static!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.topbar .wrap{
+  max-width:none!important;
+  margin:1.5rem!important;
+  padding:1rem 1.25rem!important;
+  background:#fff!important;
+  border:1px solid var(--tp-line)!important;
+  border-radius:.85rem!important;
+  box-shadow:var(--tp-shadow)!important;
+}
+
+.headrow{
+  align-items:center!important;
+}
+
+.brand{
+  display:flex!important;
+  align-items:center!important;
+  gap:1rem!important;
+}
+
+.logo{
+  width:43px!important;
+  height:43px!important;
+  flex:0 0 43px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:.7rem!important;
+  background:color-mix(in srgb,var(--tp-accent) 10%,white)!important;
+  color:var(--tp-accent)!important;
+  font-weight:normal!important;
+}
+
+.logo svg{
+  width:22px!important;
+  height:22px!important;
+  stroke-width:1.8!important;
+}
+
+.app-kicker{
+  font-size:.66rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--tp-accent);
+  margin-bottom:.15rem;
+}
+
+.brand h1{
+  margin:0!important;
+  font-size:1.15rem!important;
+  font-weight:700!important;
+  letter-spacing:-.015em!important;
+  color:var(--tp-ink)!important;
+}
+
+.brand .sub{
+  margin-top:.2rem!important;
+  color:var(--tp-muted)!important;
+  font-size:.76rem!important;
+}
+
+.actions{
+  gap:.45rem!important;
+}
+
+button,
+.filebtn{
+  border:1px solid #d8dde6!important;
+  background:#fff!important;
+  color:#475467!important;
+  border-radius:.55rem!important;
+  padding:.55rem .75rem!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+}
+
+button:hover,
+.filebtn:hover{
+  background:#f8fafc!important;
+  border-color:#cbd5e1!important;
+}
+
+.filebtn{
+  background:var(--tp-accent)!important;
+  border-color:var(--tp-accent)!important;
+  color:#fff!important;
+}
+
+.filebtn:hover{
+  background:#4338ca!important;
+  border-color:#4338ca!important;
+  color:#fff!important;
+}
+
+main.wrap{
+  max-width:none!important;
+  margin:0!important;
+  padding:0 1.5rem 2rem!important;
+}
+
+.card{
+  background:#fff!important;
+  border:1px solid var(--tp-line)!important;
+  border-radius:.8rem!important;
+  box-shadow:var(--tp-shadow)!important;
+}
+
+.statusbar{
+  padding:1rem!important;
+}
+
+.statuspill{
+  border-radius:.55rem!important;
+  font-weight:700!important;
+}
+
+.grid{
+  gap:.75rem!important;
+}
+
+.kpi{
+  padding:.9rem 1rem!important;
+}
+
+.kpi .lab{
+  color:var(--tp-muted)!important;
+  font-size:.7rem!important;
+  font-weight:700!important;
+  letter-spacing:.035em!important;
+  text-transform:uppercase!important;
+}
+
+.kpi .val{
+  color:var(--tp-ink)!important;
+  font-size:1.4rem!important;
+  font-weight:700!important;
+}
+
+.kpi .hint{
+  color:var(--tp-muted)!important;
+}
+
+.drop{
+  background:#fff!important;
+  border:1.5px dashed #cfd5df!important;
+  border-radius:.8rem!important;
+  box-shadow:var(--tp-shadow)!important;
+}
+
+.drop.drag{
+  border-color:var(--tp-accent)!important;
+  background:var(--tp-accent-soft)!important;
+}
+
+.drop h3{
+  color:#344054!important;
+}
+
+.drop p{
+  color:var(--tp-muted)!important;
+}
+
+.tabs{
+  gap:.25rem!important;
+  border-bottom:1px solid var(--tp-line)!important;
+}
+
+.tab{
+  border:0!important;
+  background:transparent!important;
+  color:#667085!important;
+  border-bottom:2px solid transparent!important;
+  border-radius:.5rem .5rem 0 0!important;
+  padding:.6rem .85rem!important;
+}
+
+.tab:hover{
+  color:var(--tp-accent)!important;
+  background:#fafafa!important;
+}
+
+.tab.active{
+  color:var(--tp-accent)!important;
+  border-bottom-color:var(--tp-accent)!important;
+  background:#fff!important;
+}
+
+.panel{
+  background:#fff!important;
+  border:1px solid var(--tp-line)!important;
+  border-radius:.8rem!important;
+  box-shadow:var(--tp-shadow)!important;
+}
+
+.toolbar{
+  border-bottom:1px solid var(--tp-line)!important;
+  background:#fff!important;
+}
+
+input,select{
+  border:1px solid #dde2ea!important;
+  border-radius:.55rem!important;
+}
+
+input:focus,select:focus{
+  outline:none!important;
+  border-color:#9ea8ff!important;
+  box-shadow:0 0 0 .2rem rgba(79,70,229,.10)!important;
+}
+
+table th{
+  background:#f8fafc!important;
+  color:#667085!important;
+}
+
+table th,table td{
+  border-color:var(--tp-line)!important;
+}
+
+.tag{
+  border-radius:999px!important;
+}
+
+.foot{
+  color:var(--tp-muted)!important;
+}
+
+@media(max-width:900px){
+  .topbar .wrap{margin:1rem!important}
+  .headrow{align-items:flex-start!important}
+}
+
+@media(max-width:600px){
+  main.wrap{padding:0 1rem 1.5rem!important}
+}
+</style>
+
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap headrow">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5m-5 4h3"/></svg></div>
+      <div>
+        <div class="app-kicker">Pilotage</div>
+        <h1>Télépaiements</h1>
+        <div class="sub">Contrôler et retrouver les encaissements reçus.</div>
+      </div>
+    </div>
+    <div class="actions">
+      <label class="filebtn">Importer un fichier<input id="fileInput" type="file" accept=".txt,.log,.xml" hidden></label>
+      <button id="exportBtn">Exporter CSV</button>
+      <button id="clearBtn">Effacer l’historique</button>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="statusCard" class="card statusbar">
+    <div>
+      <div id="statusPill" class="statuspill warn">Aucun flux chargé</div>
+      <div id="statusDetail" class="sub">Déposez un compte rendu OP@LE pour commencer.</div>
+    </div>
+    <div class="right"><strong id="flowDate">—</strong><div class="sub">Dernier flux analysé</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card kpi"><div class="lab">Encaissements</div><div class="val" id="kpiCount">0</div><div class="hint">dans le flux courant</div></div>
+    <div class="card kpi"><div class="lab">Montant reçu</div><div class="val" id="kpiAmount">0,00 €</div><div class="hint">total des télépaiements</div></div>
+    <div class="card kpi"><div class="lab">Anomalies</div><div class="val" id="kpiIssues">0</div><div class="hint">à contrôler</div></div>
+    <div class="card kpi"><div class="lab">Flux mémorisés</div><div class="val" id="kpiHistory">0</div><div class="hint">stockés localement</div></div>
+  </div>
+
+  <div id="dropZone" class="drop">
+    <h3>Glissez-déposez ici le compte rendu OP@LE</h3>
+    <p>Formats acceptés : .txt, .log, .xml — aucun fichier n’est envoyé sur Internet.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="payments">Télépaiements</button>
+    <button class="tab" data-tab="history">Historique des flux</button>
+    <button class="tab" data-tab="diag">Diagnostic</button>
+  </div>
+
+  <section id="payments" class="panel active card">
+    <div class="toolbar">
+      <strong id="tableCount" style="white-space:nowrap">0 télépaiement</strong>
+      <input id="search" type="search" placeholder="Rechercher un élève, payeur, créance, budget, objet…">
+      <select id="statusFilter"><option value="">Tous les états</option><option value="Intégré">Intégrés</option><option value="À contrôler">À contrôler</option></select>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Date paiement</th><th>Élève</th><th>Payeur</th><th>Objet</th><th>Créance</th><th>Budget</th><th>Encaissement</th><th class="right">Montant</th><th>État</th></tr></thead>
+        <tbody id="paymentsBody"></tbody>
+      </table>
+    </div>
+    <div id="paymentsEmpty" class="empty">Aucun télépaiement détecté dans le fichier chargé.</div>
+  </section>
+
+  <section id="history" class="panel card">
+    <div class="sectiontitle"><h2>Historique local des flux</h2><span class="muted">Conservé dans ce navigateur</span></div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Date du flux</th><th>UAJ</th><th>Encaissements</th><th class="right">Montant</th><th>Statut</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+    <div id="historyEmpty" class="empty">Aucun historique.</div>
+  </section>
+
+  <section id="diag" class="panel card">
+    <div class="sectiontitle"><h2>Diagnostic du flux</h2><span id="buildInfo" class="muted"></span></div>
+    <div class="diag" id="steps"></div>
+    <div style="padding:0 16px 16px"><details><summary style="cursor:pointer;font-weight:700;margin-bottom:10px">Voir le journal technique brut</summary><div id="rawLog" class="raw">Aucun journal chargé.</div></details></div>
+  </section>
+
+  <div class="foot">Application standalone — traitement 100 % local. Les données restent sur le poste utilisé.</div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmtEuro = n => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(Number(n||0));
+const fmtDate = s => {
+  if(!s) return '—';
+  const d = new Date(s);
+  return isNaN(d) ? s : new Intl.DateTimeFormat('fr-FR',{dateStyle:'short',timeStyle:'short'}).format(d);
+};
+let current = {payments:[], raw:'', meta:{}};
+
+function extractOne(block, tag){
+  const m = block.match(new RegExp('<'+tag+'>([\\s\\S]*?)<\\/'+tag+'>','i'));
+  return m ? m[1].trim() : '';
+}
+function parseLog(text){
+  const meta = {
+    build: (text.match(/Version du build:\s*([A-Z0-9.]+)/i)||[])[1] || '',
+    uaj: (text.match(/<uaj>\s*([^<]+?)\s*<\/uaj>/i)||[])[1] || '',
+    timestamp: (text.match(/<horodatage>\s*([^<]+?)\s*<\/horodatage>/i)||[])[1] || '',
+    reportedCount: Number((text.match(/Nombre d['’]encaissements\s*:\s*(\d+)/i)||[])[1] || 0),
+    valid: /flux est valide/i.test(text),
+    integrated: /flux est enregistr[ée] dans Opale avec succ[èe]s/i.test(text),
+    retrievalOk: /Etape 2\s*:\s*Termin[ée]e? avec succ[èe]s/i.test(text),
+    controlOk: /Etape 3\s*:\s*Termin[ée]e? avec succ[èe]s/i.test(text),
+    integrationOk: /Etape 4\s*:\s*Termin[ée]e? avec succ[èe]s/i.test(text)
+  };
+
+  const payments = [];
+
+  // 1) Lecture prioritaire des blocs XML <encaissement>...</encaissement>
+  const re = /<encaissement\b[^>]*>([\s\S]*?)<\/encaissement>/gi;
+  let m;
+  while((m = re.exec(text))){
+    const b = m[1];
+    const p = {
+      id: extractOne(b,'enc-id'),
+      budget: extractOne(b,'id-budget').trim(),
+      claim: extractOne(b,'num-creance'),
+      date: extractOne(b,'date-enc'),
+      object: extractOne(b,'objet'),
+      amount: Number(String(extractOne(b,'montant') || '0').replace(',','.')),
+      payer: extractOne(b,'tireur'),
+      student: extractOne(b,'eleve')
+    };
+    p.issue = !p.id || !p.claim || !p.student || !(p.amount > 0);
+    payments.push(p);
+  }
+
+  // 2) Repli : certains journaux ne conservent que les lignes de synthèse.
+  //    Exemple : Numéro créance : ..., Elève : ..., Montant : 69.30
+  if(!payments.length){
+    const lines = text.split(/\r?\n/);
+    lines.forEach(line => {
+      const sm = line.match(/Num[ée]ro cr[ée]ance\s*:\s*([^,]+),\s*El[èe]ve\s*:\s*([^,]+),\s*Montant\s*:\s*([0-9]+(?:[.,][0-9]+)?)/i);
+      if(sm){
+        payments.push({
+          id:'',
+          budget:'',
+          claim:sm[1].trim(),
+          date:'',
+          object:'',
+          amount:Number(sm[3].replace(',','.')),
+          payer:'',
+          student:sm[2].trim(),
+          issue:false,
+          partial:true
+        });
+      }
+    });
+  }
+
+  const duplicates = new Set();
+  const seen = new Set();
+  payments.forEach(p => {
+    if(p.id){
+      if(seen.has(p.id)) duplicates.add(p.id);
+      seen.add(p.id);
+    }
+  });
+  payments.forEach(p => { if(p.id && duplicates.has(p.id)) p.issue = true; });
+
+  const issues = [];
+  if(!meta.integrated) issues.push("Le flux n'est pas confirmé comme intégré dans OP@LE.");
+  if(meta.reportedCount && meta.reportedCount !== payments.length)
+    issues.push("Écart entre le nombre annoncé et le nombre d'encaissements détectés.");
+  if(duplicates.size) issues.push("Doublon(s) d'identifiant d'encaissement détecté(s).");
+  if(payments.some(p => p.issue))
+    issues.push("Au moins un encaissement contient des données incomplètes ou incohérentes.");
+
+  return {meta,payments,issues:[...new Set(issues)],raw:text};
+}
+function render(data){
+  current=data;
+  const total=data.payments.reduce((a,p)=>a+p.amount,0);
+  $('#kpiCount').textContent=data.payments.length;
+  $('#kpiAmount').textContent=fmtEuro(total);
+  $('#kpiIssues').textContent=data.issues.length;
+  $('#flowDate').textContent=fmtDate(data.meta.timestamp);
+  $('#buildInfo').textContent=data.meta.build ? 'Build '+data.meta.build : '';
+  const ok=data.meta.integrated && data.issues.length===0;
+  $('#statusPill').className='statuspill '+(ok?'ok':data.meta.integrated?'warn':'bad');
+  $('#statusPill').textContent=ok?'Flux intégré avec succès':data.meta.integrated?'Flux intégré — contrôle recommandé':'Flux non confirmé comme intégré';
+  $('#statusDetail').textContent=`${data.payments.length} encaissement(s) · ${fmtEuro(total)}${data.meta.uaj?' · UAJ '+data.meta.uaj:''}`;
+  $('#rawLog').textContent=data.raw || 'Aucun journal chargé.';
+  renderPayments();
+  renderSteps(data);
+}
+function renderPayments(){
+  const q = ($('#search').value || '').toLowerCase().trim();
+  const sf = $('#statusFilter').value || '';
+
+  const rows = current.payments.filter(p => {
+    const st = p.issue ? 'À contrôler' : 'Intégré';
+    const hay = [p.student,p.payer,p.claim,p.budget,p.object,p.id,p.date,p.amount]
+      .map(v => String(v ?? ''))
+      .join(' ')
+      .toLowerCase();
+    return (!q || hay.includes(q)) && (!sf || sf === st);
+  });
+
+  $('#tableCount').textContent =
+    rows.length + ' télépaiement' + (rows.length > 1 ? 's' : '');
+
+  const tbody = $('#paymentsBody');
+  tbody.replaceChildren();
+
+  rows.forEach(p => {
+    const tr = document.createElement('tr');
+
+    const values = [
+      fmtDate(p.date),
+      p.student || '—',
+      p.payer || '—',
+      p.object || '—',
+      p.claim || '—',
+      p.budget || '—',
+      p.id || '—'
+    ];
+
+    values.forEach((value, index) => {
+      const td = document.createElement('td');
+      td.textContent = value;
+      if(index === 1){
+        const strong = document.createElement('strong');
+        strong.textContent = value;
+        td.textContent = '';
+        td.appendChild(strong);
+      }
+      tr.appendChild(td);
+    });
+
+    const amount = document.createElement('td');
+    amount.className = 'amount';
+    amount.textContent = fmtEuro(p.amount);
+    tr.appendChild(amount);
+
+    const state = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'tag ' + (p.issue ? 'tag-warn' : 'tag-ok');
+    badge.textContent = p.issue ? 'À contrôler' : 'Intégré';
+    state.appendChild(badge);
+    tr.appendChild(state);
+
+    tbody.appendChild(tr);
+  });
+
+  $('#paymentsEmpty').style.display = rows.length ? 'none' : 'block';
+}
+function renderSteps(data){
+  const steps=[
+    ['Récupération du fichier XML',data.meta.retrievalOk],
+    ['Contrôle des règles de gestion',data.meta.valid || data.meta.controlOk],
+    ['Intégration des données dans OP@LE',data.meta.integrated || data.meta.integrationOk]
+  ];
+  $('#steps').innerHTML=steps.map(([label,ok])=>`
+    <div class="step"><div class="dot ${ok?'ok':'bad'}">${ok?'✓':'!'}</div>
+    <div><strong>${label}</strong><div class="sub">${ok?'Étape terminée avec succès':'Succès non confirmé dans le journal'}</div></div></div>`).join('')
+    +(data.issues.length?`<div style="margin-top:14px"><strong>Points à contrôler</strong><ul>${data.issues.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'');
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function saveHistory(data){
+  const h=JSON.parse(localStorage.getItem('opale_tp_history')||'[]');
+  const total=data.payments.reduce((a,p)=>a+p.amount,0);
+  const key=(data.meta.timestamp||'')+'|'+(data.meta.uaj||'')+'|'+data.payments.map(p=>p.id).join(',');
+  if(!h.some(x=>x.key===key)){
+    h.unshift({key,date:data.meta.timestamp||new Date().toISOString(),uaj:data.meta.uaj,count:data.payments.length,total,status:data.meta.integrated?'Intégré':'À contrôler'});
+    localStorage.setItem('opale_tp_history',JSON.stringify(h.slice(0,200)));
+  }
+  renderHistory();
+}
+function renderHistory(){
+  const h=JSON.parse(localStorage.getItem('opale_tp_history')||'[]');
+  $('#kpiHistory').textContent=h.length;
+  $('#historyBody').innerHTML=h.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.uaj||'—')}</td><td>${x.count}</td><td class="amount">${fmtEuro(x.total)}</td><td><span class="tag ${x.status==='Intégré'?'tag-ok':'tag-warn'}">${x.status}</span></td></tr>`).join('');
+  $('#historyEmpty').style.display=h.length?'none':'block';
+}
+function handleFile(file){
+  const r=new FileReader();
+  r.onload=()=>{const d=parseLog(r.result);render(d);saveHistory(d);};
+  r.readAsText(file,'utf-8');
+}
+$('#fileInput').addEventListener('change',e=>e.target.files[0]&&handleFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev=>$('#dropZone').addEventListener(ev,e=>{e.preventDefault();$('#dropZone').classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>$('#dropZone').addEventListener(ev,e=>{e.preventDefault();$('#dropZone').classList.remove('drag')}));
+$('#dropZone').addEventListener('drop',e=>e.dataTransfer.files[0]&&handleFile(e.dataTransfer.files[0]));
+$('#search').addEventListener('input',renderPayments);
+$('#statusFilter').addEventListener('change',renderPayments);
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');$('#'+b.dataset.tab).classList.add('active');
+}));
+$('#clearBtn').addEventListener('click',()=>{if(confirm("Effacer l'historique local des flux ?")){localStorage.removeItem('opale_tp_history');renderHistory();}});
+$('#exportBtn').addEventListener('click',()=>{
+  if(!current.payments.length) return alert('Aucun télépaiement à exporter.');
+  const rows=[['Date paiement','Élève','Payeur','Objet','Créance','Budget','Encaissement','Montant','État'],
+    ...current.payments.map(p=>[p.date,p.student,p.payer,p.object,p.claim,p.budget,p.id,p.amount.toFixed(2),p.issue?'À contrôler':'Intégré'])];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='telepaiements_opale.csv';a.click();URL.revokeObjectURL(a.href);
+});
+renderHistory();
+</script>
+</body>
+</html>

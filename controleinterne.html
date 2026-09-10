@@ -1,0 +1,4048 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CIMR - OP@LE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Version UMD 8.5.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.4;
+        }
+
+        body {
+            background: #f7f8fb;
+            padding-bottom: 6rem;
+        }
+
+        .page {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 .25rem 1rem rgba(0,0,0,.06);
+            padding: 1.5rem;
+        }
+
+        .wizard-step {
+            display: none;
+            margin-top: 0.75rem;
+        }
+
+        .import-status.ok {
+            color: #198754;
+        }
+
+        .import-status.error {
+            color: #dc3545;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.1rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .status-low {
+            background: #e5f8ec;
+            color: #1b7a3f;
+        }
+
+        .status-medium {
+            background: #fff4e0;
+            color: #a35b00;
+        }
+
+        .status-high {
+            background: #ffe5e5;
+            color: #a31919;
+        }
+
+        .chips .form-check {
+            margin-right: 0.5rem;
+        }
+
+        textarea[readonly] {
+            background-color: #f8f9fa;
+        }
+
+        .row-amazon {
+            border-left: 4px solid #ffb100;
+        }
+
+        .row-na {
+            background-color: #f8f9fa !important;
+            color: #6c757d;
+        }
+
+        #exportOutput {
+            font-size: 0.75rem;
+        }
+
+        .small-muted { color: #6c757d; font-size: .875rem; }
+        .shadow-soft { box-shadow: 0 .25rem 1rem rgba(0,0,0,.06) !important; }
+</style>
+
+<style id="eple-tools-home-theme">
+  :root{
+    --page-bg:#f7f8fb;
+    --ink:#172033;
+    --muted:#6c7587;
+    --line:#e7eaf0;
+    --accent:#475569;
+    --accent-soft:#f1f3f6;
+    --panel-shadow:0 .25rem 1rem rgba(15,23,42,.045);
+  }
+
+  body{
+    background:var(--page-bg);
+    color:var(--ink);
+    padding-bottom:6rem;
+  }
+
+  .container{
+    max-width:none;
+  }
+
+  .page{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:.85rem;
+    box-shadow:var(--panel-shadow);
+    padding:1.5rem;
+  }
+
+  .small-muted,
+  .text-muted,
+  .form-text{
+    color:var(--muted)!important;
+  }
+
+  .app-header{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+  }
+
+  .app-logo{
+    width:43px;
+    height:43px;
+    flex:0 0 43px;
+    display:grid;
+    place-items:center;
+    border-radius:.7rem;
+    background:color-mix(in srgb,var(--accent) 10%,white);
+    color:var(--accent);
+  }
+
+  .app-logo svg{
+    width:22px;
+    height:22px;
+    stroke-width:1.8;
+  }
+
+  .app-kicker{
+    font-size:.66rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--accent);
+    margin-bottom:.15rem;
+  }
+
+  .app-title{
+    font-size:1.15rem;
+    font-weight:700;
+    letter-spacing:-.015em;
+    margin:0;
+  }
+
+  .app-subtitle{
+    font-size:.76rem;
+    color:var(--muted);
+    margin:.2rem 0 0;
+  }
+
+  .nav-tabs{
+    border-bottom:1px solid var(--line);
+    gap:.25rem;
+  }
+
+  .nav-tabs .nav-link{
+    border:0;
+    border-bottom:2px solid transparent;
+    color:#667085;
+    background:transparent;
+    border-radius:.5rem .5rem 0 0;
+    font-size:.88rem;
+    font-weight:600;
+    padding:.6rem .85rem;
+  }
+
+  .nav-tabs .nav-link:hover{
+    color:var(--accent);
+    background:#f8fafc;
+  }
+
+  .nav-tabs .nav-link.active{
+    color:var(--accent);
+    background:#fff;
+    border-bottom-color:var(--accent);
+  }
+
+  .accordion-item,
+  section.border,
+  .card{
+    border:1px solid var(--line)!important;
+    border-radius:.8rem!important;
+    overflow:hidden;
+    box-shadow:none!important;
+  }
+
+  .accordion-item + .accordion-item{
+    margin-top:.65rem;
+  }
+
+  .accordion-button{
+    font-size:.88rem;
+    font-weight:650;
+    color:#344054;
+    background:#fff;
+  }
+
+  .accordion-button:not(.collapsed){
+    color:var(--accent);
+    background:#f8fafc;
+    box-shadow:inset 0 -1px 0 var(--line);
+  }
+
+  .accordion-button:focus{
+    box-shadow:0 0 0 .2rem rgba(71,85,105,.10);
+  }
+
+  .card-header{
+    background:#f8fafc!important;
+    border-bottom:1px solid var(--line);
+    color:#344054;
+    font-size:.86rem;
+  }
+
+  .form-control,
+  .form-select{
+    border-color:#dde2ea;
+    border-radius:.55rem;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#94a3b8;
+    box-shadow:0 0 0 .2rem rgba(71,85,105,.10);
+  }
+
+  .btn{
+    border-radius:.55rem;
+  }
+
+  .btn-primary{
+    --bs-btn-bg:#475569;
+    --bs-btn-border-color:#475569;
+    --bs-btn-hover-bg:#334155;
+    --bs-btn-hover-border-color:#334155;
+    --bs-btn-active-bg:#334155;
+    --bs-btn-active-border-color:#334155;
+  }
+
+  .btn-outline-primary{
+    --bs-btn-color:#475569;
+    --bs-btn-border-color:#94a3b8;
+    --bs-btn-hover-bg:#475569;
+    --bs-btn-hover-border-color:#475569;
+    --bs-btn-active-bg:#475569;
+    --bs-btn-active-border-color:#475569;
+  }
+
+  .progress{
+    background:#edf0f5;
+    border-radius:999px;
+  }
+
+  .progress-bar{
+    background:#475569;
+  }
+
+  .table{
+    --bs-table-striped-bg:#fafbfc;
+    --bs-table-hover-bg:#f7f8fb;
+    font-size:.84rem;
+  }
+
+  .table-light,
+  thead.table-light,
+  .table thead{
+    --bs-table-bg:#f8fafc;
+  }
+
+  .table th{
+    color:#475467;
+    font-weight:650;
+  }
+
+  .sticky-bottom{
+    border-top:1px solid var(--line)!important;
+    box-shadow:0 -.25rem 1rem rgba(15,23,42,.045)!important;
+  }
+
+  #exportOutput{
+    border-color:var(--line);
+    background:#f8fafc;
+  }
+
+  @media(max-width:767.98px){
+    .app-header{align-items:flex-start}
+    .app-title{font-size:1.05rem}
+  }
+</style>
+
+</head>
+<body>
+<div class="container py-4">
+    <div class="page shadow-soft">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+            <div class="app-header">
+                <div class="app-logo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 5H5v14h14V9"/>
+                        <path d="M9 3h8l4 4-9 9-5 1 1-5 9-9"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="app-kicker">Contrôle</div>
+                    <h1 class="app-title">Contrôle interne</h1>
+                    <p class="app-subtitle">Échantillons, vérifications et suivi des anomalies.</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#collapseImport">Importer DP</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('tab-historique-btn').click(); window.scrollTo({top:0,behavior:'smooth'});">Historique</button>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-saisie-btn" data-bs-toggle="tab"
+                        data-bs-target="#tab-saisie" type="button" role="tab">
+                    Saisie d’une fiche
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-historique-btn" data-bs-toggle="tab"
+                        data-bs-target="#tab-historique" type="button" role="tab">
+                    Historique des contrôles
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-risk-tab" data-bs-toggle="tab"
+                        data-bs-target="#tab-risk" type="button" role="tab">
+                    Pilotage & risques
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Onglet Saisie -->
+            <div class="tab-pane fade show active" id="tab-saisie" role="tabpanel">
+
+                <!-- Accordéon Import / Plan de contrôle -->
+                <div class="accordion mb-3" id="accordionDP">
+
+                    <!-- Import DP -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingImport">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseImport" aria-expanded="true" aria-controls="collapseImport">
+                                Import de la liste des DP (OP@LE – YGCDAHM / YGCDA1QS .xlsx)
+                            </button>
+                        </h2>
+                        <div id="collapseImport" class="accordion-collapse collapse show"
+                             aria-labelledby="headingImport" data-bs-parent="#accordionDP">
+                            <div class="accordion-body">
+                                <section>
+                                    <div class="mb-3">
+                                        <label for="dpFileInput" class="form-label">Fichier d’export YGCDAHM / YGCDA1QS (XLSX) :</label>
+                                        <input type="file" class="form-control form-control-sm" id="dpFileInput" accept=".xlsx,.xls">
+                                        <div class="form-text">
+                                            Le fichier doit contenir au moins : <strong>Classe</strong>, <strong>n°</strong>, <strong>ss-n°</strong>,
+                                            <strong>Fournisseur</strong>, <strong>Montant TTC</strong>, <strong>Objet</strong>.
+                                        </div>
+                                        <div id="dpImportStatus" class="small mt-1 import-status"></div>
+                                    </div>
+
+                                    <div class="mb-1">
+                                        <label for="dpSelect" class="form-label">Sélectionner un DP importé :</label>
+                                        <select id="dpSelect" class="form-select form-select-sm">
+                                            <option value="">-- Aucun DP sélectionné --</option>
+                                        </select>
+                                        <div class="form-text">
+                                            La sélection d’un DP remplit automatiquement « Fournisseur », « Montant engagé » et « Nature de l’achat ».
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan de contrôle -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingPlan">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapsePlan" aria-expanded="false" aria-controls="collapsePlan">
+                                Plan de contrôle par tirage aléatoire
+                            </button>
+                        </h2>
+                        <div id="collapsePlan" class="accordion-collapse collapse"
+                             aria-labelledby="headingPlan" data-bs-parent="#accordionDP">
+                            <div class="accordion-body">
+                                <section>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-6">
+                                            <label for="samplePeriod" class="form-label">Période scolaire</label>
+                                            <select id="samplePeriod" class="form-select form-select-sm">
+                                                <option value="Période 1">Période 1</option>
+                                                <option value="Période 2">Période 2</option>
+                                                <option value="Période 3">Période 3</option>
+                                                <option value="Période 4">Période 4</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 d-flex align-items-end">
+                                            <div class="d-grid gap-2 w-100">
+                                                <button type="button" id="btnGenerateSample" class="btn btn-sm btn-primary">
+                                                    Générer ~10 DP à contrôler
+                                                </button>
+                                                <button type="button" id="btnReloadSample" class="btn btn-sm btn-outline-secondary">
+                                                    Recharger dernier tirage
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mb-2">
+                                        Le tirage aléatoire est mémorisé (navigateur + cookie).
+                                        En cliquant sur « Contrôler cet DP », la fiche est pré-positionnée en « tirage aléatoire »,
+                                        la ligne passe en statut « en cours » et l’accordéon se ferme.
+                                    </p>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped align-middle mb-0" id="sampleTable">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>DP</th>
+                                                <th>Fournisseur</th>
+                                                <th>Montant TTC</th>
+                                                <th>Statut</th>
+                                                <th style="width: 1%; white-space: nowrap;">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr><td colspan="5" class="text-muted small">Aucun tirage enregistré pour cette période.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire wizard -->
+                <form id="ficheForm">
+                    <section class="border rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h2 class="h6 mb-0">Fiche de contrôle – <span id="wizardProgressText">Étape 1 / 9<</span></h2>
+                            <span class="badge text-bg-light small">Suivi pas à pas</span>
+                        </div>
+
+                        <!-- Progression -->
+                        <div class="mb-3">
+                            <div class="progress" style="height: 0.6rem;">
+                                <div class="progress-bar" id="wizardProgressFill" role="progressbar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 1 -->
+                        <div class="wizard-step" data-step="1">
+                            <h3 class="h6 mb-3">Étape 1 – Identification du dossier contrôlé</h3>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="ficheNumber" class="form-label">N° de fiche</label>
+                                    <input type="text" class="form-control form-control-sm" id="ficheNumber"
+                                           placeholder="AAAA-MM-JJ-0001">
+                                    <div class="form-text small">
+                                        Par défaut : date du jour + compteur, ex. <code>2026-01-05-0001</code>.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="controlDate" class="form-label">Date du contrôle</label>
+                                    <input type="date" class="form-control form-control-sm" id="controlDate">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="controllerName" class="form-label">Contrôleur</label>
+                                    <input type="text" class="form-control form-control-sm" id="controllerName" placeholder="Nom et prénom">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="serviceName" class="form-label">Service concerné</label>
+                                    <input type="text" class="form-control form-control-sm" id="serviceName" placeholder="Intendance, Administration...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="supplier" class="form-label">Fournisseur</label>
+                                    <input type="text" class="form-control form-control-sm" id="supplier">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="purchaseNature" class="form-label">Nature de l’achat</label>
+                                    <input type="text" class="form-control form-control-sm" id="purchaseNature" placeholder="Objet / type de dépense">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="amountEngaged" class="form-label">Montant engagé</label>
+                                    <input type="number" step="0.01" class="form-control form-control-sm" id="amountEngaged">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="amountInvoiced" class="form-label">Montant facturé</label>
+                                    <input type="number" step="0.01" class="form-control form-control-sm" id="amountInvoiced">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Type d’achat</label>
+                                    <div class="chips d-flex flex-wrap">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="purchaseType" value="Amazon" id="purchaseTypeAmazon">
+                                            <label class="form-check-label" for="purchaseTypeAmazon"><i class="bi bi-cart-fill me-1 text-warning"></i>Amazon</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="purchaseType" value="Local" id="purchaseTypeLocal">
+                                            <label class="form-check-label" for="purchaseTypeLocal">Fournisseur local / régional</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="purchaseType" value="Autre" id="purchaseTypeAutre">
+                                            <label class="form-check-label" for="purchaseTypeAutre">Autre</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 2 -->
+                        <div class="wizard-step" data-step="2">
+                            <h3 class="h6 mb-3">Étape 2 – Contexte et sélection</h3>
+                            <div class="mb-3">
+                                <label class="form-label">Motif de sélection</label>
+                                <div class="chips d-flex flex-wrap">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="selectionReason"
+                                               value="aleatoire" id="selAlea">
+                                        <label class="form-check-label" for="selAlea"><i class="bi bi-shuffle me-1"></i>Tirage aléatoire</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="selectionReason"
+                                               value="risque" id="selRisque">
+                                        <label class="form-check-label" for="selRisque">Analyse de risques</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="selectionReason"
+                                               value="anomalie" id="selAnomalie">
+                                        <label class="form-check-label" for="selAnomalie">Anomalie signalée</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="selectionReason"
+                                               value="autre" id="selAutre">
+                                        <label class="form-check-label" for="selAutre">Autre</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="budgetPeriod" class="form-label">Période budgétaire concernée</label>
+                                <select id="budgetPeriod" class="form-select form-select-sm">
+                                    <option value="">-- Choisir une période --</option>
+                                    <option value="Période 1">Période 1 (T1)</option>
+                                    <option value="Période 2">Période 2 (T2)</option>
+                                    <option value="Période 3">Période 3 (T3)</option>
+                                    <option value="Période 4">Période 4 (T4)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Étape 3 -->
+                        <div class="wizard-step" data-step="3">
+                            <h3 class="h6 mb-3">Étape 3 – Vérifications effectuées</h3>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered align-middle">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th>Point de contrôle</th>
+                                        <th>Oui</th>
+                                        <th>Non</th>
+                                        <th>Partiel</th>
+                                        <th>N/A</th>
+                                        <th>Observations</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>Concordance DP / facture finale</td>
+                                        <td class="text-center"><input type="radio" name="check_dp_facture" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_dp_facture" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_dp_facture" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_dp_facture" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Facture conforme et complète</td>
+                                        <td class="text-center"><input type="radio" name="check_facture" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_facture" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_facture" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_facture" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr id="row_exception">
+                                        <td>Procédure d’exception respectée (si Amazon)</td>
+                                        <td class="text-center"><input type="radio" name="check_exception" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_exception" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_exception" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_exception" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Justificatifs présents et lisibles</td>
+                                        <td class="text-center"><input type="radio" name="check_justificatifs" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_justificatifs" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_justificatifs" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_justificatifs" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Traçabilité des retours / avoirs</td>
+                                        <td class="text-center"><input type="radio" name="check_avoirs" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_avoirs" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_avoirs" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_avoirs" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Paiement conforme aux règles</td>
+                                        <td class="text-center"><input type="radio" name="check_paiement" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_paiement" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_paiement" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_paiement" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Choix du fournisseur objectivé</td>
+                                        <td class="text-center"><input type="radio" name="check_fournisseur" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_fournisseur" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_fournisseur" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_fournisseur" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Délai de traitement cohérent</td>
+                                        <td class="text-center"><input type="radio" name="check_delai" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_delai" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_delai" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_delai" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Correction d’anomalies antérieures</td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="oui"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="non"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="partiel"></td>
+                                        <td class="text-center"><input type="radio" name="check_anomalies" value="na"></td>
+                                        <td><input type="text" id="obs_anomalies" class="form-control form-control-sm"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Étape 4 -->
+                        <div class="wizard-step" data-step="4">
+                            <h3 class="h6 mb-3">Étape 4 – Constat global</h3>
+                            <div class="mb-3">
+                                <label for="globalSummary" class="form-label">Synthèse du contrôleur</label>
+                                <textarea id="globalSummary" class="form-control form-control-sm"
+                                          placeholder="Faits marquants, analyse, contexte, éléments de risque..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Étape 5 -->
+                        <div class="wizard-step" data-step="5">
+                            <h3 class="h6 mb-3">Étape 5 – Classement du dossier</h3>
+                            <div class="mb-3">
+                                <label class="form-label">Résultat global</label>
+                                <div class="chips d-flex flex-wrap">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="globalResult" value="conforme"
+                                               id="resConforme">
+                                        <label class="form-check-label" for="resConforme">Conforme</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="globalResult" value="reserve"
+                                               id="resReserve">
+                                        <label class="form-check-label" for="resReserve">Conforme avec réserve(s)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="globalResult" value="non_conforme"
+                                               id="resNonConforme">
+                                        <label class="form-check-label" for="resNonConforme">Non conforme</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="globalIssues" class="form-label">Nature des réserves / non-conformités</label>
+                                <textarea id="globalIssues" class="form-control form-control-sm"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Étape 6 -->
+                        <div class="wizard-step" data-step="6">
+                            <h3 class="h6 mb-3">Étape 6 – Score de contrôle et recommandations</h3>
+                            <p class="small text-muted">
+                                Le score est calculé automatiquement à partir des réponses de l’étape 3, selon une grille pondérée :
+                                <strong>Oui = 3</strong>, <strong>Partiel = 1</strong>, <strong>Non = 0</strong>, avec un poids plus élevé
+                                pour les points de contrôle critiques (concordance DP/facture, facture, paiement, procédure d’exception).
+                                La ligne « Procédure d’exception » est ignorée si l’achat n’est pas Amazon.
+                            </p>
+                            <div class="mb-2">
+                                <span class="badge bg-light text-dark border small" id="scoreSummary">
+                                    Score non calculé
+                                </span>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label mb-1">Niveau de risque</label>
+                                <div id="riskLevelDisplay"></div>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label mb-1">Actions correctives suggérées</label>
+                                <div id="recommendedActions" class="small"></div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 7 -->
+                        <div class="wizard-step" data-step="7">
+                            <h3 class="h6 mb-3">Étape 7 – Actions correctives et suivi</h3>
+                            <div class="mb-3">
+                                <label for="actionsPlanned" class="form-label">Actions à mettre en œuvre</label>
+                                <textarea id="actionsPlanned" class="form-control form-control-sm"></textarea>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="actionOwner" class="form-label">Responsable</label>
+                                    <input type="text" id="actionOwner" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="actionDueDate" class="form-label">Échéance</label>
+                                    <input type="date" id="actionDueDate" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="actionFollowUp" class="form-label">Suivi</label>
+                                    <select id="actionFollowUp" class="form-select form-select-sm">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="realise">Réalisé</option>
+                                        <option value="encours">En cours</option>
+                                        <option value="non_realise">Non réalisé</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 8 -->
+                        <div class="wizard-step" data-step="8">
+                            <h3 class="h6 mb-3">Étape 8 – Décision finale</h3>
+                            <div class="mb-3">
+                                <label class="form-label">Décision du contrôleur</label>
+                                <div class="chips d-flex flex-wrap">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="finalDecision"
+                                               value="suivi_simple" id="decSuivi">
+                                        <label class="form-check-label" for="decSuivi">Suivi simple</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="finalDecision"
+                                               value="action_obligatoire" id="decAction">
+                                        <label class="form-check-label" for="decAction">Action corrective obligatoire</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="finalDecision"
+                                               value="recontrole" id="decRecontrole">
+                                        <label class="form-check-label" for="decRecontrole">Recontrôle prioritaire</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="finalComment" class="form-label">Commentaire complémentaire</label>
+                                <textarea id="finalComment" class="form-control form-control-sm"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Étape 9 -->
+                        <div class="wizard-step" data-step="9">
+                            <h3 class="h6 mb-3">Étape 9 – Validation, archivage</h3>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="validatorController" class="form-label">Contrôleur (nom / visa)</label>
+                                    <input type="text" id="validatorController" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="validatorSG" class="form-label">Visa du Secrétaire général (si nécessaire)</label>
+                                    <input type="text" id="validatorSG" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="archiveLocation" class="form-label">Lieu d’archivage</label>
+                                    <input type="text" id="archiveLocation" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="archiveDuration" class="form-label">Durée de conservation</label>
+                                    <input type="text" id="archiveDuration" class="form-control form-control-sm"
+                                           placeholder="Ex : 5 ans">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation wizard -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" id="wizardPrev" class="btn btn-sm btn-outline-secondary">
+                                Étape précédente
+                            </button>
+                            <button type="button" id="wizardNext" class="btn btn-sm btn-primary">
+                                Étape suivante
+                            </button>
+                        </div>
+                    </section>
+                </form>
+            </div>
+
+            <!-- Onglet Historique -->
+            <div class="tab-pane fade" id="tab-historique" role="tabpanel">
+                <section class="border rounded p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="h6 mb-0">Historique des contrôles enregistrés</h2>
+                        <div class="d-flex gap-2">
+                            <button type="button" id="btnRefreshHistory" class="btn btn-sm btn-outline-secondary">
+                                Rafraîchir
+                            </button>
+                            <button type="button" id="btnDownloadHistory" class="btn btn-sm btn-primary">
+                                Télécharger l’historique (JSON)
+                            </button>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        Les enregistrements sont stockés dans le navigateur (localStorage) et recopiés dans un cookie.
+                        Seule la dernière version de chaque contrôle est affichée. Le bouton « Versions » permet d’afficher l’historique.
+                    </p>
+
+                    <!-- Import historique JSON -->
+                    <div class="mb-3">
+                        <label for="historyFileInput" class="form-label small">Importer un historique JSON :</label>
+                        <input type="file" id="historyFileInput" class="form-control form-control-sm" accept=".json,application/json">
+                        <div class="form-text small">
+                            Utiliser un fichier généré par « Télécharger l’historique (JSON) » ou par un export compatible.
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle" id="historyTable">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Date contrôle</th>
+                                <th>N° fiche</th>
+                                <th>DP</th>
+                                <th>Fournisseur</th>
+                                <th>Montant engagé</th>
+                                <th>Score</th>
+                                <th>Niveau de risque</th>
+                                <th>Décision</th>
+                                <th>Versions</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Onglet Pilotage & risques -->
+            <div class="tab-pane fade" id="tab-risk" role="tabpanel">
+                <div class="row g-3 mt-2">
+
+                    <!-- Plan d’action -->
+                    <div class="col-12">
+                        <div class="card shadow-soft">
+                            <div class="card-header bg-light fw-semibold">
+                                Plan d’action (suivi des fiches)
+                            </div>
+                            <div class="card-body">
+
+                                <div class="small mb-2">
+                                    <span class="badge bg-secondary">Nouveau</span>
+                                    <span class="badge bg-warning text-dark">À faire</span>
+                                    <span class="badge bg-info text-dark">En cours</span>
+                                    <span class="badge bg-success">Fait</span>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle" id="actionPlanTable">
+                                        <thead>
+                                        <tr>
+                                            <th>Fiche</th>
+                                            <th>DP</th>
+                                            <th>Action</th>
+                                            <th>Responsable</th>
+                                            <th>Échéance</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-3">
+
+                    <!-- Radar -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-soft">
+                            <div class="card-header bg-light fw-semibold">
+                                Maîtrise des risques (Radar)
+                            </div>
+                            <div class="card-body" style="height: 320px;">
+                                <canvas id="riskRadarChart"></canvas>
+                                <div class="small text-muted mt-2">
+                                    Échelle 1 → 4 : Minimal → Optimisé.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+
+                <!-- Matrice des risques -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-soft">
+                            <div class="card-header bg-light fw-semibold">
+                                Matrice des risques (probabilité / impact)
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted mb-2">
+                                    La matrice croise la <strong>probabilité</strong> (colonnes) et l’<strong>impact</strong> (lignes) des dossiers,
+                                    sur 5 niveaux : Nul/Rare → Très élevé.
+                                </p>
+                                <div class="table-responsive">
+                                    <table class="table table-sm text-center align-middle table-bordered mb-0" id="riskMatrixTable">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th scope="col" style="width: 16%;"></th>
+                                            <th scope="col">Nul / Rare</th>
+                                            <th scope="col">Faible / peu probable</th>
+                                            <th scope="col">Moyenne / possible</th>
+                                            <th scope="col">Élevée / probable</th>
+                                            <th scope="col">Très élevée / certaine</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row" class="text-start">Impact très fort / très élevé</th>
+                                            <td id="rm_0_0" class="bg-warning" data-toggle="tooltip"></td>
+                                            <td id="rm_0_1" data-toggle="tooltip"></td>
+                                            <td id="rm_0_2" data-toggle="tooltip"></td>
+                                            <td id="rm_0_3" data-toggle="tooltip"></td>
+                                            <td id="rm_0_4" data-toggle="tooltip"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Impact fort / élevé</th>
+                                            <td id="rm_1_0" data-toggle="tooltip"></td>
+                                            <td id="rm_1_1" data-toggle="tooltip"></td>
+                                            <td id="rm_1_2" data-toggle="tooltip"></td>
+                                            <td id="rm_1_3" data-toggle="tooltip"></td>
+                                            <td id="rm_1_4" data-toggle="tooltip"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Impact moyen</th>
+                                            <td id="rm_2_0" data-toggle="tooltip"></td>
+                                            <td id="rm_2_1" data-toggle="tooltip"></td>
+                                            <td id="rm_2_2" data-toggle="tooltip"></td>
+                                            <td id="rm_2_3" data-toggle="tooltip"></td>
+                                            <td id="rm_2_4" data-toggle="tooltip"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Impact faible</th>
+                                            <td id="rm_3_0" data-toggle="tooltip"></td>
+                                            <td id="rm_3_1" data-toggle="tooltip"></td>
+                                            <td id="rm_3_2" data-toggle="tooltip"></td>
+                                            <td id="rm_3_3" data-toggle="tooltip"></td>
+                                            <td id="rm_3_4" data-toggle="tooltip"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Impact nul / très faible</th>
+                                            <td id="rm_4_0" data-toggle="tooltip"></td>
+                                            <td id="rm_4_1" data-toggle="tooltip"></td>
+                                            <td id="rm_4_2" data-toggle="tooltip"></td>
+                                            <td id="rm_4_3" data-toggle="tooltip"></td>
+                                            <td id="rm_4_4" data-toggle="tooltip"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="small text-muted mt-2 mb-0">
+                                    Couleurs indicatives : vert (zone maîtrisée), jaune (vigilance), rouge (prioritaire).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- BARRE D’ACTIONS PERMANENTE -->
+<div class="sticky-bottom bg-white border-top py-2 shadow-soft">
+    <div class="container">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <button type="button" id="btnSaveControl" class="btn btn-success btn-sm">
+                <i class="bi bi-check2-circle me-1"></i> Enregistrer
+            </button>
+            <button type="button" id="btnSaveDraft" class="btn btn-warning btn-sm d-none">
+                <i class="bi bi-save me-1"></i> Sauvegarde
+            </button>
+            <button type="button" id="btnExportJson" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-filetype-json me-1"></i> Export JSON
+            </button>
+            <button type="button" id="btnExportWordSimple" class="btn btn-outline-primary btn-sm">
+                Plan d’action (simplifié) – Word
+            </button>
+            <button type="button" id="btnExportWordDetail" class="btn btn-outline-primary btn-sm">
+                Rapport complet – Word
+            </button>
+            <span class="ms-auto small text-muted">
+                Dernier export (JSON brut) :
+            </span>
+        </div>
+        <textarea id="exportOutput" class="form-control form-control-sm mt-2" rows="2" readonly></textarea>
+        <footer class="text-center">
+            <small id="app-version"></small>
+        </footer>
+        
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script>
+/**
+ * Audit Op@le - Contrôle interne / audit chaine de dépense
+ * Basé sur exports Op@le : YGCDAHM, YGCDA1QS
+ *
+ * @version 0.1.1
+ * @author Yann Bogdanovic
+ * @description
+ *  - Outil OP@LE pour contrôle interne
+ */
+	const APP_VERSION = "CIMR OP@LE - 0.1.1";
+	window.addEventListener("DOMContentLoaded", () => {
+		const el = document.getElementById("app-version");
+		if (el) el.textContent = APP_VERSION;
+	});
+
+    // =========================
+    // Variables globales
+    // =========================
+    let dpData = [];
+    let currentEjLabel = "";
+    let controlsHistory = [];
+    let samplesHistory = [];
+    const STORAGE_KEY = "fiche_controle_dp_list_v2";
+    const COOKIE_NAME = "fiche_controle_dp_v2";
+    const SAMPLE_KEY = "fiche_controle_dp_samples";
+    const SAMPLE_COOKIE = "fiche_controle_dp_samples";
+    const FORM_DRAFT_KEY = "fiche_controle_dp_current_draft_v1";
+    const TOTAL_STEPS = 9;
+    let currentStep = 1;
+
+    let lastScoreInfo = {
+        total: 0,
+        maxPossible: 0,
+        riskCode: null,
+        riskText: "",
+        ratio: 0
+    };
+
+    let formDirty = false;
+    let autoSaveTimer = null;
+    let riskRadarChart = null;
+
+    // =========================
+    // Utilitaires
+    // =========================
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for(let i=0;i < ca.length;i++) {
+            let c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length,c.length));
+        }
+        return null;
+    }
+
+    function getTodayString() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    // =========================
+    // Wizard
+    // =========================
+    const wizardSteps = document.querySelectorAll('.wizard-step');
+    const wizardProgressFill = document.getElementById('wizardProgressFill');
+    const wizardProgressText = document.getElementById('wizardProgressText');
+    const wizardPrev = document.getElementById('wizardPrev');
+    const wizardNext = document.getElementById('wizardNext');
+
+    function showStep(step) {
+        currentStep = step;
+        wizardSteps.forEach(st => {
+            st.style.display = (Number(st.dataset.step) === step) ? 'block' : 'none';
+        });
+        const percent = Math.round((step / TOTAL_STEPS) * 100);
+        wizardProgressFill.style.width = percent + "%";
+        wizardProgressText.textContent = "Étape " + step + " / " + TOTAL_STEPS;
+
+        wizardPrev.disabled = (step === 1);
+        wizardNext.textContent = (step === TOTAL_STEPS) ? "Fin du contrôle" : "Étape suivante";
+    }
+
+    wizardPrev.addEventListener('click', () => {
+        if (currentStep > 1) showStep(currentStep - 1);
+    });
+    wizardNext.addEventListener('click', () => {
+        if (currentStep < TOTAL_STEPS) showStep(currentStep + 1);
+    });
+
+    // =========================
+    // Import XLSX YGCDAHM / YGCDA1QS
+    // =========================
+    const fileInput = document.getElementById('dpFileInput');
+    const dpSelect = document.getElementById('dpSelect');
+    const dpImportStatus = document.getElementById('dpImportStatus');
+
+    fileInput.addEventListener('change', handleDPFileImport);
+    dpSelect.addEventListener('change', handleDPSelection);
+
+    function handleDPFileImport(event) {
+        const file = event.target.files[0];
+        dpData = [];
+        dpSelect.innerHTML = '<option value="">-- Aucun DP sélectionné --</option>';
+        dpImportStatus.textContent = '';
+        dpImportStatus.className = 'small mt-1 import-status';
+
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[firstSheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+                parseYGCDAHM_XLSX(rows);
+                renderSampleTable();
+            } catch (err) {
+                dpImportStatus.textContent = 'Erreur lors de la lecture du fichier : ' + err.message;
+                dpImportStatus.classList.add('error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function monthToSchoolPeriod(monthIndex) {
+        // monthIndex = 0 (janvier) .. 11 (décembre)
+        const m = monthIndex + 1;
+        if (m >= 1 && m <= 3) return "Période 1";   // T1
+        if (m >= 4 && m <= 6) return "Période 2";   // T2
+        if (m >= 7 && m <= 9) return "Période 3";   // T3
+        if (m >= 10 && m <= 12) return "Période 4"; // T4
+        return null;
+    }
+
+    function detectDateColumn(rows) {
+        if (!rows || rows.length === 0) return null;
+        const firstRow = rows[0];
+        const candidateNames = ["Date DP", "Date de la DP", "Date", "Date DP "];
+
+        // 1. Essai sur les noms "classiques"
+        for (const name of candidateNames) {
+            if (Object.prototype.hasOwnProperty.call(firstRow, name)) {
+                return name;
+            }
+        }
+        // 2. Sinon, premier champ contenant "date"
+        for (const key of Object.keys(firstRow)) {
+            const lower = key.toLowerCase();
+            if (lower.includes("date")) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    function parseExcelDate(value) {
+        if (!value) return null;
+
+        // Si c’est déjà un objet Date
+        if (value instanceof Date) {
+            return isNaN(value.getTime()) ? null : value;
+        }
+
+        // Si c’est un nombre (date Excel en n° de série), à adapter si besoin
+        if (typeof value === "number") {
+            // Option simple : laisser tomber pour l’instant
+            // (XLSX peut déjà renvoyer des Date selon les options)
+            return null;
+        }
+
+        if (typeof value === "string") {
+            const trimmed = value.trim();
+            if (!trimmed) return null;
+
+            // Tentative générique, suffisant si XLSX renvoie quelque chose de normalisé
+            const d = new Date(trimmed);
+            if (!isNaN(d.getTime())) {
+                return d;
+            }
+        }
+
+        return null;
+    }
+
+    function parseYGCDAHM_XLSX(rows) {
+        if (!rows || rows.length === 0) {
+            throw new Error("Fichier sans lignes de données.");
+        }
+        dpData = [];
+
+        const COL_CLASSE   = 'Classe';
+        const COL_NO       = 'n°';
+        const COL_SSNO     = 'ss-n°';
+        const COL_FOUR     = 'Fournisseur';
+        const COL_MNT_TTC  = 'Montant TTC';
+        const COL_OBJET    = 'Objet';
+
+        const dateColName = detectDateColumn(rows); // peut être null
+
+        rows.forEach(row => {
+            const classe      = row[COL_CLASSE]  ?? "";
+            const num         = row[COL_NO]      ?? "";
+            const ssnum       = row[COL_SSNO]    ?? "";
+            const fournisseur = row[COL_FOUR]    ?? "";
+            const libelle     = row[COL_OBJET]   ?? "";
+            const montantRaw  = row[COL_MNT_TTC] ?? "";
+
+            if (!classe && !num && !ssnum) return;
+
+            let dpLabel = "";
+            if (classe) dpLabel += classe + " ";
+            if (num) {
+                dpLabel += num;
+                if (ssnum) dpLabel += "/" + ssnum;
+            } else if (ssnum) {
+                dpLabel += ssnum;
+            }
+
+            let montant = "";
+            if (typeof montantRaw === "number") {
+                montant = montantRaw.toString();
+            } else if (typeof montantRaw === "string") {
+                montant = montantRaw.replace(',', '.');
+            }
+
+            let dpDate = null;
+            let period = null;
+            if (dateColName) {
+                const dateRaw = row[dateColName];
+                const d = parseExcelDate(dateRaw);
+                if (d) {
+                    dpDate = d;
+                    period = monthToSchoolPeriod(d.getMonth());
+                }
+            }
+
+            dpData.push({
+                dp: dpLabel.trim(),
+                fournisseur,
+                libelle,
+                montant,
+                date: dpDate ? dpDate.toISOString().slice(0, 10) : "",
+                period // ex : "Période 1/2/3/4" ou null
+            });
+        });
+
+        dpData.forEach((item, index) => {
+            const opt = document.createElement('option');
+            opt.value = index.toString();
+            const label = item.dp || "(DP sans libellé)";
+            opt.textContent = label + (item.libelle ? " – " + item.libelle : "");
+            dpSelect.appendChild(opt);
+        });
+
+        dpImportStatus.textContent = `Import réussi : ${dpData.length} lignes d’DP trouvées.`;
+        dpImportStatus.classList.add('ok');
+    }
+
+    function handleDPSelection() {
+        const idx = dpSelect.value;
+        if (idx === '') {
+            currentEjLabel = "";
+            return;
+        }
+        const item = dpData[Number(idx)];
+        if (!item) return;
+
+        currentEjLabel = item.dp || "";
+
+        const supplierField = document.getElementById('supplier');
+        const natureField = document.getElementById('purchaseNature');
+        const amountEngagedField = document.getElementById('amountEngaged');
+
+        if (item.fournisseur) supplierField.value = item.fournisseur;
+        if (item.libelle) natureField.value = item.libelle;
+        if (item.montant) {
+            const parsed = parseFloat(item.montant.replace(',', '.'));
+            if (!isNaN(parsed)) amountEngagedField.value = parsed.toFixed(2);
+        }
+
+        const supplierUpper = (supplierField.value || "").toUpperCase();
+        const ptAmazon = document.getElementById('purchaseTypeAmazon');
+        const ptLocal = document.getElementById('purchaseTypeLocal');
+
+        if (supplierUpper.includes("AMAZON")) {
+            if (ptAmazon) ptAmazon.checked = true;
+        } else if (supplierField.value.trim() !== "") {
+            if (ptLocal && !ptLocal.checked && !ptAmazon.checked) ptLocal.checked = true;
+        }
+
+        updateExceptionRowState();
+        recomputeScoreAndActions();
+    }
+
+    // =========================
+    // Tirage aléatoire d’DP
+    // =========================
+    const samplePeriodSelect = document.getElementById('samplePeriod');
+    const btnGenerateSample = document.getElementById('btnGenerateSample');
+    const btnReloadSample = document.getElementById('btnReloadSample');
+    const sampleTableBody = document.querySelector('#sampleTable tbody');
+
+    // Synchroniser la période budgétaire quand on coche "Tirage aléatoire"
+    document.addEventListener('DOMContentLoaded', () => {
+        const selAlea = document.getElementById('selAlea');
+        const budgetPeriodSelect = document.getElementById('budgetPeriod');
+        if (selAlea && budgetPeriodSelect && samplePeriodSelect) {
+            selAlea.addEventListener('change', () => {
+                if (selAlea.checked) {
+                    budgetPeriodSelect.value = samplePeriodSelect.value;
+                }
+            });
+        }
+    });
+
+    btnGenerateSample.addEventListener('click', generateSampleForPeriod);
+    btnReloadSample.addEventListener('click', renderSampleTable);
+    samplePeriodSelect.addEventListener('change', renderSampleTable);
+
+    function loadSamples() {
+        samplesHistory = [];
+        const ls = localStorage.getItem(SAMPLE_KEY);
+        if (ls) {
+            try { samplesHistory = JSON.parse(ls) || []; } catch(e) { samplesHistory = []; }
+        } else {
+            const ck = getCookie(SAMPLE_COOKIE);
+            if (ck) {
+                try { samplesHistory = JSON.parse(ck) || []; } catch(e) { samplesHistory = []; }
+            }
+        }
+    }
+
+    function saveSamples() {
+        try { localStorage.setItem(SAMPLE_KEY, JSON.stringify(samplesHistory)); } catch(e) {}
+        try { setCookie(SAMPLE_COOKIE, JSON.stringify(samplesHistory), 365); } catch(e) {}
+    }
+
+    function generateSampleForPeriod() {
+        if (!dpData || dpData.length === 0) {
+            alert("Veuillez d’abord importer un fichier YGCDAHM.");
+            return;
+        }
+        const period = samplePeriodSelect.value || "Période inconnue";
+
+        // On limite le tirage aux DP de la période (trimestre) correspondante
+        const candidates = [];
+        dpData.forEach((item, idx) => {
+            if (item.period === period) {
+                candidates.push(idx);
+            }
+        });
+
+        // Si aucune info de période n’est disponible dans le fichier, on revient à l’ensemble
+        const sourceIndexes = (candidates.length > 0) ? candidates : dpData.map((_, idx) => idx);
+
+        if (sourceIndexes.length === 0) {
+            alert("Aucun DP disponible pour cette période.");
+            return;
+        }
+
+        const n = Math.min(10, sourceIndexes.length);
+        const selectedIndexes = new Set();
+        while (selectedIndexes.size < n) {
+            const randomIdx = Math.floor(Math.random() * sourceIndexes.length);
+            const dpIdx = sourceIndexes[randomIdx];
+            selectedIndexes.add(dpIdx);
+        }
+
+        const items = Array.from(selectedIndexes).map(i => ({
+            dpIndex: i,
+            dpLabel: dpData[i].dp || "",
+            status: "not_started"
+        }));
+
+        samplesHistory.push({
+            period,
+            createdAt: new Date().toISOString(),
+            items
+        });
+
+        saveSamples();
+        renderSampleTable();
+    }
+
+    function getLatestSampleForPeriod(period) {
+        if (!samplesHistory || samplesHistory.length === 0) return null;
+        for (let i = samplesHistory.length - 1; i >= 0; i--) {
+            if (samplesHistory[i].period === period) return samplesHistory[i];
+        }
+        return null;
+    }
+
+    function markSampleStatus(period, dpIndex, newStatus) {
+        loadSamples();
+        for (let i = samplesHistory.length - 1; i >= 0; i--) {
+            const s = samplesHistory[i];
+            if (s.period === period && Array.isArray(s.items)) {
+                s.items.forEach(it => {
+                    if (it.dpIndex === dpIndex) it.status = newStatus;
+                });
+                break;
+            }
+        }
+        saveSamples();
+    }
+
+    function renderSampleTable() {
+        loadSamples();
+        loadHistory();
+        const period = samplePeriodSelect.value;
+        sampleTableBody.innerHTML = "";
+
+        const sample = getLatestSampleForPeriod(period);
+        if (!sample || !sample.items || sample.items.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 5;
+            td.className = "text-muted small";
+            td.textContent = "Aucun tirage enregistré pour cette période.";
+            tr.appendChild(td);
+            sampleTableBody.appendChild(tr);
+            return;
+        }
+
+        let changed = false;
+        sample.items.forEach(it => {
+            const dpLabel = dpData[it.dpIndex]?.dp || it.dpLabel || "";
+            if (dpLabel && it.status !== "done") {
+                const hasControl = controlsHistory.some(rec =>
+                    rec.versions &&
+                    rec.versions.length > 0 &&
+                    rec.versions[rec.versions.length - 1].payload &&
+                    rec.versions[rec.versions.length - 1].payload.dpLabel === dpLabel
+                );
+                if (hasControl) {
+                    it.status = "done";
+                    changed = true;
+                }
+            }
+        });
+        if (changed) saveSamples();
+
+        sample.items.forEach(it => {
+            const tr = document.createElement('tr');
+            const data = dpData[it.dpIndex] || { fournisseur: "", montant: "" };
+            const status = it.status || "not_started";
+            const isAmazon = (data.fournisseur || "").toUpperCase().includes("AMAZON");
+
+            if (status === "in_progress") tr.classList.add('table-warning');
+            else if (status === "done") tr.classList.add('table-success');
+            if (isAmazon) tr.classList.add('row-amazon');
+
+            const tdDP = document.createElement('td');
+            tdDP.innerHTML = (isAmazon ? '<i class="bi bi-cart-fill me-1 text-warning" title="Achat Amazon"></i>' : '') +
+                (it.dpLabel || '');
+            tr.appendChild(tdDP);
+
+            const tdF = document.createElement('td');
+            tdF.textContent = data.fournisseur || "";
+            tr.appendChild(tdF);
+
+            const tdM = document.createElement('td');
+            tdM.textContent = data.montant || "";
+            tr.appendChild(tdM);
+
+            const tdStatus = document.createElement('td');
+            tdStatus.className = "small";
+            if (status === "not_started") {
+                tdStatus.innerHTML = '<i class="bi bi-circle me-1 text-muted"></i>Non commencé';
+                tdStatus.classList.add("text-muted");
+            } else if (status === "in_progress") {
+                tdStatus.innerHTML = '<i class="bi bi-hourglass-split me-1 text-warning"></i>En cours';
+            } else if (status === "done") {
+                tdStatus.innerHTML = '<i class="bi bi-check-circle-fill me-1 text-success"></i>Contrôlé';
+            }
+            tr.appendChild(tdStatus);
+
+            const tdAction = document.createElement('td');
+            const btn = document.createElement('button');
+            btn.type = "button";
+            btn.className = "btn btn-sm btn-outline-primary";
+            btn.textContent = "Contrôler cet DP";
+            btn.dataset.dpIndex = it.dpIndex;
+            tdAction.appendChild(btn);
+            tr.appendChild(tdAction);
+
+            sampleTableBody.appendChild(tr);
+        });
+    }
+
+    sampleTableBody.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target.tagName === "BUTTON" && target.dataset.dpIndex !== undefined) {
+            const idx = Number(target.dataset.dpIndex);
+            if (!isNaN(idx)) {
+                dpSelect.value = idx.toString();
+                handleDPSelection();
+                currentEjLabel = dpData[idx]?.dp || "";
+
+                const aleaCheck = document.querySelector('input[name="selectionReason"][value="aleatoire"]');
+                if (aleaCheck) aleaCheck.checked = true;
+
+                const controlDateInput = document.getElementById('controlDate');
+                const ficheNumberInput = document.getElementById('ficheNumber');
+                if (!controlDateInput.value) controlDateInput.value = getTodayString();
+                if (!ficheNumberInput.value) ficheNumberInput.value = suggestFicheNumber();
+
+                const supplierField = document.getElementById('supplier');
+                const supplierUpper = (supplierField.value || "").toUpperCase();
+                const ptAmazon = document.getElementById('purchaseTypeAmazon');
+                const ptLocal = document.getElementById('purchaseTypeLocal');
+                if (supplierUpper.includes("AMAZON")) {
+                    if (ptAmazon) ptAmazon.checked = true;
+                } else if (supplierField.value.trim() !== "") {
+                    if (ptLocal && !ptLocal.checked && !ptAmazon.checked) ptLocal.checked = true;
+                }
+
+                updateExceptionRowState();
+                recomputeScoreAndActions();
+
+                const period = samplePeriodSelect.value || "Période inconnue";
+
+                // Si tirage aléatoire : on cale la période budgétaire sur la période de tirage
+                const budgetPeriodSelect = document.getElementById('budgetPeriod');
+                if (budgetPeriodSelect && period.startsWith("Période")) {
+                    budgetPeriodSelect.value = period;
+                }
+
+                markSampleStatus(period, idx, "in_progress");
+                renderSampleTable();
+
+                document.querySelectorAll('#accordionDP .accordion-collapse.show')
+                    .forEach(el => bootstrap.Collapse.getOrCreateInstance(el).hide());
+
+                const saisieTabBtn = document.getElementById('tab-saisie-btn');
+                const tab = new bootstrap.Tab(saisieTabBtn);
+                tab.show();
+                showStep(1);
+
+                ficheNumberInput.focus();
+            }
+        }
+    });
+
+    // =========================
+    // Score auto
+    // =========================
+    const scoreSummary = document.getElementById('scoreSummary');
+    const riskLevelDisplay = document.getElementById('riskLevelDisplay');
+    const recommendedActionsDiv = document.getElementById('recommendedActions');
+
+    function getCheckedValue(groupName) {
+        const elts = document.querySelectorAll(`input[name="${groupName}"]`);
+        for (const e of elts) {
+            if (e.checked) return e.value;
+        }
+        return null;
+    }
+
+    function isAmazonPurchase() {
+        const val = getCheckedValue("purchaseType");
+        return val === "Amazon";
+    }
+
+    function updateExceptionRowState() {
+        const tr = document.getElementById('row_exception');
+        const radios = document.querySelectorAll('input[name="check_exception"]');
+        if (!tr || !radios.length) return;
+        if (isAmazonPurchase()) {
+            tr.classList.remove('row-na');
+            radios.forEach(r => { r.disabled = false; });
+        } else {
+            tr.classList.add('row-na');
+            radios.forEach(r => {
+                r.checked = false;
+                r.disabled = true;
+            });
+        }
+    }
+
+    function recomputeScoreAndActions() {
+        updateExceptionRowState();
+
+        const groupsInfo = {
+            check_dp_facture: {
+                label: "Concordance DP / facture finale",
+                action: "Renforcer la concordance entre engagement et facture (mise à jour systématique des DP, contrôle des montants avant liquidation).",
+                weight: 2.0   // critique
+            },
+            check_facture: {
+                label: "Facture conforme et complète",
+                action: "Exiger une facture conforme et complète avant mise en paiement (compléter les pièces manquantes, rejeter les factures incomplètes).",
+                weight: 2.0   // critique
+            },
+            check_exception: {
+                label: "Procédure d’exception respectée (Amazon)",
+                action: "Formaliser et faire respecter la procédure d’exception Amazon (autorisation préalable, justification écrite, traçabilité des validations).",
+                weight: 2.0   // critique (quand applicable)
+            },
+            check_justificatifs: {
+                label: "Justificatifs présents et lisibles",
+                action: "Structurer le classement des justificatifs et vérifier systématiquement leur lisibilité (numérisation, nommage standardisé).",
+                weight: 1.5   // important
+            },
+            check_avoirs: {
+                label: "Traçabilité des retours / avoirs",
+                action: "Mettre en place un suivi consolidé des retours et avoirs (tableau de suivi, rapprochement avec les DP et factures).",
+                weight: 1.5   // important
+            },
+            check_paiement: {
+                label: "Paiement conforme aux règles",
+                action: "Sécuriser la chaîne de paiement (contrôles croisés, visa hiérarchique, séparation des tâches).",
+                weight: 2.0   // critique
+            },
+            check_fournisseur: {
+                label: "Choix du fournisseur objectivé",
+                action: "Repenser le choix du fournisseur (prioriser marchés publics et fournisseurs locaux lorsque c’est possible, formaliser la justification des achats).",
+                weight: 1.0   // contributif
+            },
+            check_delai: {
+                label: "Délai de traitement cohérent",
+                action: "Réduire les délais de traitement (organisation interne, suivi des relances, mise en place d’indicateurs de délai).",
+                weight: 1.0   // contributif
+            },
+            check_anomalies: {
+                label: "Correction d’anomalies antérieures",
+                action: "Suivre et clôturer les anomalies identifiées lors des contrôles précédents (plan d’actions, vérification de la mise en œuvre).",
+                weight: 1.2   // structurant
+            }
+        };
+
+        const groups = Object.keys(groupsInfo);
+        const isAmazon = isAmazonPurchase();
+        const resultsMap = {};
+        let total = 0;
+        let maxPossible = 0;
+
+
+        groups.forEach(name => {
+            if (name === "check_exception" && !isAmazon) {
+                return;
+            }
+
+            const info = groupsInfo[name];
+            const w = info.weight ?? 1; // poids par défaut = 1
+
+            // Chaque contrôle garde l’échelle 0 / 1 / 3, mais pondérée par w
+            maxPossible += 3 * w;
+
+            const v = getCheckedValue(name);
+            resultsMap[name] = v;
+            if (v === "oui") {
+                total += 3 * w;
+            } else if (v === "partiel") {
+                total += 1 * w;
+            }
+            // "non" ou "na" => 0
+        });
+
+        if (maxPossible === 0) {
+            lastScoreInfo = {
+                total: 0,
+                maxPossible: 0,
+                riskCode: null,
+                riskText: "",
+                ratio: 0
+            };
+            scoreSummary.textContent = "Score non calculé (aucun point applicable).";
+            riskLevelDisplay.innerHTML = "";
+            recommendedActionsDiv.innerHTML = "<span class='text-muted'>Compléter les points de contrôle de l’étape 3 pour générer un score et des recommandations.</span>";
+            return;
+        }
+
+        const ratio = total / maxPossible;
+        let riskCode, riskText, pillClass;
+
+        if (ratio >= 0.8) {
+            riskCode = "faible";
+            riskText = "Niveau de risque : faible – Dossier globalement maîtrisé, simple traçabilité.";
+            pillClass = "status-pill status-low";
+        } else if (ratio >= 0.5) {
+            riskCode = "modéré";
+            riskText = "Niveau de risque : modéré – Des améliorations sont nécessaires à court terme.";
+            pillClass = "status-pill status-medium";
+        } else {
+            riskCode = "élevé";
+            riskText = "Niveau de risque : élevé – Plan d’actions correctives structuré et recontrôle prioritaire.";
+            pillClass = "status-pill status-high";
+        }
+
+        lastScoreInfo = {
+            total,
+            maxPossible,
+            riskCode,
+            riskText,
+            ratio
+        };
+
+        scoreSummary.textContent = `Score total : ${total} / ${maxPossible}`;
+        riskLevelDisplay.innerHTML = `<span class="${pillClass}">${riskText}</span>`;
+
+        const recommended = [];
+
+        if (riskCode === "faible") {
+            recommended.push("Maintenir les pratiques actuelles et diffuser les bonnes pratiques au sein de l’équipe.");
+            recommended.push("Intégrer ce type de contrôle dans le plan de contrôle interne pour suivi périodique.");
+        } else if (riskCode === "modéré") {
+            recommended.push("Formaliser un plan d’actions correctives ciblé sur les points partiels ou non conformes.");
+            recommended.push("Rappeler les procédures internes et documenter les modes opératoires (DP, factures, retours).");
+            recommended.push("Programmer un recontrôle sur un échantillon similaire à moyen terme.");
+        } else {
+            recommended.push("Mettre en place un plan d’actions correctives formalisé, avec priorisation, responsables et échéances.");
+            recommended.push("Informer, le cas échéant, le chef d’établissement et l’agent comptable des anomalies majeures.");
+            recommended.push("Programmer un recontrôle prioritaire sur les achats de même nature (même fournisseur, même type de dépense).");
+        }
+
+        Object.entries(groupsInfo).forEach(([name, info]) => {
+            if (name === "check_exception" && !isAmazon) return;
+            const v = resultsMap[name];
+            if (v === "non") {
+                recommended.push(info.action + " (constat : non conforme).");
+            } else if (v === "partiel") {
+                recommended.push(info.action + " (constat : partiellement maîtrisé).");
+            }
+        });
+
+        if (recommended.length === 0) {
+            recommendedActionsDiv.innerHTML = "<span class='text-muted'>Aucune action corrective particulière n’est suggérée au vu des réponses. Vous pouvez néanmoins documenter le suivi à l’étape suivante.</span>";
+        } else {
+            recommendedActionsDiv.innerHTML = "<ul class='mb-0'>" +
+                recommended.map(a => "<li>" + a + "</li>").join("") +
+                "</ul>";
+        }
+    }
+
+    document.querySelectorAll('input[name^="check_"]').forEach(el => {
+        el.addEventListener('change', recomputeScoreAndActions);
+    });
+    document.querySelectorAll('input[name="purchaseType"]').forEach(el => {
+        el.addEventListener('change', () => {
+            updateExceptionRowState();
+            recomputeScoreAndActions();
+        });
+    });
+
+    // =========================
+    // Collecte / export JSON
+    // =========================
+    const btnExportJson = document.getElementById('btnExportJson');
+    const exportOutput = document.getElementById('exportOutput');
+
+    btnExportJson.addEventListener('click', exportAsJson);
+
+    function collectCurrentControlData() {
+        recomputeScoreAndActions();
+        const scoreInfo = lastScoreInfo;
+
+        const selectionReasons = [];
+        document.querySelectorAll('input[name="selectionReason"]:checked')
+            .forEach(c => selectionReasons.push(c.value));
+
+        const step3 = {
+            check_dp_facture_status: getCheckedValue('check_dp_facture'),
+            obs_dp_facture: document.getElementById('obs_dp_facture').value,
+            check_facture_status: getCheckedValue('check_facture'),
+            obs_facture: document.getElementById('obs_facture').value,
+            check_exception_status: getCheckedValue('check_exception'),
+            obs_exception: document.getElementById('obs_exception').value,
+            check_justificatifs_status: getCheckedValue('check_justificatifs'),
+            obs_justificatifs: document.getElementById('obs_justificatifs').value,
+            check_avoirs_status: getCheckedValue('check_avoirs'),
+            obs_avoirs: document.getElementById('obs_avoirs').value,
+            check_paiement_status: getCheckedValue('check_paiement'),
+            obs_paiement: document.getElementById('obs_paiement').value,
+            check_fournisseur_status: getCheckedValue('check_fournisseur'),
+            obs_fournisseur: document.getElementById('obs_fournisseur').value,
+            check_delai_status: getCheckedValue('check_delai'),
+            obs_delai: document.getElementById('obs_delai').value,
+            check_anomalies_status: getCheckedValue('check_anomalies'),
+            obs_anomalies: document.getElementById('obs_anomalies').value
+        };
+
+        return {
+            ficheNumber: document.getElementById('ficheNumber').value,
+            controlDate: document.getElementById('controlDate').value,
+            controllerName: document.getElementById('controllerName').value,
+            serviceName: document.getElementById('serviceName').value,
+            supplier: document.getElementById('supplier').value,
+            purchaseNature: document.getElementById('purchaseNature').value,
+            amountEngaged: document.getElementById('amountEngaged').value,
+            amountInvoiced: document.getElementById('amountInvoiced').value,
+            purchaseType: getCheckedValue('purchaseType'),
+            budgetPeriod: document.getElementById('budgetPeriod').value,
+            selectionReasons,
+            globalSummary: document.getElementById('globalSummary').value,
+            globalResult: getCheckedValue('globalResult'),
+            globalIssues: document.getElementById('globalIssues').value,
+            actionsPlanned: document.getElementById('actionsPlanned').value,
+            actionOwner: document.getElementById('actionOwner').value,
+            actionDueDate: document.getElementById('actionDueDate').value,
+            actionFollowUp: document.getElementById('actionFollowUp').value,
+            finalDecision: getCheckedValue('finalDecision'),
+            finalComment: document.getElementById('finalComment').value,
+            validatorController: document.getElementById('validatorController').value,
+            validatorSG: document.getElementById('validatorSG').value,
+            archiveLocation: document.getElementById('archiveLocation').value,
+            archiveDuration: document.getElementById('archiveDuration').value,
+            dpLabel: currentEjLabel,
+            scoreTotal: scoreInfo.total,
+            scoreMaxPossible: scoreInfo.maxPossible,
+            riskCode: scoreInfo.riskCode,
+            riskText: scoreInfo.riskText,
+            ratioScore: (scoreInfo.maxPossible > 0 ? scoreInfo.total / scoreInfo.maxPossible : null),
+            savedAt: new Date().toISOString(),
+            ...step3
+        };
+    }
+
+    function exportAsJson() {
+        const controlData = collectCurrentControlData();
+        exportOutput.value = JSON.stringify(controlData, null, 2);
+    }
+
+    // =========================
+    // Historique + versioning
+    // =========================
+    const btnSaveControl = document.getElementById('btnSaveControl');
+    const historyTableBody = document.querySelector('#historyTable tbody');
+    const btnRefreshHistory = document.getElementById('btnRefreshHistory');
+    const btnDownloadHistory = document.getElementById('btnDownloadHistory');
+    const historyFileInput = document.getElementById('historyFileInput');
+    const btnSaveDraft = document.getElementById('btnSaveDraft');
+
+    btnSaveControl.addEventListener('click', () => {
+        loadHistory();
+
+        const data = collectCurrentControlData();
+
+        if (!data.controlDate) data.controlDate = getTodayString();
+        if (!data.ficheNumber) data.ficheNumber = suggestFicheNumber();
+
+        data.ficheNumber = ensureUniqueFicheNumberForEj(data.ficheNumber, data.dpLabel);
+        document.getElementById('ficheNumber').value = data.ficheNumber;
+
+        data.savedAt = new Date().toISOString();
+
+        saveControlWithVersioning(data);
+        exportOutput.value = JSON.stringify(data, null, 2);
+
+        try { localStorage.removeItem(FORM_DRAFT_KEY); } catch(e) {}
+        formDirty = false;
+        if (btnSaveDraft) btnSaveDraft.classList.add('d-none');
+
+        alert("Contrôle enregistré (version mise à jour).");
+        renderHistoryTable();
+        renderSampleTable();
+        refreshRiskRadar();
+        refreshActionPlan();
+        refreshRiskMatrix();
+    });
+
+    function loadHistory() {
+        controlsHistory = [];
+        const ls = localStorage.getItem(STORAGE_KEY);
+        if (ls) {
+            try {
+                const parsed = JSON.parse(ls) || [];
+                controlsHistory = normalizeHistory(parsed);
+                return;
+            } catch (e) {
+                controlsHistory = [];
+            }
+        }
+        const ck = getCookie(COOKIE_NAME);
+        if (ck) {
+            try {
+                const parsed = JSON.parse(ck) || [];
+                controlsHistory = normalizeHistory(parsed);
+            } catch (e) {
+                controlsHistory = [];
+            }
+        }
+    }
+
+    function normalizeHistory(data) {
+        if (!Array.isArray(data)) return [];
+        if (data.length === 0) return [];
+        if (data[0] && data[0].versions) {
+            return data;
+        }
+        return data.map((item, idx) => ({
+            id: (item.ficheNumber || "ID" + idx) + "||" + (item.dpLabel || ""),
+            ficheNumber: item.ficheNumber || "",
+            dpLabel: item.dpLabel || "",
+            archived: item.archived || false,
+            versions: [{
+                changeType: "CREATION",
+                controllerName: item.controllerName || "",
+                savedAt: item.savedAt || new Date().toISOString(),
+                payload: item
+            }]
+        }));
+    }
+
+    function incrementFicheNumber(ficheNumber) {
+        const today = getTodayString();
+        let baseDate = today;
+        let index = 0;
+
+        const m = ficheNumber.match(/^(\d{4}-\d{2}-\d{2})-(\d{4})$/);
+        if (m) {
+            baseDate = m[1];
+            index = parseInt(m[2], 10);
+        } else {
+            const m2 = ficheNumber.match(/^(\d{4}-\d{2}-\d{2})$/);
+            if (m2) baseDate = m2[1];
+        }
+        index = index + 1;
+        return `${baseDate}-${String(index).padStart(4, '0')}`;
+    }
+
+    function ensureUniqueFicheNumberForEj(ficheNumber, dpLabel) {
+        loadHistory();
+
+        let fn = ficheNumber || (getTodayString() + "-0001");
+        const dp = dpLabel || "";
+
+        const existingForEj = controlsHistory.find(r => r.dpLabel === dp);
+        if (existingForEj) {
+            return existingForEj.ficheNumber || fn;
+        }
+
+        while (controlsHistory.some(r => r.ficheNumber === fn)) {
+            fn = incrementFicheNumber(fn);
+        }
+
+        return fn;
+    }
+
+    function persistHistory() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(controlsHistory)); } catch(e) {}
+        try { setCookie(COOKIE_NAME, JSON.stringify(controlsHistory), 365); } catch(e) {}
+    }
+
+    function saveControlWithVersioning(data) {
+        loadHistory();
+
+        const keyBase = (data.ficheNumber || "") + "||" + (data.dpLabel || "");
+        let record = controlsHistory.find(r => r.id === keyBase);
+
+        const changeType = record ? "MODIFICATION" : "CREATION";
+
+        if (!record) {
+            record = {
+                id: keyBase,
+                ficheNumber: data.ficheNumber || "",
+                dpLabel: data.dpLabel || "",
+                archived: false,
+                versions: []
+            };
+            controlsHistory.push(record);
+        }
+
+        record.ficheNumber = data.ficheNumber || record.ficheNumber;
+        record.dpLabel = data.dpLabel || record.dpLabel;
+
+        record.versions.push({
+            changeType,
+            controllerName: data.controllerName || "",
+            savedAt: data.savedAt || new Date().toISOString(),
+            payload: data
+        });
+
+        persistHistory();
+    }
+
+    function renderHistoryTable() {
+        loadHistory();
+        historyTableBody.innerHTML = "";
+
+        if (!controlsHistory || controlsHistory.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 10;
+            td.textContent = "Aucun contrôle enregistré.";
+            td.className = "text-muted small";
+            tr.appendChild(td);
+            historyTableBody.appendChild(tr);
+            return;
+        }
+
+        const sorted = [...controlsHistory].sort((a, b) => {
+            const av = a.versions[a.versions.length - 1].payload.savedAt || "";
+            const bv = b.versions[b.versions.length - 1].payload.savedAt || "";
+            return bv.localeCompare(av);
+        });
+
+        sorted.forEach(rec => {
+            const latest = rec.versions[rec.versions.length - 1].payload;
+
+            const tr = document.createElement('tr');
+            if (rec.archived) tr.classList.add('table-secondary');
+
+            const tdDate = document.createElement('td');
+            tdDate.textContent = latest.controlDate || "";
+            tr.appendChild(tdDate);
+
+            const tdFiche = document.createElement('td');
+            tdFiche.textContent = latest.ficheNumber || "";
+            tr.appendChild(tdFiche);
+
+            const tdEj = document.createElement('td');
+            tdEj.textContent = latest.dpLabel || "";
+            tr.appendChild(tdEj);
+
+            const tdFour = document.createElement('td');
+            tdFour.textContent = latest.supplier || "";
+            tr.appendChild(tdFour);
+
+            const tdMontant = document.createElement('td');
+            tdMontant.textContent = latest.amountEngaged || "";
+            tr.appendChild(tdMontant);
+
+            const tdScore = document.createElement('td');
+            if (latest.scoreTotal !== undefined && latest.scoreMaxPossible !== undefined && latest.scoreMaxPossible > 0) {
+                tdScore.textContent = latest.scoreTotal + " / " + latest.scoreMaxPossible;
+            } else tdScore.textContent = "";
+            tr.appendChild(tdScore);
+
+            const tdRisk = document.createElement('td');
+            tdRisk.textContent = latest.riskCode || "";
+            tr.appendChild(tdRisk);
+
+            const tdDecision = document.createElement('td');
+            tdDecision.textContent = latest.finalDecision || "";
+            tr.appendChild(tdDecision);
+
+            const tdVersions = document.createElement('td');
+            const btnVersions = document.createElement('button');
+            btnVersions.type = "button";
+            btnVersions.className = "btn btn-sm btn-outline-secondary";
+            btnVersions.textContent = "Versions";
+
+            const tooltipLines = rec.versions.map((v, idx) => {
+                const d = (v.savedAt || "").replace('T', ' ').substring(0, 19);
+                const ctrl = v.controllerName || "n.c.";
+                return `v${idx + 1} – ${v.changeType} – ${d} – ${ctrl}`;
+            });
+            btnVersions.setAttribute('data-bs-toggle', 'tooltip');
+            btnVersions.setAttribute('data-bs-placement', 'left');
+            btnVersions.setAttribute('title', tooltipLines.join('\n'));
+
+            tdVersions.appendChild(btnVersions);
+            tr.appendChild(tdVersions);
+
+            const tdActions = document.createElement('td');
+            const group = document.createElement('div');
+            group.className = "btn-group btn-group-sm";
+
+            const btnEdit = document.createElement('button');
+            btnEdit.type = "button";
+            btnEdit.className = "btn btn-outline-primary";
+            btnEdit.textContent = "Éditer";
+            btnEdit.dataset.recordId = rec.id;
+            btnEdit.dataset.action = "edit";
+
+            const btnArchive = document.createElement('button');
+            btnArchive.type = "button";
+            btnArchive.className = "btn btn-outline-secondary";
+            btnArchive.textContent = "Archiver";
+            btnArchive.dataset.recordId = rec.id;
+            btnArchive.dataset.action = "archive";
+
+            const btnDelete = document.createElement('button');
+            btnDelete.type = "button";
+            btnDelete.className = "btn btn-outline-danger";
+            btnDelete.textContent = "Supprimer";
+            btnDelete.dataset.recordId = rec.id;
+            btnDelete.dataset.action = "delete";
+
+            group.appendChild(btnEdit);
+            group.appendChild(btnArchive);
+            group.appendChild(btnDelete);
+            tdActions.appendChild(group);
+            tr.appendChild(tdActions);
+
+            historyTableBody.appendChild(tr);
+        });
+
+        enableTooltips();
+    }
+
+    function downloadHistoryJson() {
+        loadHistory();
+        const dataStr = JSON.stringify(controlsHistory, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "historique_controles_dp_versions.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    historyFileInput.addEventListener('change', handleHistoryImport);
+
+    function handleHistoryImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                const normalized = normalizeHistory(imported);
+                controlsHistory = normalized;
+                persistHistory();
+                renderHistoryTable();
+                renderSampleTable();
+                refreshRiskRadar();
+                refreshActionPlan();
+                refreshRiskMatrix();
+                alert("Historique importé avec succès.");
+            } catch (err) {
+                alert("Erreur lors de l’import de l’historique JSON : " + err.message);
+            }
+        };
+        reader.readAsText(file, 'utf-8');
+    }
+
+    btnRefreshHistory.addEventListener('click', () => {
+        renderHistoryTable();
+        refreshActionPlan();
+        refreshRiskRadar();
+        refreshRiskMatrix();
+    });
+    btnDownloadHistory.addEventListener('click', downloadHistoryJson);
+
+    historyTableBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const recordId = btn.dataset.recordId;
+        if (!action || !recordId) return;
+
+        if (action === "edit") {
+            editRecord(recordId);
+        } else if (action === "archive") {
+            archiveRecord(recordId);
+        } else if (action === "delete") {
+            deleteRecord(recordId);
+        }
+    });
+
+    function applyControlDataToForm(latest) {
+        document.getElementById('ficheNumber').value = latest.ficheNumber || "";
+        document.getElementById('controlDate').value = latest.controlDate || "";
+        document.getElementById('controllerName').value = latest.controllerName || "";
+        document.getElementById('serviceName').value = latest.serviceName || "";
+        document.getElementById('supplier').value = latest.supplier || "";
+        document.getElementById('purchaseNature').value = latest.purchaseNature || "";
+        document.getElementById('amountEngaged').value = latest.amountEngaged || "";
+        document.getElementById('amountInvoiced').value = latest.amountInvoiced || "";
+        document.getElementById('budgetPeriod').value = latest.budgetPeriod || "";
+        document.getElementById('globalSummary').value = latest.globalSummary || "";
+        document.getElementById('globalIssues').value = latest.globalIssues || "";
+        document.getElementById('actionsPlanned').value = latest.actionsPlanned || "";
+        document.getElementById('actionOwner').value = latest.actionOwner || "";
+        document.getElementById('actionDueDate').value = latest.actionDueDate || "";
+        document.getElementById('actionFollowUp').value = latest.actionFollowUp || "";
+        document.getElementById('finalComment').value = latest.finalComment || "";
+        document.getElementById('validatorController').value = latest.validatorController || "";
+        document.getElementById('validatorSG').value = latest.validatorSG || "";
+        document.getElementById('archiveLocation').value = latest.archiveLocation || "";
+        document.getElementById('archiveDuration').value = latest.archiveDuration || "";
+        currentEjLabel = latest.dpLabel || "";
+
+        document.querySelectorAll('input[name="purchaseType"]').forEach(r => r.checked = false);
+        if (latest.purchaseType) {
+            const r = document.querySelector(`input[name="purchaseType"][value="${latest.purchaseType}"]`);
+            if (r) r.checked = true;
+        }
+
+        document.querySelectorAll('input[name="selectionReason"]').forEach(c => c.checked = false);
+        if (Array.isArray(latest.selectionReasons)) {
+            latest.selectionReasons.forEach(val => {
+                const c = document.querySelector(`input[name="selectionReason"][value="${val}"]`);
+                if (c) c.checked = true;
+            });
+        }
+
+        document.querySelectorAll('input[name="globalResult"]').forEach(r => r.checked = false);
+        if (latest.globalResult) {
+            const r = document.querySelector(`input[name="globalResult"][value="${latest.globalResult}"]`);
+            if (r) r.checked = true;
+        }
+
+        document.querySelectorAll('input[name="finalDecision"]').forEach(r => r.checked = false);
+        if (latest.finalDecision) {
+            const r = document.querySelector(`input[name="finalDecision"][value="${latest.finalDecision}"]`);
+            if (r) r.checked = true;
+        }
+
+        const step3Keys = [
+            "dp_facture",
+            "facture",
+            "exception",
+            "justificatifs",
+            "avoirs",
+            "paiement",
+            "fournisseur",
+            "delai",
+            "anomalies"
+        ];
+        step3Keys.forEach(key => {
+            const statusField = latest[`check_${key}_status`];
+            const obsField = latest[`obs_${key}`];
+            const radios = document.querySelectorAll(`input[name="check_${key}"]`);
+            radios.forEach(r => r.checked = false);
+            if (statusField) {
+                const r = document.querySelector(`input[name="check_${key}"][value="${statusField}"]`);
+                if (r) r.checked = true;
+            }
+            const obsInput = document.getElementById(`obs_${key}`);
+            if (obsInput) obsInput.value = obsField || "";
+        });
+
+        updateExceptionRowState();
+        recomputeScoreAndActions();
+    }
+
+    function editRecord(recordId) {
+        loadHistory();
+        const rec = controlsHistory.find(r => r.id === recordId);
+        if (!rec || !rec.versions || rec.versions.length === 0) return;
+        const latest = rec.versions[rec.versions.length - 1].payload;
+
+        applyControlDataToForm(latest);
+
+        const saisieTabBtn = document.getElementById('tab-saisie-btn');
+        const tab = new bootstrap.Tab(saisieTabBtn);
+        tab.show();
+        showStep(1);
+        document.getElementById('ficheNumber').focus();
+
+        saveCurrentDraft(false);
+    }
+
+    function archiveRecord(recordId) {
+        loadHistory();
+        const rec = controlsHistory.find(r => r.id === recordId);
+        if (!rec) return;
+        rec.archived = true;
+        persistHistory();
+        renderHistoryTable();
+        refreshActionPlan();
+        refreshRiskRadar();
+        refreshRiskMatrix();
+    }
+
+    function deleteRecord(recordId) {
+        if (!confirm("Confirmez-vous la suppression définitive de cette fiche de contrôle ?")) {
+            return;
+        }
+        loadHistory();
+        controlsHistory = controlsHistory.filter(r => r.id !== recordId);
+        persistHistory();
+        renderHistoryTable();
+        renderSampleTable();
+        refreshActionPlan();
+        refreshRiskRadar();
+        refreshRiskMatrix();
+    }
+
+    function suggestFicheNumber() {
+        loadHistory();
+        const today = getTodayString();
+        const base = today + "-";
+        let maxIndex = 0;
+
+        controlsHistory.forEach(rec => {
+            const fn = rec.ficheNumber || "";
+            if (fn.startsWith(base)) {
+                const suffix = fn.slice(base.length);
+                const num = parseInt(suffix, 10);
+                if (!isNaN(num) && num > maxIndex) maxIndex = num;
+            }
+        });
+
+        const next = String(maxIndex + 1).padStart(4, '0');
+        return base + next;
+    }
+
+    function initDefaultFiche() {
+        const controlDateInput = document.getElementById('controlDate');
+        const ficheNumberInput = document.getElementById('ficheNumber');
+        const today = getTodayString();
+
+        if (!controlDateInput.value) controlDateInput.value = today;
+        if (!ficheNumberInput.value) ficheNumberInput.value = suggestFicheNumber();
+    }
+
+    // =========================
+    // Sauvegarde automatique brouillon
+    // =========================
+    function saveCurrentDraft(auto = false) {
+        const data = collectCurrentControlData();
+        data._isDraft = true;
+        data._draftSavedAt = new Date().toISOString();
+        try { localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(data)); } catch(e) {}
+        if (!auto && btnSaveDraft) {
+            formDirty = false;
+            btnSaveDraft.classList.add('d-none');
+        }
+    }
+
+    function loadCurrentDraft() {
+        const raw = localStorage.getItem(FORM_DRAFT_KEY);
+        if (!raw) return;
+        try {
+            const data = JSON.parse(raw);
+            if (!data || typeof data !== "object") return;
+            applyControlDataToForm(data);
+        } catch(e) {}
+    }
+
+    function setupFormAutoSave() {
+        const form = document.getElementById('ficheForm');
+        if (!form || !btnSaveDraft) return;
+
+        const markDirty = () => {
+            formDirty = true;
+            btnSaveDraft.classList.remove('d-none');
+            if (autoSaveTimer) clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                if (formDirty) {
+                    saveCurrentDraft(true);
+                }
+            }, 1000);
+        };
+
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            el.addEventListener('input', markDirty);
+            el.addEventListener('change', markDirty);
+        });
+
+        btnSaveDraft.addEventListener('click', () => {
+            saveCurrentDraft(false);
+        });
+    }
+
+    // =========================
+    // Radar risques
+    // =========================
+    function normalizeBudgetPeriodLabel(raw) {
+        if (!raw) return null;
+        const s = raw.toString().toLowerCase();
+
+        // Historique : textes libres type "Exercice 2026 – 1er trimestre", etc.
+        if (s.includes("période 1") || s.includes("periode 1") || s.includes("1er trimestre") || s.includes("t1")) {
+            return "Période 1";
+        }
+        if (s.includes("période 2") || s.includes("periode 2") || s.includes("2e trimestre") || s.includes("2ème trimestre") || s.includes("t2")) {
+            return "Période 2";
+        }
+        if (s.includes("période 3") || s.includes("periode 3") || s.includes("3e trimestre") || s.includes("3ème trimestre") || s.includes("t3")) {
+            return "Période 3";
+        }
+        if (s.includes("période 4") || s.includes("periode 4") || s.includes("4e trimestre") || s.includes("4ème trimestre") || s.includes("t4")) {
+            return "Période 4";
+        }
+        return null;
+    }
+
+    function computeRiskMaturityFromHistory() {
+        loadHistory();
+
+        if (!controlsHistory || controlsHistory.length === 0) {
+            return [0, 0, 0, 0, 0, 0];
+        }
+
+        const domains = [
+            { label: "Conformité budgétaire", fields: ["check_ej_facture_status","check_facture_status","check_paiement_status"] },
+            { label: "Traçabilité documentaire", fields: ["check_justificatifs_status","check_avoirs_status"] },
+            { label: "Procédures d’achats", fields: ["check_fournisseur_status","check_exception_status"] },
+            { label: "Qualité des justificatifs", fields: ["check_justificatifs_status"] },
+            { label: "Gestion retours / litiges", fields: ["check_avoirs_status","check_anomalies_status"] },
+            { label: "Sécurisation du processus", fields: ["check_delai_status","check_paiement_status"] }
+        ];
+
+        function statusToPoints(status) {
+            if (status === "oui") return 3;
+            if (status === "partiel") return 1;
+            if (status === "non") return 0;
+            return null;
+        }
+
+        const domainScores = domains.map(() => ({ score: 0, max: 0 }));
+
+        controlsHistory.forEach(rec => {
+            if (rec.archived) return;
+            if (!rec.versions || rec.versions.length === 0) return;
+
+            const latest = rec.versions[rec.versions.length - 1].payload || {};
+
+            domains.forEach((dom, idx) => {
+                dom.fields.forEach(f => {
+                    const pts = statusToPoints(latest[f]);
+                    if (pts === null) return;
+                    domainScores[idx].score += pts;
+                    domainScores[idx].max += 3;
+                });
+            });
+        });
+
+        // conversion 0..100% => 0..5
+        return domainScores.map(ds => {
+            if (ds.max === 0) return 0;
+            const ratio = ds.score / ds.max;
+
+            if (ratio >= 0.95) return 5;
+            if (ratio >= 0.80) return 4;
+            if (ratio >= 0.60) return 3;
+            if (ratio >= 0.40) return 2;
+            if (ratio >= 0.20) return 1;
+            return 0;
+        });
+    }
+
+    function normalizeBudgetPeriodLabel(raw) {
+        if (!raw) return null;
+        const s = raw.toString().toLowerCase();
+
+        // Libellés classiques ou anciens formats
+        if (s.includes("période 1") || s.includes("periode 1") || s.includes("1er trimestre") || s.includes("t1")) {
+            return "Période 1";
+        }
+        if (s.includes("période 2") || s.includes("periode 2") || s.includes("2e trimestre") || s.includes("2ème trimestre") || s.includes("t2")) {
+            return "Période 2";
+        }
+        if (s.includes("période 3") || s.includes("periode 3") || s.includes("3e trimestre") || s.includes("3ème trimestre") || s.includes("t3")) {
+            return "Période 3";
+        }
+        if (s.includes("période 4") || s.includes("periode 4") || s.includes("4e trimestre") || s.includes("4ème trimestre") || s.includes("t4")) {
+            return "Période 4";
+        }
+        return null;
+    }
+
+    function computeRiskMaturityByPeriod() {
+        loadHistory();
+
+        const result = {
+            "Période 1": [0, 0, 0, 0, 0, 0],
+            "Période 2": [0, 0, 0, 0, 0, 0],
+            "Période 3": [0, 0, 0, 0, 0, 0],
+            "Période 4": [0, 0, 0, 0, 0, 0]
+        };
+
+        if (!controlsHistory || controlsHistory.length === 0) {
+            return result;
+        }
+
+        const domains = [
+            { label: "Conformité budgétaire", fields: ["check_ej_facture_status","check_facture_status","check_paiement_status"] },
+            { label: "Traçabilité documentaire", fields: ["check_justificatifs_status","check_avoirs_status"] },
+            { label: "Procédures d’achats", fields: ["check_fournisseur_status","check_exception_status"] },
+            { label: "Qualité des justificatifs", fields: ["check_justificatifs_status"] },
+            { label: "Gestion retours / litiges", fields: ["check_avoirs_status","check_anomalies_status"] },
+            { label: "Sécurisation du processus", fields: ["check_delai_status","check_paiement_status"] }
+        ];
+
+        function statusToPoints(status) {
+            if (status === "oui") return 3;
+            if (status === "partiel") return 1;
+            if (status === "non") return 0;
+            return null;
+        }
+
+        // On veut des scores / max par période + axe
+        const sums = {
+            "Période 1": domains.map(() => ({ score: 0, max: 0 })),
+            "Période 2": domains.map(() => ({ score: 0, max: 0 })),
+            "Période 3": domains.map(() => ({ score: 0, max: 0 })),
+            "Période 4": domains.map(() => ({ score: 0, max: 0 }))
+        };
+
+        controlsHistory.forEach(rec => {
+            if (rec.archived) return;
+            if (!rec.versions || rec.versions.length === 0) return;
+
+            const latest = rec.versions[rec.versions.length - 1].payload || {};
+            const periodNorm = normalizeBudgetPeriodLabel(latest.budgetPeriod);
+            if (!periodNorm || !sums[periodNorm]) return;
+
+            domains.forEach((dom, idx) => {
+                dom.fields.forEach(f => {
+                    const pts = statusToPoints(latest[f]);
+                    if (pts === null) return;
+                    sums[periodNorm][idx].score += pts;
+                    sums[periodNorm][idx].max   += 3;
+                });
+            });
+        });
+
+        // Conversion 0..100% → 0..5 comme dans computeRiskMaturityFromHistory
+        Object.keys(sums).forEach(period => {
+            result[period] = sums[period].map(ds => {
+                if (ds.max === 0) return 0;
+                const ratio = ds.score / ds.max;
+
+                if (ratio >= 0.95) return 5;
+                if (ratio >= 0.80) return 4;
+                if (ratio >= 0.60) return 3;
+                if (ratio >= 0.40) return 2;
+                if (ratio >= 0.20) return 1;
+                return 0;
+            });
+        });
+
+        return result;
+    }
+
+    function refreshRiskRadar() {
+        const canvas = document.getElementById('riskRadarChart');
+        if (!canvas) return;
+
+        const labels = [
+            "Conformité budgétaire",
+            "Traçabilité documentaire",
+            "Procédures d’achats",
+            "Qualité des justificatifs",
+            "Gestion retours / litiges",
+            "Sécurisation du processus"
+        ];
+
+        if (riskRadarChart) riskRadarChart.destroy();
+
+        const perPeriod = computeRiskMaturityByPeriod();
+
+        const periodDefs = [
+            {
+                key: "Période 1",
+                label: "Période 1 (T1)",
+                bg: "rgba(54, 162, 235, 0.4)",
+                border: "rgba(54, 162, 235, 1)"
+            },
+            {
+                key: "Période 2",
+                label: "Période 2 (T2)",
+                bg: "rgba(255, 99, 132, 0.4)",
+                border: "rgba(255, 99, 132, 1)"
+            },
+            {
+                key: "Période 3",
+                label: "Période 3 (T3)",
+                bg: "rgba(255, 206, 86, 0.4)",
+                border: "rgba(255, 206, 86, 1)"
+            },
+            {
+                key: "Période 4",
+                label: "Période 4 (T4)",
+                bg: "rgba(75, 192, 192, 0.4)",
+                border: "rgba(75, 192, 192, 1)"
+            }
+        ];
+
+        const datasets = [];
+
+        periodDefs.forEach(def => {
+            const values = perPeriod[def.key] || [0, 0, 0, 0, 0, 0];
+            const hasData = values.some(v => v > 0);
+            if (!hasData) return; // on n’affiche pas les périodes sans données
+
+            datasets.push({
+                label: def.label,
+                data: values,
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: def.bg,
+                borderColor: def.border,
+                pointBackgroundColor: def.border
+            });
+        });
+
+        // Si aucune période exploitable, on retombe sur le radar global historique
+        if (datasets.length === 0) {
+            const values = computeRiskMaturityFromHistory();
+            datasets.push({
+                label: "Niveau de maîtrise (toutes périodes)",
+                data: values,
+                borderWidth: 2,
+                fill: true
+            });
+        }
+
+        riskRadarChart = new Chart(canvas, {
+            type: 'radar',
+            data: {
+                labels,
+                datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                },
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function describeAxisLevel(label, value) {
+        const niveau = value ?? 0;
+
+        if (niveau >= 4) {
+            return `L’axe « ${label} » présente un niveau de maîtrise élevé. Les pratiques sont stabilisées et peuvent servir de référence ou de support de diffusion de bonnes pratiques.`;
+        } else if (niveau >= 3) {
+            return `L’axe « ${label} » est globalement maîtrisé, avec quelques points d’amélioration ciblés. Une priorisation des actions de fiabilisation permettrait de sécuriser durablement cet axe.`;
+        } else if (niveau >= 2) {
+            return `L’axe « ${label} » est partiellement maîtrisé. Les audits font apparaître des écarts récurrents, qui nécessitent un plan d’actions structuré (procédures, rappels, contrôles renforcés).`;
+        } else if (niveau >= 1) {
+            return `L’axe « ${label} » apparaît fragile. Le dispositif est peu formalisé et la qualité d’exécution est très variable. Il convient de traiter cet axe en priorité dans le plan d’actions.`;
+        } else {
+            return `L’axe « ${label} » n’est pas suffisamment documenté ou maîtrisé pour l’instant. Une analyse complémentaire et des contrôles ciblés sont recommandés.`;
+        }
+    }
+
+    // =========================
+    // Matrice des risques 5×5
+    // =========================
+    function computeRiskMatrixFromHistory() {
+        loadHistory();
+
+        // 5 lignes (impact) x 5 colonnes (probabilité)
+        // Lignes (0 = impact très fort, 4 = impact nul)
+        // Colonnes (0 = prob nul, 4 = prob très élevée)
+        const matrix = [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ];
+
+        if (!controlsHistory || controlsHistory.length === 0) return matrix;
+
+        controlsHistory.forEach(rec => {
+            if (rec.archived) return;
+            if (!rec.versions || rec.versions.length === 0) return;
+            const latest = rec.versions[rec.versions.length - 1].payload || {};
+
+            // Ratio de score
+            let ratio = null;
+            if (typeof latest.ratioScore === "number") {
+                ratio = latest.ratioScore;
+            } else if (latest.scoreMaxPossible > 0) {
+                ratio = latest.scoreTotal / latest.scoreMaxPossible;
+            }
+
+            // Impact index (0 très fort / 4 nul)
+            let impactIdx = 3; // par défaut impact faible/moyen
+            if (latest.globalResult === "non_conforme") {
+                if (ratio !== null && ratio < 0.4) impactIdx = 0; // très fort
+                else impactIdx = 1;                               // fort
+            } else if (latest.globalResult === "reserve") {
+                if (ratio !== null && ratio < 0.6) impactIdx = 2; // moyen
+                else impactIdx = 3;                               // faible
+            } else { // conforme ou non renseigné
+                if (ratio !== null && ratio >= 0.9) impactIdx = 4; // nul
+                else impactIdx = 3;                                // faible
+            }
+
+            // Probabilité index (0 nul / 4 très élevée)
+            let probIdx = 2; // moyenne par défaut
+            if (ratio !== null) {
+                if (ratio >= 0.95) probIdx = 0;      // prob nul / rare
+                else if (ratio >= 0.8) probIdx = 1;  // faible
+                else if (ratio >= 0.6) probIdx = 2;  // moyenne
+                else if (ratio >= 0.4) probIdx = 3;  // élevée
+                else probIdx = 4;                    // très élevée
+            } else if (latest.riskCode) {
+                if (latest.riskCode === "faible") probIdx = 1;
+                else if (latest.riskCode === "modéré") probIdx = 2;
+                else if (latest.riskCode === "élevé") probIdx = 4;
+            }
+
+            if (impactIdx < 0 || impactIdx > 4 || probIdx < 0 || probIdx > 4) return;
+            matrix[impactIdx][probIdx] += 1;
+        });
+
+        return matrix;
+    }
+
+    function computeRiskMatrixBuckets() {
+        // 5 x 5, chaque cellule contient un tableau de numéros de fiches
+        const buckets = Array.from({ length: 5 }, () =>
+            Array.from({ length: 5 }, () => [])
+        );
+
+        loadHistory();
+        if (!controlsHistory || controlsHistory.length === 0) {
+            return buckets;
+        }
+
+        controlsHistory.forEach(rec => {
+            if (rec.archived) return;
+            if (!rec.versions || rec.versions.length === 0) return;
+
+            const latest = rec.versions[rec.versions.length - 1].payload || {};
+
+            // On reprend la même logique de classement que computeRiskMatrixFromHistory()
+            let ratio = null;
+            if (typeof latest.ratioScore === "number") {
+                ratio = latest.ratioScore;
+            } else if (latest.scoreMaxPossible > 0) {
+                ratio = latest.scoreTotal / latest.scoreMaxPossible;
+            }
+
+            // Impact (0 = très fort / très élevé, 4 = nul / très faible)
+            let impactIdx = 3;
+            if (latest.globalResult === "non_conforme") {
+                if (ratio !== null && ratio < 0.4) impactIdx = 0;
+                else impactIdx = 1;
+            } else if (latest.globalResult === "reserve") {
+                if (ratio !== null && ratio < 0.6) impactIdx = 2;
+                else impactIdx = 3;
+            } else {
+                if (ratio !== null && ratio >= 0.9) impactIdx = 4;
+                else impactIdx = 3;
+            }
+
+            // Probabilité (0 = nul / rare, 4 = très élevée)
+            let probIdx = 2;
+            if (ratio !== null) {
+                if (ratio >= 0.95) probIdx = 0;
+                else if (ratio >= 0.8) probIdx = 1;
+                else if (ratio >= 0.6) probIdx = 2;
+                else if (ratio >= 0.4) probIdx = 3;
+                else probIdx = 4;
+            } else if (latest.riskCode) {
+                if (latest.riskCode === "faible") probIdx = 1;
+                else if (latest.riskCode === "modéré") probIdx = 2;
+                else if (latest.riskCode === "élevé") probIdx = 4;
+            }
+
+            if (impactIdx < 0 || impactIdx > 4 || probIdx < 0 || probIdx > 4) return;
+
+            const fiche = latest.ficheNumber || "(sans n°)";
+            buckets[impactIdx][probIdx].push(fiche);
+        });
+
+        return buckets;
+    }
+
+    function refreshRiskMatrix() {
+        const matrix = computeRiskMatrixFromHistory();
+        const buckets = computeRiskMatrixBuckets();
+
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++) {
+                const cell = document.getElementById(`rm_${i}_${j}`);
+                if (!cell) continue;
+
+                const val = matrix[i][j];
+
+                // Affichage numérique
+                cell.textContent = val > 0 ? val : "";
+
+                // Reset des classes
+                cell.className = "text-center align-middle fw-semibold";
+
+                // Couleur en fonction de la sévérité
+                const severity = (4 - i) + j; // 0..8
+                if (severity <= 3) {
+                    cell.classList.add("bg-success");
+                } else if (severity <= 6) {
+                    cell.classList.add("bg-warning");
+                } else {
+                    cell.classList.add("bg-danger");
+                }
+
+                // Infobulle : références de fiches (bucket)
+                const list = (buckets[i] && buckets[i][j]) ? buckets[i][j] : [];
+                if (list.length > 0) {
+                    cell.title = "Fiches concernées : " + list.join(", ");
+                } else {
+                    cell.title = "Aucune fiche";
+                }
+            }
+        }
+    }
+
+    // =========================
+    // Plan d’action
+    // =========================
+    function deriveActionStatus(payload) {
+        const hasAction = (payload.actionsPlanned || "").trim().length > 0;
+        const follow = payload.actionFollowUp || "";
+
+        if (!hasAction) {
+            return { code: "new", label: "Nouveau", badgeClass: "bg-secondary" };
+        }
+        if (follow === "realise") {
+            return { code: "done", label: "Fait", badgeClass: "bg-success" };
+        }
+        if (follow === "encours") {
+            return { code: "progress", label: "En cours", badgeClass: "bg-info text-dark" };
+        }
+        if (follow === "non_realise") {
+            return { code: "todo", label: "À faire", badgeClass: "bg-warning text-dark" };
+        }
+        return { code: "todo", label: "À faire", badgeClass: "bg-warning text-dark" };
+    }
+
+    function refreshActionPlan() {
+        const tbody = document.querySelector("#actionPlanTable tbody");
+        if (!tbody) return;
+        loadHistory();
+        tbody.innerHTML = "";
+
+        if (!controlsHistory || controlsHistory.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 5;
+            td.className = "text-muted small";
+            td.textContent = "Aucune fiche enregistrée.";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+        }
+
+        controlsHistory.forEach(row => {
+            if (!row.versions || row.versions.length === 0) return;
+            const latest = row.versions[row.versions.length - 1].payload || {};
+            const stat = deriveActionStatus(latest);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${latest.ficheNumber || ""}</td>
+                <td>${latest.dpLabel || ""}</td>
+                <td>${(latest.actionsPlanned || "").replace(/\n/g, "<br>") || "-"}</td>
+                <td>${latest.actionOwner || "-"}</td>
+                <td>${latest.actionDueDate || "-"}</td>
+                <td><span class="badge ${stat.badgeClass}">${stat.label}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function collectActionPlanData() {
+        loadHistory();
+        const list = [];
+
+        controlsHistory.forEach(r => {
+            if (!r.versions || r.versions.length === 0) return;
+            const p = r.versions[r.versions.length - 1].payload;
+
+            list.push({
+                fiche: p.ficheNumber || "",
+                dp: p.dpLabel || "",
+                action: p.actionsPlanned || "",
+                owner: p.actionOwner || "",
+                dueDate: p.actionDueDate || "",
+                follow: p.actionFollowUp || "",
+                score: `${p.scoreTotal || 0}/${p.scoreMaxPossible || 0}`,
+                risk: p.riskCode || "",
+                summary: p.globalSummary || ""
+            });
+        });
+
+        return list;
+    }
+
+    // Construit une image PNG du radar (0 à 5) à partir de l’historique,
+    // avec intitulés lisibles et ratio 1:1 (carré), et une couleur par période.
+    function buildRiskRadarImageDataUrl() {
+        // Données par période
+        const perPeriod = computeRiskMaturityByPeriod();
+
+        const labels = [
+            "Conformité budgétaire",
+            "Traçabilité documentaire",
+            "Procédures d’achats",
+            "Qualité des justificatifs",
+            "Gestion retours / litiges",
+            "Sécurisation du processus"
+        ];
+
+        const periodDefs = [
+            {
+                key: "Période 1",
+                label: "Période 1 (T1)",
+                fill: "rgba(54, 162, 235, 0.25)",
+                stroke: "rgba(54, 162, 235, 1)"
+            },
+            {
+                key: "Période 2",
+                label: "Période 2 (T2)",
+                fill: "rgba(255, 99, 132, 0.25)",
+                stroke: "rgba(255, 99, 132, 1)"
+            },
+            {
+                key: "Période 3",
+                label: "Période 3 (T3)",
+                fill: "rgba(255, 206, 86, 0.25)",
+                stroke: "rgba(255, 206, 86, 1)"
+            },
+            {
+                key: "Période 4",
+                label: "Période 4 (T4)",
+                fill: "rgba(75, 192, 192, 0.25)",
+                stroke: "rgba(75, 192, 192, 1)"
+            }
+        ];
+
+        const size = 600;
+        const margin = 90;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+
+        const ctx = canvas.getContext("2d");
+
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const maxRadius = size / 2 - margin; // on garde de la place pour les labels
+        const maxValue = 5;                  // échelle 0 → 5
+        const axisCount = labels.length;     // 6
+
+        // Fond
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, size, size);
+
+        ctx.font = "13px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const gridColor = "#dddddd";
+        const axisColor = "#bbbbbb";
+        const tickColor = "#888888";
+
+        // ===== Maillage hexagonal (polygones concentriques) =====
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 1;
+
+        for (let level = 1; level <= maxValue; level++) {
+            const radius = (maxRadius * level) / maxValue;
+
+            ctx.beginPath();
+            for (let i = 0; i < axisCount; i++) {
+                const angle = -Math.PI / 2 + (2 * Math.PI * i) / axisCount;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            // Label d’échelle (1..5) sur le sommet supérieur
+            const lx = centerX;
+            const ly = centerY - radius;
+            ctx.fillStyle = tickColor;
+            ctx.fillText(String(level), lx, ly - 10);
+        }
+
+        // Label "0" au centre
+        ctx.fillStyle = tickColor;
+        ctx.fillText("0", centerX, centerY + 14);
+
+        // ===== Axes + labels =====
+        ctx.strokeStyle = axisColor;
+
+        for (let i = 0; i < axisCount; i++) {
+            const angle = -Math.PI / 2 + (2 * Math.PI * i) / axisCount;
+
+            // Axe
+            const ax = centerX + maxRadius * Math.cos(angle);
+            const ay = centerY + maxRadius * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(ax, ay);
+            ctx.stroke();
+
+            // Label
+            const labelRadius = maxRadius + 25;
+            const lx = centerX + labelRadius * Math.cos(angle);
+            const ly = centerY + labelRadius * Math.sin(angle);
+
+            let align = "center";
+            let baseline = "middle";
+
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+
+            if (cosA > 0.2) align = "left";
+            else if (cosA < -0.2) align = "right";
+            else align = "center";
+
+            if (sinA > 0.2) baseline = "top";
+            else if (sinA < -0.2) baseline = "bottom";
+            else baseline = "middle";
+
+            ctx.textAlign = align;
+            ctx.textBaseline = baseline;
+            ctx.fillStyle = "#333333";
+
+            drawWrappedText(ctx, labels[i], lx, ly, 140, 16);
+        }
+
+        // On repasse en mode "texte normal" pour la légende
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.font = "13px Arial";
+
+        // ===== Polygones par période =====
+        const periodsToDraw = periodDefs.filter(def => {
+            const vals = perPeriod && perPeriod[def.key];
+            if (!vals) return false;
+            return vals.some(v => typeof v === "number" && v > 0);
+        });
+
+        if (periodsToDraw.length === 0) {
+            // Fallback : si aucune période n’a de données,
+            // on garde le comportement historique (un seul radar global).
+            const values = computeRiskMaturityFromHistory();
+            ctx.beginPath();
+            for (let i = 0; i < axisCount; i++) {
+                const v = (values && typeof values[i] === "number") ? values[i] : 0;
+                const ratio = Math.max(0, Math.min(v / maxValue, 1));
+                const angle = -Math.PI / 2 + (2 * Math.PI * i) / axisCount;
+                const r = maxRadius * ratio;
+                const px = centerX + r * Math.cos(angle);
+                const py = centerY + r * Math.sin(angle);
+
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+
+            ctx.fillStyle = "rgba(54, 162, 235, 0.35)";
+            ctx.fill();
+            ctx.strokeStyle = "#1f4e79";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            return canvas.toDataURL("image/png");
+        }
+
+        // Polygone de chaque période
+        periodsToDraw.forEach(def => {
+            const values = perPeriod[def.key] || [];
+
+            ctx.beginPath();
+            for (let i = 0; i < axisCount; i++) {
+                const v = (values && typeof values[i] === "number") ? values[i] : 0;
+                const ratio = Math.max(0, Math.min(v / maxValue, 1)); // clamp 0..1
+                const angle = -Math.PI / 2 + (2 * Math.PI * i) / axisCount;
+                const r = maxRadius * ratio;
+                const px = centerX + r * Math.cos(angle);
+                const py = centerY + r * Math.sin(angle);
+
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+
+            ctx.fillStyle = def.fill;
+            ctx.strokeStyle = def.stroke;
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        });
+
+        // ===== Légende =====
+        const legendX = size - margin - 160;
+        let legendY = margin;
+
+        periodsToDraw.forEach(def => {
+            // carré de couleur
+            ctx.fillStyle = def.stroke;
+            ctx.fillRect(legendX, legendY, 14, 14);
+            ctx.strokeStyle = "#000000";
+            ctx.strokeRect(legendX, legendY, 14, 14);
+
+            // texte
+            ctx.fillStyle = "#333333";
+            ctx.fillText(def.label, legendX + 20, legendY + 7);
+
+            legendY += 22;
+        });
+
+        return canvas.toDataURL("image/png");
+    }
+
+    // Helper pour texte multi-lignes (si tu ne l’as pas déjà)
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(" ");
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            const testLine = currentLine + " " + words[i];
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        lines.push(currentLine);
+
+        const totalHeight = (lines.length - 1) * lineHeight;
+        let offsetY = y - totalHeight / 2;
+
+        lines.forEach(line => {
+            ctx.fillText(line, x, offsetY);
+            offsetY += lineHeight;
+        });
+    }
+
+    async function getRadarImage() {
+        return buildRiskRadarImageDataUrl();
+    }
+
+    // Construit une image PNG de la matrice de risques à partir des données calculées
+    // avec libellés des lignes (impact) et colonnes (probabilité).
+    function buildRiskMatrixImageDataUrl() {
+        const matrix = computeRiskMatrixFromHistory();
+
+        const rows = 5;
+        const cols = 5;
+        const cellSize = 60;
+        const borderWidth = 1;
+
+        // Marges pour les intitulés
+        const marginLeft = 170;   // pour labels d’impact (lignes)
+        const marginTop = 80;     // pour labels de probabilité (colonnes)
+        const marginRight = 20;
+        const marginBottom = 40;
+
+        const width = marginLeft + cols * cellSize + marginRight;
+        const height = marginTop + rows * cellSize + marginBottom;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+
+        // Style texte
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Fond
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+
+        // Libellés colonnes (probabilité)
+        const colLabels = [
+            "Nul / Rare",
+            "Faible / peu probable",
+            "Moyenne / possible",
+            "Élevée / probable",
+            "Très élevée / certaine"
+        ];
+
+        for (let j = 0; j < cols; j++) {
+            const xCenter = marginLeft + j * cellSize + cellSize / 2;
+            const yLabel = marginTop - 30;
+
+            ctx.fillStyle = "#333333";
+            drawWrappedText(ctx, colLabels[j], xCenter, yLabel, cellSize + 10, 14);
+        }
+
+        // Libellés lignes (impact) – centrés sur chaque ligne
+        const rowLabels = [
+            "Impact très fort / très élevé",
+            "Impact fort / élevé",
+            "Impact moyen",
+            "Impact faible",
+            "Impact nul / très faible"
+        ];
+
+        for (let i = 0; i < rows; i++) {
+            const yCenter = marginTop + i * cellSize + cellSize / 2;
+            const xLabel = marginLeft - 10;
+
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#333333";
+            drawWrappedText(ctx, rowLabels[i], xLabel, yCenter, marginLeft - 20, 14);
+        }
+
+        // Dessin des cases (données + couleurs)
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                const val = matrix[i][j];
+
+                // Même logique de sévérité que refreshRiskMatrix()
+                const severity = (4 - i) + j; // 0..8
+
+                let fillColor;
+                if (severity <= 3) {
+                    // zone "verte"
+                    fillColor = "#d1e7dd";
+                } else if (severity <= 6) {
+                    // zone "jaune"
+                    fillColor = "#fff3cd";
+                } else {
+                    // zone "rouge"
+                    fillColor = "#f8d7da";
+                }
+
+                const x = marginLeft + j * cellSize;
+                const y = marginTop + i * cellSize;
+
+                // Fond
+                ctx.fillStyle = fillColor;
+                ctx.fillRect(x, y, cellSize, cellSize);
+
+                // Bordure
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = borderWidth;
+                ctx.strokeRect(x, y, cellSize, cellSize);
+
+                // Valeur
+                if (val && val > 0) {
+                    ctx.fillStyle = "#000000";
+                    ctx.fillText(String(val), x + cellSize / 2, y + cellSize / 2);
+                }
+            }
+        }
+
+        // Titre des axes (optionnel mais utile)
+        ctx.save();
+        ctx.fillStyle = "#333333";
+        ctx.font = "13px Arial";
+
+        // Axe des colonnes (probabilité)
+        ctx.fillText(
+            "Probabilité",
+            marginLeft + (cols * cellSize) / 2,
+            marginTop - 55
+        );
+
+        // Axe des lignes (impact) – texte vertical
+        ctx.translate(30, marginTop + (rows * cellSize) / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("Impact", 0, 0);
+        ctx.restore();
+
+        return canvas.toDataURL("image/png");
+    }
+
+    // Utilisé par l’export Word détaillé
+    async function getMatrixImage() {
+        return buildRiskMatrixImageDataUrl();
+    }
+
+    async function exportWordSimple() {
+        const { Document, Packer, Paragraph, TextRun } = docx;
+        const data = collectActionPlanData();
+
+        const paragraphs = [
+            new Paragraph({
+                children: [new TextRun({ text: "Plan d’action simplifié", bold: true, size: 28 })]
+            }),
+            new Paragraph("")
+        ];
+
+        data.forEach(d => {
+            paragraphs.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `Fiche ${d.fiche} — DP ${d.dp}`, bold: true })
+                    ]
+                }),
+                new Paragraph(`Action : ${d.action || "-"}`),
+                new Paragraph(`Responsable : ${d.owner || "-"}`),
+                new Paragraph(`Date prévue : ${d.dueDate || "-"}`),
+                new Paragraph(`Statut : ${d.follow || "-"}`),
+                new Paragraph("")
+            );
+        });
+
+        const doc = new Document({ sections: [{ children: paragraphs }] });
+
+        const blob = await Packer.toBlob(doc);
+        downloadFile(blob, "plan_action_simplifie.docx");
+    }
+
+    function collectContextsFromHistory() {
+        const raw = localStorage.getItem("controlsHistory") || "[]";
+        let history = [];
+console.log(raw);
+        try {
+            history = JSON.parse(raw);
+        } catch (e) {
+            console.warn("Historique illisible");
+        }
+
+        return history
+            .map(h => (h.globalSummary || "").trim())
+            .filter(t => t.length > 0);
+    }
+
+    function synthesizeContexts(contexts) {
+        if (!contexts || contexts.length === 0) {
+            return "Aucun élément de contexte exploitable n’a été renseigné dans les fiches analysées.";
+        }
+
+        const counters = {
+            procedures: 0,
+            justificatifs: 0,
+            tracabilite: 0,
+            delais: 0,
+            fournisseurs: 0,
+            anomalies: 0,
+            securisation: 0
+        };
+
+        contexts.forEach(txt => {
+            const t = txt.toLowerCase();
+            if (t.includes("procédure") || t.includes("achat")) counters.procedures++;
+            if (t.includes("justificatif") || t.includes("pièce")) counters.justificatifs++;
+            if (t.includes("traç") || t.includes("archiv")) counters.tracabilite++;
+            if (t.includes("délai") || t.includes("retard")) counters.delais++;
+            if (t.includes("fournisseur") || t.includes("marché")) counters.fournisseurs++;
+            if (t.includes("anomalie") || t.includes("écart")) counters.anomalies++;
+            if (t.includes("sécurisation") || t.includes("sécurité")) counters.securisation++;
+        });
+
+        const total = contexts.length;
+
+        const lines = [];
+
+        if (counters.procedures) lines.push(`Fréquence élevée de questions liées au respect des procédures d’achat (${counters.procedures}/${total}).`);
+        if (counters.justificatifs) lines.push(`Hétérogénéité des justificatifs transmis et pièces manquantes récurrentes (${counters.justificatifs}/${total}).`);
+        if (counters.tracabilite) lines.push(`Traçabilité et archivage parfois incomplets (${counters.tracabilite}/${total}).`);
+        if (counters.delais) lines.push(`Délais de traitement jugés longs ou irréguliers (${counters.delais}/${total}).`);
+        if (counters.fournisseurs) lines.push(`Choix des fournisseurs nécessitant une meilleure objectivation (${counters.fournisseurs}/${total}).`);
+        if (counters.anomalies) lines.push(`Présence d’anomalies récurrentes nécessitant un suivi formalisé (${counters.anomalies}/${total}).`);
+        if (counters.securisation) lines.push(`Points d’attention sur la sécurisation globale de la chaîne DP (${counters.securisation}/${total}).`);
+
+        return [
+            `Les contextes analysés sur ${total} fiches font apparaître plusieurs tendances convergentes :`,
+            "",
+            ...lines.map(l => `- ${l}`),
+            "",
+            "Ces constats structurent la priorisation des actions proposées dans le présent rapport."
+        ].join("\n");
+    }
+
+    async function buildIntroFromAI() {
+        const contexts = collectContextsFromHistory();
+        const synthese = synthesizeContexts(contexts);
+
+        return (
+    `Introduction — Contexte général
+
+    ${synthese}
+
+    L’analyse détaillée qui suit met en perspective ces constats avec le radar de maturité et la matrice des risques, afin d’orienter les actions à court, moyen et long terme.`
+        );
+    }
+
+    function buildConclusionFromAI() {
+        return (
+            "Conclusion — Projection opérationnelle\r\n" +
+            "À 1 mois : consolidation rapide des actions correctives prioritaires et diffusion des consignes claires.\r\n" +
+            "À 3 mois : montée en maturité sur la formalisation des procédures et amélioration mesurable de la traçabilité.\r\n" +
+            "À 9 mois : stabilisation du dispositif, homogénéisation des pratiques et pilotage régulier par indicateurs."
+        );
+    }
+
+    function buildIAContextSummary() {
+        // On ne renvoie pas tout l’historique brut pour éviter un payload énorme
+        const summary = controlsHistory.map(rec => {
+            if (!rec.versions || rec.versions.length === 0) return null;
+            const latest = rec.versions[rec.versions.length - 1].payload || {};
+
+            return {
+                ficheNumber: latest.ficheNumber || "",
+                dpLabel: latest.dpLabel || "",
+                controlDate: latest.controlDate || "",
+                scoreTotal: latest.scoreTotal ?? null,
+                scoreMaxPossible: latest.scoreMaxPossible ?? null,
+                ratioScore: latest.ratioScore ?? null,
+                riskCode: latest.riskCode || "",
+                riskText: latest.riskText || "",
+                globalSummary: latest.globalSummary || "",
+                globalIssues: latest.globalIssues || "",
+                actionsPlanned: latest.actionsPlanned || "",
+                actionOwner: latest.actionOwner || "",
+                actionDueDate: latest.actionDueDate || "",
+                actionFollowUp: latest.actionFollowUp || "",
+                finalDecision: latest.finalDecision || ""
+            };
+        }).filter(Boolean);
+
+        const radar = computeRiskMaturityFromHistory();   // tableau de 6 valeurs 0–4
+        const matrix = computeRiskMatrixFromHistory();    // matrice 5×5
+
+        return { summary, radar, matrix };
+    }
+
+    async function generateIntroAndConclusionWithIA() {
+        const context = buildIAContextSummary();
+
+        const response = await fetch("/api/ia/controle-interne", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                context,
+                // Tu peux ajouter ici des paramètres de “style” si tu veux
+                options: {
+                    langue: "fr",
+                    ton: "professionnel",
+                    horizonMois: [1, 3, 9]
+                }
+            })
+        });
+
+        if (!response.ok) {
+            console.error("Erreur appel IA :", response.status, await response.text());
+            // fallback minimal si le backend est KO
+            return {
+                intro: "Introduction : impossible d’appeler le service IA. Merci de relancer la génération du rapport.",
+                conclusion: "Conclusion : impossible d’appeler le service IA. Merci de relancer la génération du rapport."
+            };
+        }
+
+        const json = await response.json();
+        return {
+            intro: json.intro || "",
+            conclusion: json.conclusion || ""
+        };
+    }
+
+    function getControlsHistoryArray() {
+        const key = "controlsHistory";
+        let raw = "[]";
+
+        try {
+            raw = localStorage.getItem(key) || "[]";
+        } catch (e) {
+            console.warn("Lecture controlsHistory impossible :", e);
+        }
+
+        try {
+            const arr = JSON.parse(raw);
+            return Array.isArray(arr) ? arr : [];
+        } catch {
+            return [];
+        }
+    }
+
+    // Synthèse des points de contrôle critiques non maîtrisés (non / partiel)
+    function summarizeCriticalWeaknessesFromHistory() {
+        const history = getControlsHistoryArray();
+        if (history.length === 0) {
+            return "Aucun historique de contrôle n’est disponible à ce stade. La synthèse des points critiques non maîtrisés ne peut pas être établie.";
+        }
+
+        // Points de contrôle critiques + clé de statut dans les données
+        const criticalControls = {
+            check_dp_facture: {
+                statusKey: "check_dp_facture_status",
+                label: "Concordance DP / facture finale"
+            },
+            check_facture: {
+                statusKey: "check_facture_status",
+                label: "Facture conforme et complète"
+            },
+            check_paiement: {
+                statusKey: "check_paiement_status",
+                label: "Paiement conforme aux règles"
+            },
+            check_exception: {
+                statusKey: "check_exception_status",
+                label: "Procédure d’exception respectée (Amazon)"
+            }
+        };
+
+        // Compteurs par point critique
+        const stats = {};
+        Object.keys(criticalControls).forEach(key => {
+            stats[key] = { non: 0, partiel: 0, totalFiches: 0 };
+        });
+
+        history.forEach(rec => {
+            // Suivant ta structure, les statuts peuvent être à plat ou dans rec.step3
+            const src = rec.step3 || rec;
+
+            Object.entries(criticalControls).forEach(([key, info]) => {
+                const status = src && src[info.statusKey];
+                if (status === "non" || status === "partiel") {
+                    stats[key].totalFiches++;
+                    if (status === "non") stats[key].non++;
+                    else stats[key].partiel++;
+                }
+            });
+        });
+
+        const lines = [];
+        const totalFiches = history.length;
+
+        Object.entries(criticalControls).forEach(([key, info]) => {
+            const { non, partiel, totalFiches: tf } = stats[key];
+            if (tf > 0) {
+                lines.push(
+                    `- ${info.label} : ${tf} fiche(s) concernée(s), dont ${non} non conforme(s) et ${partiel} partiellement maîtrisée(s).`
+                );
+            }
+        });
+
+        if (lines.length === 0) {
+            return (
+                `Les points de contrôle critiques (concordance DP/facture, facture, paiement, procédure d’exception) ` +
+                `apparaissent globalement maîtrisés sur les ${totalFiches} fiche(s) examinée(s). ` +
+                `Aucune situation récurrente de non-maîtrise n’a été identifiée sur ces items.`
+            );
+        }
+
+        return [
+            `Sur un total de ${totalFiches} fiche(s) de contrôle analysée(s), plusieurs fragilités récurrentes concernent des points de contrôle critiques :`,
+            "",
+            ...lines,
+            "",
+            `Ces constats invitent à prioriser les actions de sécurisation sur ces points structurants, en complément des mesures plus larges décrites dans le plan d’action.`
+        ].join("\n");
+    }
+
+    function renderMultilineParagraphs(text) {
+        const { Paragraph } = docx; // si tu as déjà destructuré, adapte en conséquence
+
+        const lines = (text || "").split(/\r?\n/);
+
+        const paras = [];
+
+        lines.forEach(rawLine => {
+            const line = rawLine.trimEnd(); // on garde le début pour détecter le "-"
+
+            // Ligne vide → paragraphe vide pour garder l’aération
+            if (line.trim() === "") {
+                paras.push(new Paragraph(""));
+                return;
+            }
+
+            // Ligne de type "- ..." -> puce Word
+            const bulletMatch = line.match(/^-\s+(.*)$/);
+            if (bulletMatch) {
+                const content = bulletMatch[1] || "";
+                paras.push(
+                    new Paragraph({
+                        text: content,
+                        bullet: { level: 0 }
+                    })
+                );
+            } else {
+                // Ligne normale -> paragraphe simple
+                paras.push(new Paragraph(line));
+            }
+        });
+
+        return paras;
+    }
+
+    async function exportWordDetailed() {
+        const {
+            Document,
+            Packer,
+            Paragraph,
+            TextRun,
+            ImageRun,
+            Header,
+            Footer,
+            PageNumber,
+            TableOfContents,
+            HeadingLevel,
+            AlignmentType,
+            PageOrientation,
+            SimpleField
+        } = docx;
+
+        const data = collectActionPlanData();
+        const radarImg = await getRadarImage();
+        const matrixImg = await getMatrixImage();
+
+        // IA : intro + conclusion contextuelles
+        //const { intro, conclusion } = await generateIntroAndConclusionWithIA();
+        const intro = await buildIntroFromAI();
+        const conclusion = await buildConclusionFromAI();
+
+        // Radar (pour chapitre par axe)
+        const radarValues = computeRiskMaturityFromHistory();
+        const axisLabels = [
+            "Conformité budgétaire",
+            "Traçabilité documentaire",
+            "Procédures d’achats",
+            "Qualité des justificatifs",
+            "Gestion retours / litiges",
+            "Sécurisation du processus"
+        ];
+
+        const criticalSummaryText = summarizeCriticalWeaknessesFromHistory();
+
+        // ---------- Corps du document ----------
+
+        const children = [];
+
+        // ===== PAGE DE GARDE =====
+        children.push(
+            new Paragraph({
+                text: "Contrôle interne – Rapport complet",
+                heading: HeadingLevel.TITLE,
+                alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({ text: "", spacing: { after: 400 } }),
+            new Paragraph({
+                children: [new TextRun({ text: "Établissement :", bold: true })]
+            }),
+            new Paragraph("________________________________"),
+            new Paragraph({
+                children: [new TextRun({ text: "Secrétaire général d’établissement (SGE) :", bold: true })]
+            }),
+            new Paragraph("________________________________"),
+            new Paragraph({
+                children: [new TextRun({ text: "Date du rapport :", bold: true })]
+            }),
+            new Paragraph(getTodayString()),
+            new Paragraph({
+                children: [new TextRun({ text: "Diffusion :", bold: true })]
+            }),
+            new Paragraph("Interne / Direction / Audit / Autres"),
+            new Paragraph({ text: "", pageBreakBefore: true })
+        );
+
+        // ===== TABLE DES MATIÈRES =====
+        children.push(
+            new Paragraph({
+                text: "Table des matières",
+                heading: HeadingLevel.HEADING_1
+            }),
+            new TableOfContents("Table des matières", {
+                headingStyleRanges: [{ start: 1, end: 4 }]
+            }),
+            new Paragraph({ text: "", pageBreakBefore: true })
+        );
+
+        // ===== INTRODUCTION (IA) =====
+        children.push(
+            new Paragraph({
+                text: "Introduction",
+                heading: HeadingLevel.HEADING_1
+            }),
+            ...renderMultilineParagraphs(intro || "Introduction non générée."),
+            new Paragraph("")
+        );
+
+        // ===== RADAR =====
+        children.push(
+            new Paragraph({
+                text: "Radar de maîtrise des risques",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            }),
+            new Paragraph({
+                children: [
+                    new ImageRun({
+                        data: await fetchImage(radarImg),
+                        transformation: { width: 520, height: 360 }
+                    })
+                ],
+                alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({
+                text: "Visualisation synthétique du niveau de maîtrise des principaux axes de contrôle interne (0 = minimal, 5 = optimisé).",
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 120, after: 240 }
+            })
+        );
+
+        // ===== MATRICE DES RISQUES =====
+        children.push(
+            new Paragraph({
+                text: "Matrice des risques",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            }),
+            new Paragraph({
+                children: [
+                    new ImageRun({
+                        data: await fetchImage(matrixImg),
+                        transformation: { width: 520, height: 360 }
+                    })
+                ],
+                alignment: AlignmentType.CENTER
+            }),
+            new Paragraph({
+                text: "La matrice croise la probabilité de survenance et l’impact des risques sur les DP contrôlées (zone rouge = prioritaire).",
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 120, after: 240 }
+            })
+        );
+
+        // ===== ANALYSE PAR AXE =====
+        children.push(
+            new Paragraph({
+                text: "Analyse par axe de maîtrise des risques",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            })
+        );
+
+        axisLabels.forEach((label, idx) => {
+            const val = radarValues && radarValues[idx] != null ? radarValues[idx] : 0;
+            children.push(
+                new Paragraph({
+                    text: label,
+                    heading: HeadingLevel.HEADING_2
+                }),
+                new Paragraph(`Niveau de maîtrise estimé : ${val} / 5`),
+                new Paragraph(describeAxisLevel(label, val)),
+                new Paragraph("")
+            );
+        });
+
+        // ===== SYNTHÈSE DES POINTS CRITIQUES NON MAÎTRISÉS =====
+        children.push(
+            new Paragraph({
+                text: "Synthèse des points de contrôle critiques non maîtrisés",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            }),
+            ...renderMultilineParagraphs(criticalSummaryText),
+            new Paragraph("")
+        );
+
+        // ===== PLAN D’ACTION DÉTAILLÉ =====
+        children.push(
+            new Paragraph({
+                text: "Plan d’action détaillé",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            })
+        );
+
+        data.forEach(d => {
+            children.push(
+                new Paragraph({
+                    text: `Fiche ${d.fiche} — DP ${d.dp}`,
+                    heading: HeadingLevel.HEADING_2
+                }),
+                new Paragraph(`Résumé : ${d.summary || "-"}`),
+                new Paragraph(`Score / risque : ${d.score} — ${d.risk}`),
+                new Paragraph(`Action : ${d.action || "-"}`),
+                new Paragraph(`Responsable : ${d.owner || "-"}`),
+                new Paragraph(`Échéance : ${d.dueDate || "-"}`),
+                new Paragraph(`Suivi : ${d.follow || "-"}`),
+                new Paragraph("")
+            );
+        });
+
+        // ===== CONCLUSION (IA) =====
+        children.push(
+            new Paragraph({
+                text: "Conclusion et projections",
+                heading: HeadingLevel.HEADING_1,
+                pageBreakBefore: true
+            }),
+            ...renderMultilineParagraphs(conclusion || "Conclusion non générée.")
+        );
+
+        // ---------- Document avec thème Arial / marges / pieds de page ----------
+        const doc = new Document({
+            features: {
+                updateFields: true     //  mise à jour automatique des champs Word
+            },
+            styles: {
+                default: {
+                    document: {
+                        run: {
+                            font: "Arial",
+                            size: 22 // = 11 pts
+                        },
+                        paragraph: {
+                            spacing: { after: 120 } // petit espace après chaque paragraphe
+                        }
+                    }
+                },
+                paragraphStyles: [
+                    {
+                        id: "Normal",
+                        name: "Normal",
+                        basedOn: "Normal",
+                        run: { font: "Arial", size: 22 },
+                        paragraph: { spacing: { after: 120 } }
+                    },
+                    {
+                        id: "Heading1",
+                        name: "Titre 1",
+                        basedOn: "Normal",
+                        next: "Normal",
+                        quickFormat: true,
+                        run: { font: "Arial", size: 32, bold: true },
+                        paragraph: {
+                            spacing: { before: 240, after: 120 }
+                        }
+                    },
+                    {
+                        id: "Heading2",
+                        name: "Titre 2",
+                        basedOn: "Normal",
+                        next: "Normal",
+                        quickFormat: true,
+                        run: { font: "Arial", size: 26, bold: true },
+                        paragraph: {
+                            spacing: { before: 200, after: 80 }
+                        }
+                    }
+                ]
+            },
+            sections: [
+                {
+                    properties: {
+                        page: {
+                            // A4 portrait : 21 x 29,7 cm ≈ 11906 x 16838 twips
+                            size: {
+                                orientation: PageOrientation.PORTRAIT,
+                                width: 11906,
+                                height: 16838
+                            },
+                            margin: {
+                                top: 1440,    // ≈ 2,5 cm
+                                right: 1440,
+                                bottom: 1440,
+                                left: 1440
+                            }
+                        }
+                    },
+                    headers: {
+                        default: new Header({
+                            children: [
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "Rapport de contrôle interne – DP OP@LE",
+                                            bold: true
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    },
+                    footers: {
+                        default: new Footer({
+                            children: [
+                                // Ligne 1 : nom + confidentialité
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: "Rapport de contrôle interne — Document confidentiel",
+                                            italics: true
+                                        })
+                                    ]
+                                }),
+
+                                // Ligne 2 : pagination
+                                new Paragraph({
+                                    alignment: AlignmentType.RIGHT,
+                                    children: [
+                                        new TextRun("Page "),
+                                        new SimpleField("PAGE"),
+                                        new TextRun(" / "),
+                                        new SimpleField("NUMPAGES")
+                                    ]
+                                })
+                            ]
+                        })
+                    },
+                    children
+                }
+            ]
+        });
+
+        const blob = await Packer.toBlob(doc);
+        downloadFile(blob, "rapport_controle_interne.docx");
+    }
+
+    async function fetchImage(dataUrl) {
+        const res = await fetch(dataUrl);
+        return await res.arrayBuffer();
+    }
+
+    function downloadFile(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("btnExportWordSimple")
+        .addEventListener("click", exportWordSimple);
+
+    document.getElementById("btnExportWordDetail")
+        .addEventListener("click", exportWordDetailed);
+
+    // =========================
+    // Tooltips Bootstrap
+    // =========================
+    function enableTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+    }
+
+    // =========================
+    // Initialisation
+    // =========================
+    (function init() {
+        loadHistory();
+        loadSamples();
+        showStep(1);
+        renderSampleTable();
+        renderHistoryTable();
+        initDefaultFiche();
+        updateExceptionRowState();
+        recomputeScoreAndActions();
+        loadCurrentDraft();
+        setupFormAutoSave();
+        refreshRiskRadar();
+        refreshActionPlan();
+        refreshRiskMatrix();
+
+        const riskTabBtn = document.getElementById('tab-risk-tab');
+        if (riskTabBtn) {
+            riskTabBtn.addEventListener('shown.bs.tab', () => {
+                refreshRiskRadar();
+                refreshRiskMatrix();
+            });
+        }
+    })();
+</script>
+<script src="assets/iframe-storage-bridge.js"></script>
+</body>
+</html>

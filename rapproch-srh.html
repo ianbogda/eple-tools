@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapproch’SRH — WebGerest ↔ Op@le</title>
+<style>
+:root{
+  --bg:#f5f7fb;--panel:#fff;--ink:#182230;--muted:#667085;--line:#e4e7ec;
+  --brand:#2457d6;--brand2:#eaf0ff;--ok:#067647;--okbg:#ecfdf3;
+  --warn:#b54708;--warnbg:#fffaeb;--bad:#b42318;--badbg:#fef3f2;
+  --info:#175cd3;--infobg:#eff8ff;--shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.05);
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.wrap{max-width:1500px;margin:auto;padding:0 22px}.top{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:.7rem;background:#eef8f6;display:grid;place-items:center;color:#0f766e;border:1px solid #d8eeea}.logo svg{width:22px;height:22px;stroke-width:1.8}
+.brand h1{font-size:18px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;font-weight:650;cursor:pointer}
+button:hover{border-color:#cfd4dc;background:#fafafa}.primary{background:var(--brand);border-color:var(--brand);color:#fff}.danger{color:var(--bad)}
+main.wrap{padding-top:20px;padding-bottom:40px}
+.grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.pad{padding:16px}.drop{border:1.5px dashed #b8c3d8;border-radius:12px;padding:18px;background:#fbfcff;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:112px}
+.drop.drag{background:var(--brand2);border-color:var(--brand)}.drop h3{margin:0 0 5px;font-size:15px}.drop p{margin:0;color:var(--muted);font-size:12px}.filemeta{margin-top:10px;color:var(--muted);font-size:12px}
+input[type=file]{display:none}
+.section-title{display:flex;align-items:end;justify-content:space-between;margin:20px 0 10px;gap:12px}.section-title h2{margin:0;font-size:17px}.section-title p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px}.kpi{padding:14px}.kpi .lab{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}.kpi .val{font-size:23px;font-weight:780;margin-top:4px}.kpi .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);padding:0 14px;margin-top:18px}.tab{border:0;border-radius:0;background:none;padding:13px 12px;color:var(--muted);border-bottom:2px solid transparent}.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.panel{display:none}.panel.active{display:block}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line)}
+select,input[type=number],input[type=text]{border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#fff;color:var(--ink);min-height:36px}
+.search{min-width:250px}.datefilters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.datefilters input[type=date]{border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#fff;color:var(--ink);min-height:36px}
+.tablewrap{overflow:auto;max-height:650px}table{border-collapse:collapse;width:100%;min-width:1050px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.035em;color:#475467;background:#f9fafb;position:sticky;top:0;z-index:2}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:750;white-space:nowrap}
+.s-ok{color:var(--ok);background:var(--okbg)}.s-warn{color:var(--warn);background:var(--warnbg)}.s-bad{color:var(--bad);background:var(--badbg)}.s-info{color:var(--info);background:var(--infobg)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}.priority{font-weight:800}.p1{color:var(--bad)}.p2{color:var(--warn)}.p3{color:var(--muted)}
+.callout{padding:12px 14px;border-radius:10px;background:#f8faff;border:1px solid #dce6ff;color:#344054}.callout strong{color:#1d2939}
+.mapping{display:grid;grid-template-columns:160px 1fr 1fr 110px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.mapping .score{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
+.small{font-size:12px;color:var(--muted)}.empty{padding:42px 20px;text-align:center;color:var(--muted)}
+.settings{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px}.field label{display:block;font-size:11px;font-weight:750;color:#475467;margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}.field input{width:100%}
+details summary{cursor:pointer;font-weight:700}.foot{margin-top:18px;color:var(--muted);font-size:11px}
+@media(max-width:1000px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.settings{grid-template-columns:1fr 1fr}.mapping{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h7v6H4zM13 14h7v6h-7z"/><path d="M9 15H5a2 2 0 0 1-2-2v-1M15 9h4a2 2 0 0 1 2 2v1"/><path d="m6 12-3 3-3-3M18 12l3-3 3 3"/></svg></div>
+      <div><h1>Rapproch’SRH</h1><p>Contrôle de cohérence WebGerest ↔ Op@le</p></div>
+    </div>
+    <div class="actions">
+      <button id="btnExport">Exporter l’analyse CSV</button>
+      <button id="btnReset" class="danger">Réinitialiser</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid2">
+    <div class="card pad">
+      <div class="drop" id="dropWeb">
+        <div><h3>1. Commandes / livraisons WebGerest</h3><p>Colonnes attendues : Date prévue, N° BL, Fournisseur, Total HT, Total TTC.</p></div>
+        <label class="btn primary" for="fileWeb">Choisir le fichier</label><input id="fileWeb" type="file" accept=".xlsx,.xls,.csv">
+      </div>
+      <div class="filemeta" id="metaWeb">Aucun fichier chargé.</div>
+    </div>
+    <div class="card pad">
+      <div class="drop" id="dropOpale">
+        <div><h3>2. Factures Op@le</h3><p>Colonnes attendues : Référence, Date de facture, Fournisseur/Tiers, Montant HT, Montant TTC.</p></div>
+        <label class="btn primary" for="fileOpale">Choisir le fichier</label><input id="fileOpale" type="file" accept=".xlsx,.xls,.csv">
+      </div>
+      <div class="filemeta" id="metaOpale">Aucun fichier chargé.</div>
+    </div>
+    <div class="card pad">
+      <div class="drop" id="dropTiers">
+        <div><h3>3. Référentiel tiers / SIRET Op@le</h3><p>Export YGKTIE : Tiers, Nom / Raison sociale, SIRET.</p></div>
+        <label class="btn primary" for="fileTiers">Choisir le fichier</label><input id="fileTiers" type="file" accept=".xlsx,.xls,.csv">
+      </div>
+      <div class="filemeta" id="metaTiers">Facultatif, mais recommandé pour fiabiliser les fournisseurs.</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <div><h2>Lecture de la situation</h2><p>Les avoirs exacts sont neutralisés avec leur facture d’origine avant calcul des anomalies.</p></div>
+    <button id="btnRun" class="primary">Relancer l’analyse</button>
+  </div>
+
+  <div class="kpis">
+    <div class="card kpi"><div class="lab">WebGerest TTC</div><div class="val" id="kWeb">—</div><div class="sub">périmètre analysé</div></div>
+    <div class="card kpi"><div class="lab">Op@le net TTC</div><div class="val" id="kOpale">—</div><div class="sub">factures + avoirs</div></div>
+    <div class="card kpi"><div class="lab">Écart brut</div><div class="val" id="kDiff">—</div><div class="sub">Op@le − WebGerest</div></div>
+    <div class="card kpi"><div class="lab">Écart inexpliqué</div><div class="val" id="kUnexplained">—</div><div class="sub">hors attente récente / avoir</div></div>
+    <div class="card kpi"><div class="lab">Anomalies</div><div class="val" id="kIssues">—</div><div class="sub">à contrôler</div></div>
+    <div class="card kpi"><div class="lab">Régularisations</div><div class="val" id="kCredits">—</div><div class="sub">facture ↔ avoir</div></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="analysis">Analyse</button>
+      <button class="tab" data-tab="mapping">Correspondance fournisseurs</button>
+      <button class="tab" data-tab="credits">Régularisations</button>
+      <button class="tab" data-tab="settings">Paramètres</button>
+    </div>
+
+    <div id="analysis" class="panel active">
+      <div class="toolbar">
+        <select id="fYear"><option value="">Toutes les années</option></select>
+        <select id="fQuarter"><option value="">Tous les trimestres</option><option value="1">T1</option><option value="2">T2</option><option value="3">T3</option><option value="4">T4</option></select>
+        <select id="fPeriod">
+          <option value="">Toute période</option>
+          <option value="current_month">Mois courant</option>
+          <option value="previous_month">Mois précédent</option>
+          <option value="current_quarter">Trimestre courant</option>
+          <option value="previous_quarter">Trimestre précédent</option>
+          <option value="current_year">Année courante</option>
+          <option value="previous_year">Année précédente</option>
+        </select>
+        <div class="datefilters">
+          <input id="fDateFrom" type="date" title="Date de début">
+          <input id="fDateTo" type="date" title="Date de fin">
+        </div>
+        <select id="fStatus"><option value="">Tous les statuts</option></select>
+        <select id="fSupplier"><option value="">Tous les fournisseurs</option></select>
+        <select id="fPriority"><option value="">Toutes priorités</option><option>P1</option><option>P2</option><option>P3</option></select>
+        <input class="search" id="fSearch" type="text" placeholder="BL, facture, fournisseur…">
+        <button id="btnClearDates">Réinitialiser période</button>
+        <span class="small" id="rowCount"></span>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr>
+          <th>Date</th><th>Fournisseur</th><th>BL WebGerest</th><th>Factures Op@le</th>
+          <th class="num">WebGerest TTC</th><th class="num">Op@le TTC ajusté</th><th class="num">Écart</th>
+          <th>Statut</th><th>Priorité</th><th>Lecture</th>
+        </tr></thead><tbody id="tbodyAnalysis"></tbody>
+      </table></div>
+    </div>
+
+    <div id="mapping" class="panel">
+      <div class="pad">
+        <div class="callout"><strong>Principe.</strong> Le référentiel YGKTIE fournit l’identité et le SIRET du tiers Op@le. L’outil privilégie cette identité pour associer le fournisseur WebGerest, puis contrôle la cohérence par date + montant. Sans référentiel, il revient au rapprochement heuristique.</div>
+        <div id="mappingList" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <div id="credits" class="panel">
+      <div class="tablewrap"><table>
+        <thead><tr><th>Fournisseur</th><th>Facture</th><th>Date facture</th><th>Avoir</th><th>Date avoir</th><th class="num">Montant</th><th>Effet</th></tr></thead>
+        <tbody id="tbodyCredits"></tbody>
+      </table></div>
+    </div>
+
+    <div id="settings" class="panel">
+      <div class="pad">
+        <div class="settings">
+          <div class="field"><label>Tolérance rapprochement (€)</label><input id="sTolerance" type="number" value="0.10" step="0.01" min="0"></div>
+          <div class="field"><label>Attente normale facture (jours)</label><input id="sWaitDays" type="number" value="10" step="1" min="0"></div>
+          <div class="field"><label>Seuil priorité P1 (€)</label><input id="sP1" type="number" value="250" step="10" min="0"></div>
+          <div class="field"><label>Seuil priorité P2 (€)</label><input id="sP2" type="number" value="50" step="10" min="0"></div>
+          <div class="field"><label>Fenêtre recherche avoir (jours)</label><input id="sCreditDays" type="number" value="180" step="1" min="1"></div>
+          <div class="field"><label>Décalage date toléré mapping (jours)</label><input id="sMapDays" type="number" value="0" step="1" min="0" max="7"></div>
+        </div>
+        <div class="foot">Les paramètres et correspondances fournisseurs sont conservés dans le navigateur. Les fichiers importés ne sont pas envoyés à un serveur par l’application.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* SheetJS : essaie d'abord un fichier local Toolbox, puis CDN. */
+(function loadXLSX(){
+  const candidates=["./assets/xlsx.full.min.js","./vendor/xlsx.full.min.js","https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"];
+  let i=0;
+  function next(){
+    if(window.XLSX || i>=candidates.length) return;
+    const s=document.createElement("script"); s.src=candidates[i++]; s.onload=()=>{}; s.onerror=next; document.head.appendChild(s);
+  } next();
+})();
+
+const state={web:[],opale:[],tiers:[],tierIndex:new Map(),mappings:{},mapScores:{},credits:[],rows:[],latestDate:null,files:{web:null,opale:null,tiers:null}};
+const euro=new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
+const fmtDate=d=>d?new Intl.DateTimeFormat("fr-FR").format(d):"—";
+const round2=n=>Math.round((Number(n)||0)*100)/100;
+const norm=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function excelDate(v){
+  if(v instanceof Date && !isNaN(v)) return v;
+  if(typeof v==="number"){
+    const utc=Math.round((v-25569)*86400*1000);
+    const d=new Date(utc); return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+  }
+  const s=String(v??"").trim();
+  if(!s) return null;
+  const m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if(m){let y=+m[3]; if(y<100)y+=2000; return new Date(y,+m[2]-1,+m[1]);}
+  const d=new Date(s); return isNaN(d)?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
+}
+const dayKey=d=>d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`:"";
+const daysBetween=(a,b)=>Math.round((b-a)/86400000);
+
+function findCol(headers,aliases){
+  const nh=headers.map(norm);
+  for(const a of aliases){
+    const na=norm(a); let i=nh.indexOf(na); if(i>=0)return i;
+  }
+  for(const a of aliases){
+    const na=norm(a); let i=nh.findIndex(h=>h.includes(na)); if(i>=0)return i;
+  }
+  return -1;
+}
+function num(v){
+  if(typeof v==="number")return v;
+  const s=String(v??"").replace(/\s/g,"").replace(",",".").replace(/[^\d.-]/g,"");
+  const n=Number(s); return Number.isFinite(n)?n:0;
+}
+function readWorkbook(file){
+  return new Promise((resolve,reject)=>{
+    if(!window.XLSX) return reject(new Error("Bibliothèque XLSX non chargée. Place xlsx.full.min.js dans /assets ou active l’accès internet."));
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:"array",cellDates:true});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        resolve(XLSX.utils.sheet_to_json(ws,{header:1,defval:"",raw:true}));
+      }catch(err){reject(err)}
+    }; r.onerror=reject; r.readAsArrayBuffer(file);
+  });
+}
+async function importFile(kind,file){
+  try{
+    const rows=await readWorkbook(file);
+    if(rows.length<2)throw new Error("Fichier vide ou non lisible.");
+    if(kind==="web") state.web=parseWeb(rows);
+    else if(kind==="opale") state.opale=parseOpale(rows);
+    else {
+      state.tiers=parseTiers(rows);
+      rebuildTierIndex();
+    }
+    state.files[kind]=file.name;
+    if(kind==="web") document.getElementById("metaWeb").textContent=`${file.name} — ${state.web.length} lignes exploitables`;
+    if(kind==="opale") document.getElementById("metaOpale").textContent=`${file.name} — ${state.opale.length} lignes exploitables`;
+    if(kind==="tiers") document.getElementById("metaTiers").textContent=`${file.name} — ${state.tiers.length} tiers avec identité${state.tiers.filter(x=>x.siret).length?`, dont ${state.tiers.filter(x=>x.siret).length} avec SIRET`:""}`;
+    analyze();
+  }catch(e){alert(e.message)}
+}
+function parseWeb(rows){
+  const h=rows[0], c={
+    date:findCol(h,["Date prévue","Date prevue","Date"]),
+    bl:findCol(h,["N° BL","No BL","BL"]),
+    supplier:findCol(h,["Fournisseur"]),
+    ht:findCol(h,["Total HT","Montant HT"]),
+    ttc:findCol(h,["Total TTC","Montant TTC"])
+  };
+  if(c.date<0||c.supplier<0||c.ttc<0)throw new Error("Structure WebGerest non reconnue : Date prévue, Fournisseur et Total TTC sont requis.");
+  return rows.slice(1).map((r,i)=>({
+    _id:"W"+i,date:excelDate(r[c.date]),bl:String(r[c.bl]??"").trim(),supplier:String(r[c.supplier]??"").trim(),
+    ht:num(r[c.ht]),ttc:num(r[c.ttc])
+  })).filter(x=>x.date&&x.supplier&&x.ttc!==0);
+}
+function parseOpale(rows){
+  const h=rows[0], c={
+    ref:findCol(h,["Référence","Reference"]),
+    date:findCol(h,["Date de facture","Date facture"]),
+    supplier:findCol(h,["Fournisseur"]),
+    tier:findCol(h,["Tiers fournisseur / responsable","Tiers fournisseur","Tiers"]),
+    ht:findCol(h,["Montant HT"]),
+    ttc:findCol(h,["Montant TTC"])
+  };
+  if(c.date<0||c.ttc<0||(c.supplier<0&&c.tier<0))throw new Error("Structure Op@le non reconnue : Date de facture, Fournisseur/Tiers et Montant TTC sont requis.");
+  return rows.slice(1).map((r,i)=>{
+    const supplier=cleanTierId(c.tier>=0?r[c.tier]:r[c.supplier])||String(r[c.supplier]??"").trim();
+    return {_id:"O"+i,date:excelDate(r[c.date]),ref:String(r[c.ref]??"").trim(),supplierId:supplier,ht:num(r[c.ht]),ttc:num(r[c.ttc])};
+  }).filter(x=>x.date&&x.supplierId&&x.ttc!==0);
+}
+
+
+function cleanTierId(v){
+  const s=String(v??"").trim();
+  if(!s) return "";
+  return s.replace(/\D/g,"").replace(/^0+/,"") || "0";
+}
+function cleanSiret(v){
+  return String(v??"").replace(/\D/g,"").slice(0,14);
+}
+function parseTiers(rows){
+  const h=rows[0], c={
+    tier:findCol(h,["Tiers"]),
+    name:findCol(h,["Nom / Raison sociale","Nom /  Raison sociale","Raison sociale"]),
+    siret:findCol(h,["SIRET"])
+  };
+  if(c.tier<0||c.name<0) throw new Error("Structure du référentiel tiers non reconnue : les colonnes Tiers et Nom / Raison sociale sont requises.");
+  return rows.slice(1).map((r,i)=>({
+    _id:"T"+i,
+    tierId:cleanTierId(r[c.tier]),
+    name:String(r[c.name]??"").trim(),
+    siret:c.siret>=0?cleanSiret(r[c.siret]):""
+  })).filter(x=>x.tierId&&x.name);
+}
+function rebuildTierIndex(){
+  state.tierIndex=new Map();
+  state.tiers.forEach(t=>state.tierIndex.set(t.tierId,t));
+}
+function tierInfo(id){
+  return state.tierIndex.get(cleanTierId(id))||null;
+}
+function supplierDisplay(opId){
+  const t=tierInfo(opId);
+  return t ? `${t.name}${t.siret?` · SIRET ${t.siret}`:""}` : `Tiers ${opId}`;
+}
+function nameSimilarity(a,b){
+  const aa=norm(a),bb=norm(b);
+  if(!aa||!bb) return 0;
+  if(aa===bb) return 1000;
+  if(aa.includes(bb)||bb.includes(aa)) return 700;
+  const A=new Set(aa.split(" ").filter(x=>x.length>2)),B=new Set(bb.split(" ").filter(x=>x.length>2));
+  let inter=0;A.forEach(x=>{if(B.has(x))inter++});
+  return inter*100/Math.max(1,Math.min(A.size,B.size));
+}
+
+function settings(){
+  return {
+    tol:+document.getElementById("sTolerance").value||0.1,
+    wait:+document.getElementById("sWaitDays").value||10,
+    p1:+document.getElementById("sP1").value||250,
+    p2:+document.getElementById("sP2").value||50,
+    creditDays:+document.getElementById("sCreditDays").value||180,
+    mapDays:+document.getElementById("sMapDays").value||0
+  };
+}
+function supplierNames(){return [...new Set(state.web.map(x=>x.supplier))].sort((a,b)=>a.localeCompare(b,"fr"))}
+function opaleIds(){return [...new Set(state.opale.map(x=>x.supplierId))].sort()}
+
+function aggregate(rows,keySupplier,supplierValue,excludeSet=new Set()){
+  const m=new Map();
+  rows.filter(x=>x[keySupplier]===supplierValue&&!excludeSet.has(x._id)).forEach(x=>{
+    const k=dayKey(x.date); if(!m.has(k))m.set(k,{date:x.date,total:0,items:[]});
+    const g=m.get(k);g.total+=x.ttc;g.items.push(x);
+  }); return m;
+}
+function scoreMapping(opId,webSupplier){
+  const s=settings(), w=aggregate(state.web,"supplier",webSupplier), o=aggregate(state.opale,"supplierId",opId);
+  let exact=0,near=0,coverage=0;
+  for(const [kd,og] of o){
+    let best=Infinity;
+    for(let d=-s.mapDays;d<=s.mapDays;d++){
+      const dt=new Date(og.date);dt.setDate(dt.getDate()+d);const wg=w.get(dayKey(dt));
+      if(wg){best=Math.min(best,Math.abs(round2(wg.total)-round2(og.total)));coverage++}
+    }
+    if(best<=s.tol)exact++;
+    else if(best<=5)near++;
+  }
+  return exact*100+near*10+coverage;
+}
+function autoMappings(){
+  const saved=JSON.parse(localStorage.getItem("rapprochSRH_mappings")||"{}");
+  const names=supplierNames();
+  state.mapScores={};
+  for(const id of opaleIds()){
+    if(saved[id]&&names.includes(saved[id])){state.mappings[id]=saved[id];continue}
+    const ti=tierInfo(id);
+    let best=null,bestScore=-1,bestMethod="date/montant";
+    for(const n of names){
+      let sc=scoreMapping(id,n);
+      if(ti){
+        const ns=nameSimilarity(ti.name,n);
+        if(ns>=700) sc+=100000+ns;
+        else if(ns>0) sc+=10000+ns;
+      }
+      if(sc>bestScore){bestScore=sc;best=n;bestMethod=ti?"identité tiers + date/montant":"date/montant"}
+    }
+    state.mappings[id]=best;state.mapScores[id]={score:bestScore,method:bestMethod};
+  }
+}
+function pairCredits(){
+  const s=settings(); state.credits=[]; const used=new Set();
+  const bySupplier=new Map();
+  state.opale.forEach(x=>{if(!bySupplier.has(x.supplierId))bySupplier.set(x.supplierId,[]);bySupplier.get(x.supplierId).push(x)});
+  for(const [sid,arr] of bySupplier){
+    const pos=arr.filter(x=>x.ttc>0).sort((a,b)=>a.date-b.date);
+    const neg=arr.filter(x=>x.ttc<0).sort((a,b)=>a.date-b.date);
+    for(const cr of neg){
+      let candidates=pos.filter(p=>!used.has(p._id)&&Math.abs(p.ttc+cr.ttc)<=s.tol&&p.date<=cr.date&&daysBetween(p.date,cr.date)<=s.creditDays);
+      if(!candidates.length)continue;
+      candidates.sort((a,b)=>Math.abs(daysBetween(a.date,cr.date))-Math.abs(daysBetween(b.date,cr.date)));
+      const inv=candidates[0];used.add(inv._id);used.add(cr._id);
+      state.credits.push({supplierId:sid,invoice:inv,credit:cr,amount:Math.abs(cr.ttc)});
+    }
+  }
+  return used;
+}
+function analyze(){
+  if(!state.web.length||!state.opale.length){renderAll();return}
+  autoMappings();
+  const excluded=pairCredits(), s=settings();
+  const latest=[...state.web,...state.opale].map(x=>x.date).sort((a,b)=>b-a)[0]; state.latestDate=latest;
+  const rows=[];
+  for(const opId of opaleIds()){
+    const supplier=state.mappings[opId]; if(!supplier)continue;
+    const w=aggregate(state.web,"supplier",supplier);
+    const o=aggregate(state.opale,"supplierId",opId,excluded);
+    const keys=new Set([...w.keys(),...o.keys()]);
+    for(const k of [...keys].sort()){
+      const wg=w.get(k),og=o.get(k);const date=(wg||og).date;
+      const wt=round2(wg?.total||0),ot=round2(og?.total||0),diff=round2(ot-wt);
+      const hadCredit=state.credits.some(c=>c.supplierId===opId&&(dayKey(c.invoice.date)===k||dayKey(c.credit.date)===k));
+      let status,lecture,priority="P3";
+      if(Math.abs(diff)<=s.tol){
+        status=hadCredit?"Régularisé par avoir":"Rapproché";
+        lecture=hadCredit?"Une facture/avoir a été neutralisée ; le solde rejoint WebGerest.":"Montants cohérents après agrégation journalière.";
+      }else if(wt>0&&ot===0){
+        const age=daysBetween(date,latest);
+        if(age<=s.wait){status="En attente normale";lecture=`Livraison récente (${age} j) : facture non encore reçue/intégrée.`}
+        else {status="Livraison sans facture";lecture=`Aucune facture Op@le identifiée après ${age} jours.`}
+      }else if(wt===0&&ot!==0){
+        status=ot<0?"Avoir non apparié":"Facture sans livraison";
+        lecture=ot<0?"Avoir sans facture d’origine retrouvée dans la fenêtre paramétrée.":"Facture Op@le sans livraison WebGerest correspondante à cette date.";
+      }else{
+        status="Écart de facturation";lecture=diff>0?`Op@le supérieur de ${euro.format(Math.abs(diff))}.`:`WebGerest supérieur de ${euro.format(Math.abs(diff))}.`;
+      }
+      if(!["Rapproché","Régularisé par avoir","En attente normale"].includes(status)){
+        const a=Math.abs(diff);priority=a>=s.p1?"P1":a>=s.p2?"P2":"P3";
+      }
+      rows.push({date,supplier,opId,web:wt,opale:ot,diff,status,priority,lecture,
+        bl:(wg?.items||[]).map(x=>x.bl).filter(Boolean).join(" / "),
+        refs:(og?.items||[]).map(x=>x.ref).filter(Boolean).join(" / ")
+      });
+    }
+  }
+  state.rows=rows; renderAll();
+}
+function statusClass(s){
+  if(["Rapproché","Régularisé par avoir"].includes(s))return"s-ok";
+  if(["En attente normale"].includes(s))return"s-info";
+  if(["Écart de facturation","Livraison sans facture"].includes(s))return"s-warn";
+  return"s-bad";
+}
+
+function getFilteredRows(){
+  const st=document.getElementById("fStatus")?.value||"";
+  const sup=document.getElementById("fSupplier")?.value||"";
+  const pr=document.getElementById("fPriority")?.value||"";
+  const q=norm(document.getElementById("fSearch")?.value||"");
+  const year=document.getElementById("fYear")?.value||"";
+  const quarter=document.getElementById("fQuarter")?.value||"";
+  const fromVal=document.getElementById("fDateFrom")?.value||"";
+  const toVal=document.getElementById("fDateTo")?.value||"";
+  const from=fromVal?new Date(fromVal+"T00:00:00"):null;
+  const to=toVal?new Date(toVal+"T23:59:59"):null;
+
+  return state.rows.filter(r=>{
+    if(year && r.date.getFullYear()!==+year) return false;
+    if(quarter){
+      const qtr=Math.floor(r.date.getMonth()/3)+1;
+      if(qtr!==+quarter) return false;
+    }
+    if(from && r.date<from) return false;
+    if(to && r.date>to) return false;
+    if(st && r.status!==st) return false;
+    if(sup && r.supplier!==sup) return false;
+    if(pr && r.priority!==pr) return false;
+    if(q && !norm(`${r.supplier} ${r.bl} ${r.refs} ${r.status}`).includes(q)) return false;
+    return true;
+  });
+}
+function currentPeriodBounds(kind){
+  const base=state.latestDate?new Date(state.latestDate):new Date();
+  let y=base.getFullYear(),m=base.getMonth();
+  const first=(yy,mm)=>new Date(yy,mm,1), last=(yy,mm)=>new Date(yy,mm+1,0);
+  let start=null,end=null;
+  if(kind==="current_month"){start=first(y,m);end=last(y,m)}
+  if(kind==="previous_month"){m--; if(m<0){m=11;y--} start=first(y,m);end=last(y,m)}
+  if(kind==="current_quarter"){
+    const qm=Math.floor(base.getMonth()/3)*3;start=new Date(base.getFullYear(),qm,1);end=new Date(base.getFullYear(),qm+3,0)
+  }
+  if(kind==="previous_quarter"){
+    let qm=Math.floor(base.getMonth()/3)*3-3,yy=base.getFullYear();if(qm<0){qm+=12;yy--}
+    start=new Date(yy,qm,1);end=new Date(yy,qm+3,0)
+  }
+  if(kind==="current_year"){start=new Date(base.getFullYear(),0,1);end=new Date(base.getFullYear(),11,31)}
+  if(kind==="previous_year"){start=new Date(base.getFullYear()-1,0,1);end=new Date(base.getFullYear()-1,11,31)}
+  return {start,end};
+}
+function isoDate(d){
+  if(!d)return "";
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function applyPresetPeriod(){
+  const kind=document.getElementById("fPeriod").value;
+  if(!kind)return;
+  const {start,end}=currentPeriodBounds(kind);
+  document.getElementById("fDateFrom").value=isoDate(start);
+  document.getElementById("fDateTo").value=isoDate(end);
+  document.getElementById("fYear").value="";
+  document.getElementById("fQuarter").value="";
+  renderKPIs();renderAnalysis();
+}
+function clearDateFilters(){
+  document.getElementById("fYear").value="";
+  document.getElementById("fQuarter").value="";
+  document.getElementById("fPeriod").value="";
+  document.getElementById("fDateFrom").value="";
+  document.getElementById("fDateTo").value="";
+  renderKPIs();renderAnalysis();
+}
+
+function renderKPIs(){
+  if(!state.web.length||!state.opale.length){["kWeb","kOpale","kDiff","kUnexplained","kIssues","kCredits"].forEach(id=>document.getElementById(id).textContent="—");return}
+  const rows=getFilteredRows();
+  const web=round2(rows.reduce((a,r)=>a+r.web,0));
+  const op=round2(rows.reduce((a,r)=>a+r.opale,0));
+  const diff=round2(op-web);
+  const issueRows=rows.filter(r=>!["Rapproché","Régularisé par avoir","En attente normale"].includes(r.status));
+  const unexpl=round2(issueRows.reduce((a,r)=>a+r.diff,0));
+  const creditCount=state.credits.filter(c=>{
+    const d=c.invoice.date;
+    const year=document.getElementById("fYear")?.value||"";
+    const quarter=document.getElementById("fQuarter")?.value||"";
+    const fromVal=document.getElementById("fDateFrom")?.value||"";
+    const toVal=document.getElementById("fDateTo")?.value||"";
+    if(year && d.getFullYear()!==+year)return false;
+    if(quarter && Math.floor(d.getMonth()/3)+1!==+quarter)return false;
+    if(fromVal && d<new Date(fromVal+"T00:00:00"))return false;
+    if(toVal && d>new Date(toVal+"T23:59:59"))return false;
+    return true;
+  }).length;
+  document.getElementById("kWeb").textContent=euro.format(web);
+  document.getElementById("kOpale").textContent=euro.format(op);
+  document.getElementById("kDiff").textContent=euro.format(diff);
+  document.getElementById("kUnexplained").textContent=euro.format(unexpl);
+  document.getElementById("kIssues").textContent=issueRows.length;
+  document.getElementById("kCredits").textContent=creditCount;
+}
+function renderFilters(){
+  const fs=document.getElementById("fStatus"),fSup=document.getElementById("fSupplier"),fy=document.getElementById("fYear");
+  const sv=fs.value,pv=fSup.value,yv=fy.value;
+  fs.innerHTML='<option value="">Tous les statuts</option>'+[...new Set(state.rows.map(r=>r.status))].sort().map(x=>`<option>${esc(x)}</option>`).join("");
+  fSup.innerHTML='<option value="">Tous les fournisseurs</option>'+[...new Set(state.rows.map(r=>r.supplier))].sort().map(x=>`<option>${esc(x)}</option>`).join("");
+  fy.innerHTML='<option value="">Toutes les années</option>'+[...new Set(state.rows.map(r=>r.date.getFullYear()))].sort((a,b)=>b-a).map(y=>`<option value="${y}">${y}</option>`).join("");
+  fs.value=sv;fSup.value=pv;fy.value=yv;
+}
+function renderAnalysis(){
+  let rows=getFilteredRows();
+  rows.sort((a,b)=>{const pa={P1:0,P2:1,P3:2};return pa[a.priority]-pa[b.priority]||Math.abs(b.diff)-Math.abs(a.diff)||b.date-a.date});
+  const year=document.getElementById("fYear")?.value||"";
+  const quarter=document.getElementById("fQuarter")?.value||"";
+  const from=document.getElementById("fDateFrom")?.value||"";
+  const to=document.getElementById("fDateTo")?.value||"";
+  let periodTxt="";
+  if(year) periodTxt+=` · ${year}`;
+  if(quarter) periodTxt+=` · T${quarter}`;
+  if(from||to) periodTxt+=` · ${from||"…"} → ${to||"…"}`;
+  document.getElementById("rowCount").textContent=`${rows.length} ligne(s)${periodTxt}`;
+  document.getElementById("tbodyAnalysis").innerHTML=rows.length?rows.map(r=>`<tr>
+    <td>${fmtDate(r.date)}</td><td>${esc(r.supplier)}${tierInfo(r.opId)?.siret?`<div class="small">SIRET ${esc(tierInfo(r.opId).siret)} · tiers ${esc(r.opId)}</div>`:`<div class="small">tiers ${esc(r.opId)}</div>`}</td><td>${esc(r.bl)||"—"}</td><td>${esc(r.refs)||"—"}</td>
+    <td class="num">${euro.format(r.web)}</td><td class="num">${euro.format(r.opale)}</td><td class="num"><strong>${euro.format(r.diff)}</strong></td>
+    <td><span class="status ${statusClass(r.status)}"><span class="dot"></span>${esc(r.status)}</span></td>
+    <td class="priority ${r.priority.toLowerCase()}">${r.priority}</td><td>${esc(r.lecture)}</td></tr>`).join(""):`<tr><td colspan="10" class="empty">Aucun résultat avec ces filtres.</td></tr>`;
+}
+function renderMappings(){
+  const names=supplierNames();const el=document.getElementById("mappingList");
+  if(!opaleIds().length){el.innerHTML='<div class="empty">Charge d’abord les fichiers Op@le et WebGerest.</div>';return}
+  el.innerHTML=opaleIds().map(id=>{
+    const opts=names.map(n=>`<option value="${esc(n)}" ${state.mappings[id]===n?"selected":""}>${esc(n)}</option>`).join("");
+    const ti=tierInfo(id), ms=state.mapScores[id];
+    const detail=ti ? `${esc(ti.name)}${ti.siret?` · SIRET ${esc(ti.siret)}`:""}` : "Identité non trouvée dans le référentiel tiers";
+    const method=ti ? "Référentiel tiers Op@le + contrôle date/montant" : "Concordances date/montant uniquement";
+    return `<div class="mapping">
+      <div><strong>Tiers ${esc(id)}</strong><div class="small">${detail}</div></div>
+      <select data-map="${esc(id)}">${opts}</select>
+      <span class="small">${method}</span>
+      <span class="score">${ti?"SIRET/tiers":"heuristique"}</span>
+    </div>`;
+  }).join("");
+  el.querySelectorAll("select[data-map]").forEach(sel=>sel.addEventListener("change",()=>{
+    state.mappings[sel.dataset.map]=sel.value;localStorage.setItem("rapprochSRH_mappings",JSON.stringify(state.mappings));analyze();
+  }));
+}
+function renderCredits(){
+  const tb=document.getElementById("tbodyCredits");
+  tb.innerHTML=state.credits.length?state.credits.map(c=>`<tr><td>${esc(state.mappings[c.supplierId]||c.supplierId)}${tierInfo(c.supplierId)?.siret?`<div class="small">SIRET ${esc(tierInfo(c.supplierId).siret)}</div>`:""}</td><td>${esc(c.invoice.ref)}</td><td>${fmtDate(c.invoice.date)}</td><td>${esc(c.credit.ref)}</td><td>${fmtDate(c.credit.date)}</td><td class="num">${euro.format(c.amount)}</td><td><span class="status s-ok"><span class="dot"></span>Neutralisé</span></td></tr>`).join(""):`<tr><td colspan="7" class="empty">Aucun couple facture / avoir exact détecté.</td></tr>`;
+}
+function renderAll(){renderKPIs();renderFilters();renderAnalysis();renderMappings();renderCredits()}
+
+function exportCSV(){
+  const exportRows=getFilteredRows(); if(!exportRows.length)return alert("Aucune analyse à exporter sur la période sélectionnée.");
+  const head=["Date","Fournisseur WebGerest","Tiers Opale","Raison sociale Opale","SIRET","BL WebGerest","Factures Opale","WebGerest TTC","Opale TTC ajuste","Ecart","Statut","Priorite","Lecture"];
+  const lines=[head,...exportRows.map(r=>{const t=tierInfo(r.opId);return [dayKey(r.date),r.supplier,r.opId,t?.name||"",t?.siret||"",r.bl,r.refs,r.web,r.opale,r.diff,r.status,r.priority,r.lecture]})];
+  const csv=lines.map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="rapproch_srh_analyse.csv";a.click();URL.revokeObjectURL(a.href);
+}
+function reset(){
+  if(!confirm("Réinitialiser les fichiers chargés et les résultats ?"))return;
+  state.web=[];state.opale=[];state.credits=[];state.rows=[];state.files={};document.getElementById("metaWeb").textContent="Aucun fichier chargé.";document.getElementById("metaOpale").textContent="Aucun fichier chargé.";document.getElementById("metaTiers").textContent="Facultatif, mais recommandé pour fiabiliser les fournisseurs.";state.tiers=[];rebuildTierIndex();renderAll();
+}
+["sTolerance","sWaitDays","sP1","sP2","sCreditDays","sMapDays"].forEach(id=>{
+  const e=document.getElementById(id),saved=localStorage.getItem("rapprochSRH_"+id);if(saved!==null)e.value=saved;
+  e.addEventListener("change",()=>{localStorage.setItem("rapprochSRH_"+id,e.value);analyze()});
+});
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");document.getElementById(b.dataset.tab).classList.add("active");
+}));
+[["fileWeb","web"],["fileOpale","opale"],["fileTiers","tiers"]].forEach(([id,k])=>document.getElementById(id).addEventListener("change",e=>e.target.files[0]&&importFile(k,e.target.files[0])));
+[["dropWeb","web"],["dropOpale","opale"],["dropTiers","tiers"]].forEach(([id,k])=>{
+  const d=document.getElementById(id);["dragenter","dragover"].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add("drag")}));
+  ["dragleave","drop"].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove("drag")}));
+  d.addEventListener("drop",e=>e.dataTransfer.files[0]&&importFile(k,e.dataTransfer.files[0]));
+});
+["fStatus","fSupplier","fPriority","fSearch"].forEach(id=>document.getElementById(id).addEventListener(id==="fSearch"?"input":"change",()=>{renderKPIs();renderAnalysis()}));
+["fYear","fQuarter","fDateFrom","fDateTo"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{document.getElementById("fPeriod").value="";renderKPIs();renderAnalysis()}));
+document.getElementById("fPeriod").addEventListener("change",applyPresetPeriod);
+document.getElementById("btnClearDates").addEventListener("click",clearDateFilters);
+document.getElementById("btnRun").onclick=analyze;document.getElementById("btnExport").onclick=exportCSV;document.getElementById("btnReset").onclick=reset;
+renderAll();
+</script>
+</body>
+</html>

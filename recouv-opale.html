@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recouv’Op@le — Suivi des débiteurs et pilotage du recouvrement</title>
+<style>
+:root{
+  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#6b7280;--line:#e5e7eb;
+  --primary:#2563eb;--primary2:#1d4ed8;--ok:#15803d;--warn:#b45309;--danger:#b91c1c;
+  --soft:#eef2ff;--shadow:0 8px 26px rgba(15,23,42,.07);--radius:16px;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{max-width:1600px;margin:auto;padding:13px 20px;display:flex;gap:16px;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;min-width:300px}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center;color:white;font-weight:800}
+.brand h1{margin:0;font-size:18px}.brand small{color:var(--muted)}
+.actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{border:1px solid var(--line);background:white;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:650;color:var(--text)}
+button:hover{background:#f8fafc}.primary{background:var(--primary);border-color:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}
+input,select,textarea{border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;color:var(--text)}
+main{max-width:1600px;margin:auto;padding:20px}
+.grid{display:grid;gap:14px}.kpis{grid-template-columns:repeat(6,minmax(150px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kpi{padding:16px}.kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.kpi .value{font-size:25px;font-weight:800;margin-top:3px}.kpi .hint{color:var(--muted);font-size:12px;margin-top:3px}
+.filters{padding:14px;margin-top:14px;display:grid;grid-template-columns:1.4fr repeat(5,minmax(130px,1fr));gap:10px;align-items:end}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input,.field select{width:100%}
+.dashboard{margin-top:14px;display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+.panel{padding:16px}.panel h2{font-size:15px;margin:0 0 12px}.aging{display:grid;grid-template-columns:repeat(13,minmax(88px,1fr));gap:8px;align-items:end;height:230px;overflow-x:auto}
+.barwrap{height:180px;display:flex;flex-direction:column;justify-content:flex-end;gap:5px}.bar{border-radius:9px 9px 3px 3px;background:linear-gradient(#60a5fa,#2563eb);min-height:4px;position:relative}.bar.red{background:linear-gradient(#fca5a5,#dc2626)}
+.barval{text-align:center;font-size:11px;font-weight:700}.barlab{text-align:center;font-size:11px;color:var(--muted)}
+.risklist{display:grid;gap:8px}.risk{display:flex;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px}.risk b{font-size:13px}.risk small{display:block;color:var(--muted)}
+.tablecard{margin-top:14px;overflow:hidden}.tabletools{padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)}.tabletools .spacer{flex:1}
+.tablewrap{overflow:auto;max-height:560px}table{width:100%;border-collapse:separate;border-spacing:0;min-width:1350px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left}th{position:sticky;top:0;background:#f8fafc;z-index:2;font-size:12px;color:#475569;cursor:pointer}
+tr:hover td{background:#fafcff}.money{text-align:right;font-variant-numeric:tabular-nums}.badge{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:750;background:#eef2ff;color:#3730a3}
+.badge.warn{background:#fff7ed;color:#9a3412}.badge.danger{background:#fef2f2;color:#991b1b}.badge.ok{background:#f0fdf4;color:#166534}.priority{font-weight:800}
+.drawer{position:fixed;right:-540px;top:0;width:min(540px,100vw);height:100vh;background:white;z-index:50;box-shadow:-18px 0 50px rgba(15,23,42,.18);transition:.25s;display:flex;flex-direction:column}.drawer.open{right:0}.drawerhead{padding:18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start}.drawerbody{padding:18px;overflow:auto}.drawer h3{margin:0}.muted{color:var(--muted)}
+.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{border:1px solid var(--line);border-radius:10px;padding:10px}.mini small{display:block;color:var(--muted)}
+.timeline{display:grid;gap:8px;margin-top:12px}.event{border-left:3px solid #93c5fd;padding:8px 10px;background:#f8fafc;border-radius:0 8px 8px 0}.event small{color:var(--muted)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.28);z-index:40}.overlay.show{display:block}
+.empty{padding:40px;text-align:center;color:var(--muted)}.help{font-size:12px;color:var(--muted)}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(3,1fr)}.dashboard{grid-template-columns:1fr}}
+@media(max-width:700px){main{padding:10px}.topbar{padding:10px}.brand{min-width:0}.brand small{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.actions button:not(.primary){display:none}}
+
+.appnav{display:flex;gap:6px;margin-top:14px;padding:5px;background:#e9eef5;border-radius:12px;width:max-content;max-width:100%;overflow:auto;position:sticky;top:66px;z-index:20}
+.appnav button{border:0;background:transparent;padding:9px 14px;border-radius:9px;font-weight:750;color:#475569;white-space:nowrap}
+.appnav button.active{background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(15,23,42,.10)}
+.appview{display:none}.appview.active{display:block}
+.debtor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;margin-bottom:8px}
+.debtor-head h2{margin:0;font-size:18px}.debtor-head .help{margin-top:3px}
+.quickfilters{grid-template-columns:2fr 1fr 1fr 1fr 1fr auto}
+.advanced-filters{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.advanced-filters summary{cursor:pointer;font-weight:700;color:#334155;list-style:none}
+.advanced-filters summary::-webkit-details-marker{display:none}
+.advanced-grid{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-top:10px}
+.tablecard.primary-worklist{margin-top:8px}
+.primary-worklist .tabletools{position:sticky;top:111px;background:#fff;z-index:8}
+.primary-worklist .tablewrap{max-height:58vh;overflow:auto}
+.primary-worklist thead th{position:sticky;top:0;background:#f8fafc;z-index:5;box-shadow:0 1px 0 var(--line)}
+.primary-worklist tbody tr:hover{background:#f8fbff}
+.primary-worklist tbody tr{cursor:pointer}
+.section-note{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#f8fafc;color:#475569;font-size:12px}
+@media(max-width:1100px){
+ .quickfilters{grid-template-columns:2fr 1fr 1fr}
+ .advanced-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:700px){
+ .appnav{top:58px;width:100%}
+ .quickfilters,.advanced-grid{grid-template-columns:1fr 1fr}
+ .primary-worklist .tablewrap{max-height:62vh}
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.paybtn{padding:5px 8px;font-size:11px}
+.statuspill{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:750;border:1px solid var(--line)}
+.st0{background:#f8fafc;color:#475569}.st1{background:#eff6ff;color:#1d4ed8}.st2{background:#fff7ed;color:#9a3412}
+.st3{background:#fefce8;color:#854d0e}.st4{background:#f0fdf4;color:#166534}.st5{background:#ecfdf5;color:#065f46}
+.sold td{opacity:.62}
+.portfolio{display:none}
+
+.analytics{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.analytics-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:10px}
+.pyramid{height:300px;padding:10px 6px 2px 6px;position:relative}
+.pyramid svg{width:100%;height:100%;overflow:visible}
+.pyramid .gridline{stroke:#e5e7eb;stroke-width:1}
+.pyramid .axistext{font-size:10px;fill:#64748b}
+.pyramid .bar{fill:#3b82f6}
+.pyramid .barlabel{font-size:11px;font-weight:750;fill:#1d4ed8}
+.pyramid .catlabel{font-size:10px;font-weight:700;fill:#0f172a}
+.pyramid .tierlabel{font-size:9px;fill:#64748b}
+.linechart{height:300px;position:relative;padding:10px 6px 24px 42px}
+.linechart svg{width:100%;height:100%;overflow:visible}
+.linechart .gridline{stroke:#e5e7eb;stroke-width:1}.linechart .axistext{font-size:10px;fill:#64748b}
+.linechart .curve{fill:none;stroke:#2563eb;stroke-width:3}.linechart .point{fill:#fff;stroke:#2563eb;stroke-width:2}
+.strategy{margin-top:14px;padding:16px}.strategy-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.strategy-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.strategy-card{border:1px solid var(--line);border-radius:12px;padding:12px}.strategy-card b{display:block;margin-bottom:4px}.strategy-card .amount{font-size:19px;font-weight:800}.strategy-card small{color:var(--muted)}
+.rule-grid{display:grid;grid-template-columns:repeat(3,minmax(140px,1fr));gap:8px;margin-top:10px}
+.rule-grid .field input{width:100%}
+.action-table{margin-top:12px;overflow:auto}.action-table table{min-width:900px}
+@media(max-width:1050px){.analytics{grid-template-columns:1fr}.strategy-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.strategy-grid,.rule-grid{grid-template-columns:1fr}}
+
+@media print{
+ header,main,.drawer,.overlay{display:none!important}
+ .portfolio{display:block!important;font-family:Arial,sans-serif;color:#000;padding:8mm}
+ @page{size:A4 landscape;margin:10mm}
+ .pf-head{border:1.5px solid #333;padding:12px;margin-bottom:8px;position:relative}
+ .pf-head h1{text-align:center;font-size:20px;margin:0 0 20px}.pf-date{position:absolute;right:12px;top:10px}
+ .pf-meta{line-height:1.7}.pf-table{width:100%;border-collapse:collapse;font-size:9px;min-width:0}
+ .pf-table th{position:static;background:#d9dde5;color:#000}.pf-table th,.pf-table td{padding:5px;border-bottom:1px solid #ddd}
+ .pf-total{display:flex;justify-content:flex-end;gap:35px;margin-top:8px;font-size:11px}
+ .pf-solde{font-size:17px;font-weight:bold;margin-top:10px}.pf-sign{text-align:right;margin:20px 12% 0 0}
+}
+</style>
+
+<style id="eple-tools-recouv-home-theme">
+:root{
+  --bg:#f7f8fb;
+  --panel:#fff;
+  --text:#172033;
+  --muted:#6c7587;
+  --line:#e7eaf0;
+  --primary:#2563eb;
+  --primary2:#1d4ed8;
+  --ok:#15803d;
+  --warn:#b45309;
+  --danger:#b91c1c;
+  --soft:#eef4ff;
+  --shadow:0 .25rem 1rem rgba(15,23,42,.045);
+  --radius:.8rem;
+}
+
+body{
+  background:var(--bg)!important;
+  color:var(--text)!important;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+
+header{
+  position:static!important;
+  background:transparent!important;
+  border:0!important;
+  backdrop-filter:none!important;
+}
+
+.topbar{
+  max-width:1600px!important;
+  margin:1.5rem auto 0!important;
+  padding:1rem 1.25rem!important;
+  display:flex!important;
+  gap:1rem!important;
+  align-items:center!important;
+  background:#fff!important;
+  border:1px solid var(--line)!important;
+  border-radius:.85rem!important;
+  box-shadow:var(--shadow)!important;
+}
+
+.brand{
+  min-width:0!important;
+  gap:1rem!important;
+}
+
+.logo{
+  width:43px!important;
+  height:43px!important;
+  flex:0 0 43px!important;
+  border-radius:.7rem!important;
+  background:color-mix(in srgb,var(--primary) 10%,white)!important;
+  color:var(--primary)!important;
+  font-weight:normal!important;
+}
+
+.logo svg{
+  width:22px;
+  height:22px;
+  stroke-width:1.8;
+}
+
+.brand-copy{
+  min-width:0;
+}
+
+.app-kicker{
+  font-size:.66rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--primary);
+  margin-bottom:.15rem;
+}
+
+.brand h1{
+  margin:0!important;
+  font-size:1.15rem!important;
+  font-weight:700!important;
+  letter-spacing:-.015em!important;
+  color:var(--text)!important;
+}
+
+.brand small{
+  display:block;
+  margin-top:.2rem;
+  color:var(--muted)!important;
+  font-size:.76rem!important;
+}
+
+.actions{
+  margin-left:auto!important;
+  gap:.45rem!important;
+}
+
+button,.btn{
+  border:1px solid #d8dde6!important;
+  background:#fff!important;
+  border-radius:.55rem!important;
+  padding:.55rem .75rem!important;
+  color:#475467!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+}
+
+button:hover,.btn:hover{
+  background:#f8fafc!important;
+  border-color:#cbd5e1!important;
+}
+
+.primary{
+  background:var(--primary)!important;
+  border-color:var(--primary)!important;
+  color:#fff!important;
+}
+.primary:hover{
+  background:var(--primary2)!important;
+  border-color:var(--primary2)!important;
+  color:#fff!important;
+}
+
+main{
+  max-width:1600px!important;
+  margin:auto!important;
+  padding:1rem 1.5rem 2rem!important;
+}
+
+.card,
+.panel,
+.strategy{
+  border:1px solid var(--line)!important;
+  border-radius:.8rem!important;
+  box-shadow:var(--shadow)!important;
+  background:#fff!important;
+}
+
+.kpi{
+  padding:.9rem 1rem!important;
+}
+
+.kpi .label{
+  color:var(--muted)!important;
+  font-size:.7rem!important;
+  letter-spacing:.035em!important;
+  font-weight:700!important;
+}
+
+.kpi .value{
+  color:var(--text)!important;
+  font-size:1.4rem!important;
+  font-weight:700!important;
+}
+
+.kpi .hint,
+.help,
+.field label,
+.muted{
+  color:var(--muted)!important;
+}
+
+.filters{
+  padding:.9rem!important;
+  gap:.65rem!important;
+}
+
+input,select,textarea{
+  border:1px solid #dde2ea!important;
+  border-radius:.55rem!important;
+}
+
+input:focus,select:focus,textarea:focus{
+  outline:none!important;
+  border-color:#86b7fe!important;
+  box-shadow:0 0 0 .2rem rgba(37,99,235,.10)!important;
+}
+
+.appnav{
+  margin-top:1rem!important;
+  padding:.3rem!important;
+  gap:.2rem!important;
+  background:#fff!important;
+  border:1px solid var(--line)!important;
+  border-radius:.7rem!important;
+  box-shadow:var(--shadow)!important;
+  width:max-content!important;
+  position:sticky!important;
+  top:.5rem!important;
+}
+
+.appnav button{
+  border:0!important;
+  background:transparent!important;
+  color:#667085!important;
+  border-radius:.5rem!important;
+  padding:.5rem .75rem!important;
+}
+
+.appnav button:hover{
+  color:var(--primary)!important;
+  background:#f8fafc!important;
+}
+
+.appnav button.active{
+  color:var(--primary)!important;
+  background:var(--soft)!important;
+  box-shadow:none!important;
+}
+
+.debtor-head h2,
+.panel h2,
+.strategy-head h2{
+  color:#344054!important;
+  font-weight:700!important;
+}
+
+.section-note{
+  background:#f8fafc!important;
+  border-color:var(--line)!important;
+  color:#667085!important;
+  border-radius:.6rem!important;
+}
+
+.tablecard{
+  border-radius:.8rem!important;
+}
+
+.tabletools{
+  background:#fff!important;
+  border-bottom:1px solid var(--line)!important;
+}
+
+th{
+  background:#f8fafc!important;
+  color:#667085!important;
+  border-bottom:1px solid var(--line)!important;
+}
+
+td{
+  border-bottom:1px solid var(--line)!important;
+}
+
+tr:hover td{
+  background:#fafcff!important;
+}
+
+.badge{
+  background:var(--soft)!important;
+  color:#1d4ed8!important;
+}
+
+.drawer{
+  border-left:1px solid var(--line)!important;
+  box-shadow:-.75rem 0 2rem rgba(15,23,42,.12)!important;
+}
+
+.drawerhead{
+  border-bottom:1px solid var(--line)!important;
+}
+
+.mini,
+.risk,
+.strategy-card{
+  border-color:var(--line)!important;
+  border-radius:.65rem!important;
+}
+
+.event{
+  background:#f8fafc!important;
+  border-left-color:#93c5fd!important;
+}
+
+.overlay{
+  background:rgba(15,23,42,.32)!important;
+}
+
+@media(max-width:700px){
+  .topbar{
+    margin:1rem!important;
+    padding:.9rem 1rem!important;
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .actions{
+    margin-left:0!important;
+    width:100%!important;
+  }
+  main{padding:0 1rem 1.5rem!important}
+}
+
+@media print{
+  .topbar{display:none!important}
+}
+</style>
+
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+<body>
+<header><div class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16M4 12h10M4 18h7"/>
+        <circle cx="18" cy="16" r="3"/>
+        <path d="m20.2 18.2 2 2"/>
+      </svg>
+    </div>
+    <div class="brand-copy">
+      <div class="app-kicker">Pilotage</div>
+      <h1>Recouv’Op@le</h1>
+      <small>Suivi des débiteurs et pilotage du recouvrement.</small>
+    </div>
+  </div>
+  <div class="actions">
+    <input id="file" type="file" accept=".xlsx,.xls,.csv,.txt,.md" hidden>
+    <button onclick="document.getElementById('file').click()">Importer GYPIE</button>
+    <button onclick="exportXLSX()">Exporter Excel</button>
+    <button onclick="printPortfolio()">PDF portefeuille</button>
+    <button class="primary" onclick="loadDemo()">Charger l’exemple</button>
+  </div>
+</div></header>
+
+
+<main>
+<section class="grid kpis">
+    <div class="card kpi"><div class="label">Encours</div><div class="value" id="kEncours">0 €</div><div class="hint" id="kPieces">0 pièces</div></div>
+    <div class="card kpi"><div class="label">Tiers débiteurs</div><div class="value" id="kTiers">0</div><div class="hint">tiers distincts</div></div>
+    <div class="card kpi"><div class="label">Échu</div><div class="value" id="kEchu">0 €</div><div class="hint" id="kEchuPct">0 % de l’encours</div></div>
+    <div class="card kpi"><div class="label">> 90 jours</div><div class="value" id="k90">0 €</div><div class="hint">zone de vigilance</div></div>
+    <div class="card kpi"><div class="label">> 1 an</div><div class="value" id="k365">0 €</div><div class="hint">priorité forte</div></div>
+    <div class="card kpi"><div class="label">Taux de recouvrement*</div><div class="value" id="kTx">—</div><div class="hint">si montant initial disponible</div></div>
+  </section>
+
+<nav class="appnav" aria-label="Navigation de l'application">
+  <button id="tabDebtors" class="active" onclick="showView('debtors')">Débiteurs</button>
+  <button id="tabAnalysis" onclick="showView('analysis')">Analyse</button>
+  <button id="tabStrategy" onclick="showView('strategy')">Stratégie</button>
+</nav>
+
+<section id="viewDebtors" class="appview active">
+  <div class="debtor-head">
+    <div><h2>Débiteurs à traiter</h2><div class="help">La liste de travail est désormais prioritaire dans l'application.</div></div>
+    <div class="section-note">Cycle : À recouvrer → Relancé → Engagement → Paiement signalé → Constaté GYPIE → Soldé</div>
+  </div>
+  
+<section class="card filters quickfilters">
+  <div class="field"><label>Rechercher un débiteur</label><input id="q" placeholder="Nom, n° tiers, pièce..." oninput="applyFilters()"></div>
+  <div class="field"><label>Établissement</label><select id="fEts" onchange="applyFilters()"><option value="">Tous</option></select></div>
+  <div class="field"><label>Tranche</label><select id="fBucket" onchange="applyFilters()"><option value="">Toutes</option></select></div>
+  <div class="field"><label>Priorité</label><select id="fPriority" onchange="applyFilters()"><option value="">Toutes</option><option>Critique</option><option>Haute</option><option>Normale</option><option>Faible</option></select></div>
+  <div class="field"><label>Date d’analyse</label><input id="asOf" type="date" onchange="recompute()"></div>
+  <button onclick="resetFilters()">Réinitialiser</button>
+
+  <details class="advanced-filters">
+    <summary>Filtres avancés ▾</summary>
+    <div class="advanced-grid">
+      <div class="field"><label>Compte</label><select id="fCompte" onchange="applyFilters()"><option value="">Tous</option></select></div>
+      <div class="field"><label>Gestionnaire</label><select id="fGest" onchange="applyFilters()"><option value="">Tous</option></select></div>
+      <div class="field"><label>Date d’échéance</label><select id="dateMode" onchange="recompute()"><option value="initial">Date d'échéance initiale</option><option value="echeance">Échéance</option></select></div>
+      <div class="field"><label>Relance</label><select id="fRelance" onchange="applyFilters()"><option value="">Toutes</option><option value="none">Sans relance</option><option value="has">Avec relance</option></select></div>
+      <div class="field"><label>Litige</label><select id="fLitige" onchange="applyFilters()"><option value="">Tous</option><option value="yes">En litige</option><option value="no">Hors litige</option></select></div>
+      <div class="field"><label>Minimum (€)</label><input id="fMin" type="number" min="0" step="1" value="0" oninput="applyFilters()"></div>
+      <div class="field"><label>Convention comptable</label><input value="Débiteur = débit − crédit" disabled></div>
+    </div>
+  </details>
+</section>
+
+  <section class="card tablecard primary-worklist">
+    <div class="tabletools">
+      <div><b id="resultCount">0 ligne</b><div class="help">Cliquez sur un tiers pour ouvrir son dossier de recouvrement.</div></div>
+      <div class="spacer"></div><button onclick="resetFilters()">Réinitialiser</button>
+    </div>
+    <div class="tablewrap">
+      <table><thead><tr>
+        <th>Suivi</th><th onclick="sortBy('priorityScore')">Priorité</th><th onclick="sortBy('tiersLabel')">Tiers</th><th>Compte</th><th>Pièce</th>
+        <th onclick="sortBy('dueDate')">Échéance</th><th onclick="sortBy('days')">Retard</th><th>Tranche</th>
+        <th onclick="sortBy('amount')">Encours</th><th>N° relance</th><th>Dernière</th><th>Litige</th><th>Gestionnaire</th><th>Prescription*</th><th>Action suivante</th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+      <div class="empty" id="empty">Importez un export GYPIE pour commencer.</div>
+    </div>
+  </section>
+</section>
+
+<section id="viewAnalysis" class="appview">
+  <section class="dashboard">
+    <div class="card panel"><h2>Encours par ancienneté</h2><div id="aging" class="aging"></div></div>
+    <div class="card panel"><h2>File d’action — priorités</h2><div id="risklist" class="risklist"></div></div>
+  </section>
+  <div class="card" style="margin-top:14px;padding:12px 14px">
+  <b>Suivi du recouvrement — tiers débiteurs uniquement</b><div class="help" style="margin-top:4px">Contrôle appliqué : total des débits − total des crédits par tiers. Les tiers créditeurs ou soldés sont exclus du suivi des débiteurs.</div>
+  <div id="workflowStats" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+</div>
+  <section class="card panel" style="margin-top:14px">
+  <div class="strategy-head">
+    <div>
+      <h2>Sécurisation du recouvrement — vigilance prescription</h2>
+      <div class="help">Référence juridique : délai de 4 ans à compter de la prise en charge du titre, sous réserve des actes interruptifs ou d’une reconnaissance du débiteur. L’ancienneté par échéance ne suffit donc pas à elle seule.</div>
+    </div>
+    <div class="field"><label>Date utilisée pour l’alerte</label>
+      <select id="prescriptionDateMode" onchange="recomputePrescription()">
+        <option value="created">Créé le / prise en charge si disponible</option>
+        <option value="emission">Émission</option>
+        <option value="due">Échéance (approximation)</option>
+      </select>
+    </div>
+  </div>
+  <div id="prescriptionStats" class="strategy-grid"></div>
+  <div class="help" style="margin-top:8px">Une créance proche de 4 ans doit être contrôlée immédiatement : date réelle de prise en charge, actes interruptifs, reconnaissance du débiteur, contentieux éventuel. Le logiciel signale un risque ; il ne conclut pas à la prescription.</div>
+</section>
+  <section class="analytics">
+  <div class="card panel">
+    <div class="strategy-head">
+      <div><h2>Encours par ancienneté</h2><div class="help">Montant restant à recouvrer par tranche.</div></div>
+      <div class="field"><label>Périodicité</label><select id="pyrPeriod" onchange="renderPyramid()"><option value="month">Mensuelle</option><option value="quarter" selected>Trimestrielle</option><option value="standard">Seuils de recouvrement</option></select></div>
+    </div>
+    <div id="pyramid" class="pyramid"></div>
+  </div>
+  <div class="card panel">
+    <h2>Taux de recouvrement par ancienneté</h2>
+    <div class="help">Crédits ÷ débits observés par tranche de retard.</div>
+    <div id="recoveryCurve" class="linechart"></div>
+  </div>
+</section>
+</section>
+
+<section id="viewStrategy" class="appview">
+  <section class="card strategy">
+  <div class="strategy-head">
+    <div><h2 style="margin:0">Stratégie de recouvrement</h2><div class="help">Les règles classent et proposent les actions. Elles ne déclenchent aucune procédure externe automatiquement.</div></div>
+    <button onclick="applyStrategySuggestions()">Appliquer les statuts proposés</button>
+  </div>
+  <div class="rule-grid">
+    <div class="field"><label>Relance amiable à partir de</label><input id="ruleRelance" type="number" min="0" value="15" onchange="renderStrategy()"><small class="help">jours de retard</small></div>
+    <div class="field"><label>Relance renforcée / mise en demeure à partir de</label><input id="ruleMise" type="number" min="0" value="30" onchange="renderStrategy()"><small class="help">jours de retard</small></div>
+    <div class="field"><label>Candidat au recouvrement forcé à partir de</label><input id="ruleForce" type="number" min="0" value="60" onchange="renderStrategy()"><small class="help">jours de retard</small></div>
+  </div>
+  <div id="strategyCards" class="strategy-grid"></div>
+  <div class="action-table">
+    <table><thead><tr><th>Action proposée</th><th>Créances</th><th>Tiers</th><th>Montant</th><th>Part de l’encours</th><th>Seuil</th></tr></thead><tbody id="strategyBody"></tbody></table>
+  </div>
+</section>
+</section>
+</main>
+
+
+<section class="portfolio" id="portfolio">
+ <div class="pf-head"><div class="pf-date" id="pfDate"></div><h1>PORTEFEUILLE TIERS</h1>
+ <div class="pf-meta"><b>Établissement :</b> <span id="pfEts"></span><br><b>Identité du tiers :</b> <span id="pfTiers"></span><br><b>N° du tiers :</b> <span id="pfTiersId"></span></div></div>
+ <table class="pf-table"><thead><tr><th>Pièce</th><th>Date</th><th>Compte</th><th>Libellé compte</th><th>Tiers</th><th>Identité</th><th>Référence</th><th>Libellé référence</th><th>Débit</th><th>Crédit</th></tr></thead><tbody id="pfBody"></tbody></table>
+ <div class="pf-total"><span>Nombre d’opérations : <b id="pfCount"></b></span><span>Débit : <b id="pfDebit"></b></span><span>Crédit : <b id="pfCredit"></b></span></div>
+ <div class="pf-solde">SOLDE DU TIERS : <span id="pfSolde"></span></div><div class="pf-sign">Le comptable public</div>
+</section>
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawerhead"><div><h3 id="dTitle">Tiers</h3><div class="muted" id="dSub"></div></div><button onclick="closeDrawer()">✕</button></div>
+  <div class="drawerbody">
+    <div class="detailgrid" id="dStats"></div>
+    <h4>Plan d’action</h4>
+    <div class="field"><label>Statut de recouvrement</label><select id="dStatus">
+<option>À recouvrer</option>
+<option>Relancé</option>
+<option>Engagement de paiement</option>
+<option>Paiement signalé</option>
+<option>Paiement constaté dans GYPIE</option>
+<option>Soldé</option>
+</select></div>
+    <div class="field" style="margin-top:8px"><label>Prochaine action</label><input id="dNext" type="date"></div>
+    <div class="field" style="margin-top:8px"><label>Note / compte rendu</label><textarea id="dNote" rows="4" style="width:100%" placeholder="Appel, mail, engagement de paiement, motif du litige..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="primary" onclick="saveAction()">Enregistrer l’action</button><button onclick="printPortfolio()">Éditer / PDF</button><button onclick="addQuickRelance()">+ Relance aujourd’hui</button></div>
+    <h4>Historique local</h4><div id="timeline" class="timeline"></div>
+    <h4>Créances du tiers</h4><div id="dItems"></div>
+  </div>
+</aside>
+
+<script>
+let raw=[], rows=[], filtered=[], currentTiers=null, sortKey='priorityScore', sortDir=-1;
+
+function showView(name){
+ const map={debtors:'Debtors',analysis:'Analysis',strategy:'Strategy'};
+ Object.keys(map).forEach(k=>{
+   const v=document.getElementById('view'+map[k]), b=document.getElementById('tab'+map[k]);
+   if(v)v.classList.toggle('active',k===name);
+   if(b)b.classList.toggle('active',k===name);
+ });
+ try{localStorage.setItem('gy_active_view',name)}catch(e){}
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const buckets=[
+ {key:'notdue',label:'Non échu',min:-Infinity,max:-1},
+ {key:'0-15',label:'0–15 j',min:0,max:15},
+ {key:'16-30',label:'16–30 j',min:16,max:30},
+ {key:'31-45',label:'31–45 j',min:31,max:45},
+ {key:'46-60',label:'46–60 j',min:46,max:60},
+ {key:'61-90',label:'61–90 j',min:61,max:90},
+ {key:'91-180',label:'91–180 j',min:91,max:180},
+ {key:'181-365',label:'181 j–1 an',min:181,max:365},
+ {key:'1-2y',label:'1–2 ans',min:366,max:730},
+ {key:'2-3y',label:'2–3 ans',min:731,max:1095},
+ {key:'3-3.5y',label:'3–3,5 ans',min:1096,max:1277},
+ {key:'3.5-4y',label:'3,5–4 ans',min:1278,max:1460},
+ {key:'4y+',label:'≥ 4 ans',min:1461,max:Infinity}
+];
+setTimeout(()=>showView(localStorage.getItem('gy_active_view')||'debtors'),0);
+document.getElementById('asOf').value=new Date().toISOString().slice(0,10);
+document.getElementById('fBucket').innerHTML='<option value="">Toutes</option>'+buckets.map(b=>`<option value="${b.key}">${b.label}</option>`).join('');
+
+function norm(s){return String(s??'').trim()}
+function num(v){if(v==null)return 0; let s=String(v).replace(/\s/g,'').replace(',','.').replace(/[^\d.-]/g,''); return Number(s)||0}
+function parseDate(v){
+ let s=norm(v); if(!s)return null;
+ if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){let [d,m,y]=s.split('/');return new Date(`${y}-${m}-${d}T00:00:00`)}
+ let d=new Date(s); return isNaN(d)?null:d;
+}
+function parseDelimited(text){
+ let lines=text.split(/\r?\n/).filter(x=>x.trim());
+ if(!lines.length)return [];
+ let delim=lines[0].includes('|')?'|':(lines[0].includes('\t')?'\t':';');
+ if(delim==='|' && lines[0].trim().startsWith('|')) lines=lines.map(l=>l.trim().replace(/^\||\|$/g,''));
+ let head=lines[0].split(delim).map(x=>x.trim());
+ let start=(lines[1]&&lines[1].split(delim).every(x=>/^\s*:?-{3,}:?\s*$/.test(x)))?2:1;
+ return lines.slice(start).map(line=>{
+   let vals=line.split(delim).map(x=>x.trim()), o={}; head.forEach((h,i)=>o[h]=vals[i]??''); return o;
+ });
+}
+document.getElementById('file').addEventListener('change',async e=>{
+ const f=e.target.files[0]; if(!f)return;
+ if(/\.xlsx?$/i.test(f.name)){
+   if(typeof XLSX==='undefined'){alert("Le module Excel n'est pas disponible. Connectez-vous une première fois à Internet ou importez en CSV.");return}
+   const buf=await f.arrayBuffer(), wb=XLSX.read(buf,{type:'array',cellDates:false});
+   const ws=wb.Sheets[wb.SheetNames[0]]; raw=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});
+ } else {
+   const txt=await f.text(); raw=parseDelimited(txt); localStorage.setItem('gy_agee_last',txt);
+ }
+ recompute(); e.target.value='';
+});
+function field(o,...names){for(const n of names)if(o[n]!=null&&norm(o[n])!=='')return o[n]; return ''}
+function recompute(){
+ const asOf=new Date(document.getElementById('asOf').value+'T00:00:00');
+ const dateMode=document.getElementById('dateMode').value;
+ let mapped=raw.map((o,i)=>{
+   let debit=num(field(o,'Solde débit')), credit=num(field(o,'Solde crédit'));
+   let amount=debit-credit;
+   let dval=dateMode==='initial'?field(o,"Date d'échéance initiale") : field(o,'Echéance');
+   if(!dval) dval=field(o,'Echéance',"Date d'échéance initiale");
+   let due=parseDate(dval), days=due?Math.floor((asOf-due)/86400000):null;
+   let bucket=days==null?null:buckets.find(b=>days>=b.min&&days<=b.max);
+   let relance=num(field(o,'N° relance')); let litige=norm(field(o,'Litige'));
+   let score=0;
+   if(days!=null){score += Math.max(0,Math.min(days,730))/10}
+   score += Math.log10(Math.max(amount,1))*12 + relance*4;
+   if(litige && !/^(non|n|0)$/i.test(litige)) score+=15;
+   let priority=score>=85?'Critique':score>=60?'Haute':score>=35?'Normale':'Faible';
+   return {i,src:o,amount,debit,credit,dueDate:due,days,bucket:bucket?.key||'',
+     bucketLabel:bucket?.label||'Sans date', relance,litige,
+     tiersId:norm(field(o,'Tiers principal','Tiers concerné')),
+     tiersLabel:norm(field(o,'Libellé Tiers Principal','Nom/libellé tiers principal','Prénom/libellé tiers principal'))||'Tiers non libellé',
+     compte:norm(field(o,'Compte')),piece:norm(field(o,'Pièce')),ref:norm(field(o,'Référence')),
+     ets:norm(field(o,'Ets')),gest:norm(field(o,'Gestionnaire')),last:norm(field(o,'Dernière')),
+     docDate:parseDate(field(o,'Date','Comptable','Date comptable','Emission','Date émission','Date d’émission')),
+     createdDate:parseDate(field(o,'Créé le','Date de prise en charge','Prise en charge')),
+     emissionDate:parseDate(field(o,'Emission','Date émission','Date d’émission')),
+     priority,priorityScore:score
+   };
+ });
+ // Calcul du solde au niveau du tiers : total débits - total crédits.
+ // Un tiers n'est conservé que si ce solde est strictement débiteur (> 0).
+ const tierNet={};
+ mapped.forEach(r=>{const k=r.tiersId||r.tiersLabel; tierNet[k]=(tierNet[k]||0)+r.debit-r.credit});
+ rows=mapped.filter(r=>tierNet[r.tiersId||r.tiersLabel]>0.0001);
+ fillSelect('fEts', [...new Set(rows.map(r=>r.ets).filter(Boolean))]);
+ fillSelect('fCompte',[...new Set(rows.map(r=>r.compte).filter(Boolean))]);
+ fillSelect('fGest',[...new Set(rows.map(r=>r.gest).filter(Boolean))]);
+ applyFilters();
+}
+function fillSelect(id,vals){
+ const el=document.getElementById(id), cur=el.value, first=el.options[0]?.outerHTML||'<option value="">Tous</option>';
+ el.innerHTML=first+vals.sort().map(v=>`<option>${esc(v)}</option>`).join(''); if(vals.includes(cur))el.value=cur;
+}
+function applyFilters(){
+ const q=norm(document.getElementById('q').value).toLowerCase(), ets=fEts.value, compte=fCompte.value,b=fBucket.value,g=fGest.value,p=fPriority.value;
+ const rel=fRelance.value, lit=fLitige.value, min=num(fMin.value);
+ filtered=rows.filter(r=>{
+   const hay=(r.tiersLabel+' '+r.tiersId+' '+r.piece+' '+r.ref).toLowerCase();
+   const isLit=r.litige&&!/^(non|n|0)$/i.test(r.litige);
+   return (!q||hay.includes(q))&&(!ets||r.ets===ets)&&(!compte||r.compte===compte)&&(!b||r.bucket===b)&&(!g||r.gest===g)&&(!p||r.priority===p)&&
+   (!rel||(rel==='none'?r.relance===0:r.relance>0))&&(!lit||(lit==='yes'?isLit:!isLit))&&r.amount>=min;
+ });
+ render();
+}
+function render(){
+ updateKpis(); renderAging(); renderRisk(); renderWorkflowStats(); renderPyramid(); renderRecoveryCurve(); renderStrategy(); renderPrescription();
+ let list=[...filtered].sort((a,b)=>{let x=a[sortKey],y=b[sortKey]; if(x instanceof Date)x=x.getTime();if(y instanceof Date)y=y.getTime(); return (x>y?1:x<y?-1:0)*sortDir});
+ tbody.innerHTML=list.map(r=>{let st=getRowStatus(r);return `<tr class="${st==='Soldé'?'sold':''}" onclick="openTiers('${js(r.tiersId)}','${js(r.tiersLabel)}')">
+ <td onclick="event.stopPropagation()"><button class="paybtn statuspill ${statusClass(st)}" onclick="advanceStatus(${r.i})">${esc(st)}</button></td>
+ <td><span class="badge ${r.priority==='Critique'?'danger':r.priority==='Haute'?'warn':r.priority==='Faible'?'ok':''}">${r.priority}</span></td>
+ <td><b>${esc(r.tiersLabel)}</b><br><small class="muted">${esc(r.tiersId)}</small></td><td>${esc(r.compte)}</td><td>${esc(r.piece)}</td>
+ <td>${r.dueDate?fmtDate(r.dueDate):'—'}</td><td>${r.days==null?'—':(r.days<0?`${Math.abs(r.days)} j avant`:`${r.days} j`)}</td><td>${esc(r.bucketLabel)}</td>
+ <td class="money"><b>${eur(r.amount)}</b></td><td>${r.relance||'—'}</td><td>${esc(r.last)||'—'}</td><td>${esc(r.litige)||'—'}</td><td>${esc(r.gest)||'—'}</td><td>${prescriptionCell(r)}</td><td>${nextAction(r)}</td></tr>`}).join('');
+ empty.style.display=list.length?'none':'block'; resultCount.textContent=`${list.length} ligne${list.length>1?'s':''}`;
+}
+function tierDebtorTotal(arr){
+ const m={};arr.forEach(r=>{const k=r.tiersId||r.tiersLabel;m[k]=(m[k]||0)+r.debit-r.credit});
+ return Object.values(m).filter(v=>v>0).reduce((a,b)=>a+b,0);
+}
+function updateKpis(){
+ const total=tierDebtorTotal(filtered), tiers=new Set(filtered.map(r=>r.tiersId||r.tiersLabel)).size, echu=sum(filtered.filter(r=>r.days>=0)), j90=sum(filtered.filter(r=>r.days>90)), j365=sum(filtered.filter(r=>r.days>365));
+ kEncours.textContent=eur(total); kPieces.textContent=`${filtered.length} pièce${filtered.length>1?'s':''}`; kTiers.textContent=tiers;kEchu.textContent=eur(echu);kEchuPct.textContent=total?`${(echu/total*100).toFixed(1)} % de l’encours`:'0 %';k90.textContent=eur(j90);k365.textContent=eur(j365);
+ let initial=filtered.reduce((s,r)=>s+num(field(r.src,'Montant crédit','Montant débit')),0); kTx.textContent=initial>0?`${Math.max(0,(1-total/initial)*100).toFixed(1)} %`:'—';
+}
+
+function renderWorkflowStats(){
+ if(!document.getElementById('workflowStats'))return;
+ const stats=workflow.map(st=>({st,n:filtered.filter(r=>getRowStatus(r)===st).length,amt:sum(filtered.filter(r=>getRowStatus(r)===st))}));
+ workflowStats.innerHTML=stats.map(x=>`<span class="statuspill ${statusClass(x.st)}">${x.st} · ${x.n} · ${shortEur(x.amt)}</span>`).join('');
+}
+
+function positiveOutstandingByTier(arr){
+ const m={};
+ arr.forEach(r=>{const k=r.tiersId||r.tiersLabel;if(!m[k])m[k]={net:0,days:-999,rows:[]};m[k].net+=r.debit-r.credit;m[k].days=Math.max(m[k].days,r.days??-999);m[k].rows.push(r)});
+ return Object.entries(m).filter(([k,v])=>v.net>0.0001).map(([k,v])=>({key:k,...v}));
+}
+
+function prescriptionBaseDate(r){
+ const mode=document.getElementById('prescriptionDateMode')?.value||'created';
+ if(mode==='created') return r.createdDate||r.emissionDate||r.dueDate||null;
+ if(mode==='emission') return r.emissionDate||r.createdDate||r.dueDate||null;
+ return r.dueDate||r.createdDate||r.emissionDate||null;
+}
+function addYears(d,n){if(!d)return null;const x=new Date(d);x.setFullYear(x.getFullYear()+n);return x}
+function prescriptionInfo(r){
+ const base=prescriptionBaseDate(r), asOf=new Date(document.getElementById('asOf').value+'T00:00:00');
+ if(!base)return {base:null,limit:null,daysLeft:null,band:'unknown'};
+ const limit=addYears(base,4), daysLeft=Math.ceil((limit-asOf)/86400000);
+ let band='ok';
+ if(daysLeft<=0)band='elapsed';else if(daysLeft<=90)band='critical';else if(daysLeft<=180)band='warning';else if(daysLeft<=365)band='watch';
+ return {base,limit,daysLeft,band};
+}
+function recomputePrescription(){renderPrescription();render()}
+function renderPrescription(){
+ const el=document.getElementById('prescriptionStats');if(!el)return;
+ const tiers=positiveOutstandingByTier(filtered);
+ const bands=[
+  {k:'elapsed',label:'Échéance théorique atteinte',sub:'Contrôle immédiat'},
+  {k:'critical',label:'Moins de 3 mois',sub:'Priorité absolue'},
+  {k:'warning',label:'3 à 6 mois',sub:'Action rapide'},
+  {k:'watch',label:'6 à 12 mois',sub:'À sécuriser'}
+ ];
+ const vals=bands.map(b=>{
+   let ts=tiers.filter(t=>t.rows.some(r=>prescriptionInfo(r).band===b.k));
+   return {...b,n:ts.length,amt:ts.reduce((z,t)=>z+t.net,0)};
+ });
+ el.innerHTML=vals.map(x=>`<div class="strategy-card"><b>${x.label}</b><div class="amount">${eur(x.amt)}</div><small>${x.n} tiers · ${x.sub}</small></div>`).join('');
+}
+
+function pyramidBuckets(){
+ const mode=document.getElementById('pyrPeriod')?.value||'quarter';
+ if(mode==='month') return [
+  {label:'Non échu',min:-99999,max:-1},{label:'0–30 j',min:0,max:30},{label:'31–60 j',min:31,max:60},
+  {label:'61–90 j',min:61,max:90},{label:'91–120 j',min:91,max:120},{label:'121–180 j',min:121,max:180},
+  {label:'181–365 j',min:181,max:365},{label:'> 1 an',min:366,max:99999}
+ ];
+ if(mode==='standard') return [
+  {label:'Non échu',min:-99999,max:-1},{label:'0–15 j',min:0,max:15},{label:'16–30 j',min:16,max:30},
+  {label:'31–45 j',min:31,max:45},{label:'46–60 j',min:46,max:60},{label:'61–90 j',min:61,max:90},
+  {label:'91–180 j',min:91,max:180},{label:'181 j–1 an',min:181,max:365},{label:'1–2 ans',min:366,max:730},
+  {label:'2–3 ans',min:731,max:1095},{label:'3–3,5 ans',min:1096,max:1277},
+  {label:'3,5–4 ans',min:1278,max:1460},{label:'≥ 4 ans',min:1461,max:99999}
+ ];
+ return [
+  {label:'Non échu',min:-99999,max:-1},{label:'0–90 j',min:0,max:90},{label:'91–180 j',min:91,max:180},
+  {label:'181–270 j',min:181,max:270},{label:'271–365 j',min:271,max:365},{label:'> 1 an',min:366,max:99999}
+ ];
+}
+function renderPyramid(){
+ const el=document.getElementById('pyramid'); if(!el)return;
+ const tiers=positiveOutstandingByTier(filtered), bs=pyramidBuckets();
+ const vals=bs.map(b=>{
+   const hit=tiers.filter(t=>t.days>=b.min&&t.days<=b.max);
+   return {label:b.label,v:hit.reduce((z,t)=>z+t.net,0),n:hit.length};
+ });
+ const W=720,H=280,left=46,right=12,top=24,bottom=55,iw=W-left-right,ih=H-top-bottom;
+ const maxRaw=Math.max(...vals.map(x=>x.v),1);
+ const pow=Math.pow(10,Math.floor(Math.log10(maxRaw)));
+ const max=Math.ceil(maxRaw/pow)*pow || 1;
+ let grid='';
+ [0,.25,.5,.75,1].forEach(f=>{
+   const val=max*f,y=top+ih-(f*ih);
+   grid+=`<line class="gridline" x1="${left}" y1="${y}" x2="${W-right}" y2="${y}"/>`;
+   grid+=`<text class="axistext" text-anchor="end" x="${left-6}" y="${y+3}">${shortEur(val)}</text>`;
+ });
+ const slot=iw/Math.max(vals.length,1), bw=Math.min(72,slot*.62);
+ const bars=vals.map((p,i)=>{
+   const h=(p.v/max)*ih,x=left+i*slot+(slot-bw)/2,y=top+ih-h,cx=x+bw/2;
+   return `<rect class="bar" x="${x}" y="${y}" width="${bw}" height="${Math.max(h,1)}" rx="4"/>
+    <text class="barlabel" text-anchor="middle" x="${cx}" y="${Math.max(top+10,y-7)}">${shortEur(p.v)}</text>
+    <text class="catlabel" text-anchor="middle" x="${cx}" y="${top+ih+20}">${esc(p.label)}</text>
+    <text class="tierlabel" text-anchor="middle" x="${cx}" y="${top+ih+35}">${p.n} tiers</text>`;
+ }).join('');
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}${bars}</svg>`;
+}
+function renderRecoveryCurve(){
+ const el=document.getElementById('recoveryCurve'); if(!el)return;
+ const bs=[
+  {label:'30 j',min:0,max:30},{label:'60 j',min:31,max:60},{label:'1 trim.',min:61,max:90},
+  {label:'6 mois',min:91,max:180},{label:'1 an',min:181,max:365},{label:'> 1 an',min:366,max:99999}
+ ];
+ const pts=bs.map(b=>{
+   const a=filtered.filter(r=>r.days!=null&&r.days>=b.min&&r.days<=b.max);
+   const d=a.reduce((s,r)=>s+r.debit,0), c=a.reduce((s,r)=>s+r.credit,0);
+   return {label:b.label,rate:d>0?Math.max(0,Math.min(100,c/d*100)):null,debit:d,credit:c};
+ });
+ const valid=pts.filter(p=>p.rate!=null);
+ if(!valid.length){el.innerHTML='<div class="empty">Données insuffisantes pour calculer l’indicateur.</div>';return}
+ const W=620,H=250,left=36,right=10,top=12,bottom=32,iw=W-left-right,ih=H-top-bottom;
+ const x=i=>left+(valid.length===1?iw/2:i*iw/(valid.length-1)), y=v=>top+(100-v)/100*ih;
+ let grid='';[0,25,50,75,100].forEach(v=>{grid+=`<line class="gridline" x1="${left}" y1="${y(v)}" x2="${W-right}" y2="${y(v)}"/><text class="axistext" x="2" y="${y(v)+3}">${v}%</text>`});
+ const path=valid.map((p,i)=>(i?'L':'M')+x(i)+' '+y(p.rate)).join(' ');
+ const points=valid.map((p,i)=>`<circle class="point" cx="${x(i)}" cy="${y(p.rate)}" r="4"><title>${p.label}: ${p.rate.toFixed(1)} %</title></circle><text class="axistext" text-anchor="middle" x="${x(i)}" y="${H-8}">${p.label}</text><text class="axistext" text-anchor="middle" x="${x(i)}" y="${y(p.rate)-8}">${p.rate.toFixed(0)}%</text>`).join('');
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}<path class="curve" d="${path}"/>${points}</svg>`;
+}
+function getStrategyRules(){
+ let rel=Math.max(0,num(document.getElementById('ruleRelance')?.value||15));
+ let mise=Math.max(rel,num(document.getElementById('ruleMise')?.value||30));
+ let force=Math.max(mise,num(document.getElementById('ruleForce')?.value||60));
+ return {rel,mise,force};
+}
+function strategyAction(days){
+ const {rel,mise,force}=getStrategyRules();
+ if(days==null||days<0)return 'Surveillance';
+ if(days>=force)return 'Candidat recouvrement forcé';
+ if(days>=mise)return 'Relance renforcée / mise en demeure';
+ if(days>=rel)return 'Relance amiable';
+ return 'À surveiller';
+}
+function renderStrategy(){
+ const cards=document.getElementById('strategyCards'), body=document.getElementById('strategyBody'); if(!cards||!body)return;
+ const tiers=positiveOutstandingByTier(filtered), total=tiers.reduce((s,t)=>s+t.net,0), rules=getStrategyRules();
+ const defs=[
+  {name:'À surveiller',test:t=>t.days>=0&&t.days<rules.rel,threshold:`< ${rules.rel} j`},
+  {name:'Relance amiable',test:t=>t.days>=rules.rel&&t.days<rules.mise,threshold:`${rules.rel}–${rules.mise-1} j`},
+  {name:'Relance renforcée / mise en demeure',test:t=>t.days>=rules.mise&&t.days<rules.force,threshold:`${rules.mise}–${rules.force-1} j`},
+  {name:'Candidat recouvrement forcé',test:t=>t.days>=rules.force,threshold:`≥ ${rules.force} j`}
+ ];
+ const stats=defs.map(d=>{const ts=tiers.filter(d.test);return {...d,tiers:ts.length,amt:ts.reduce((s,t)=>s+t.net,0),pieces:ts.reduce((s,t)=>s+t.rows.length,0)}});
+ cards.innerHTML=stats.map(x=>`<div class="strategy-card"><b>${x.name}</b><div class="amount">${eur(x.amt)}</div><small>${x.tiers} tiers · ${x.pieces} créances</small></div>`).join('');
+ body.innerHTML=stats.map(x=>`<tr><td><b>${x.name}</b></td><td>${x.pieces}</td><td>${x.tiers}</td><td class="money">${eur(x.amt)}</td><td>${total?((x.amt/total)*100).toFixed(1):'0.0'} %</td><td>${x.threshold}</td></tr>`).join('');
+}
+function applyStrategySuggestions(){
+ const rules=getStrategyRules(); let changed=0;
+ filtered.forEach(r=>{
+   if(r.days==null||r.days<rules.rel||getRowStatus(r)==='Soldé'||getRowStatus(r)==='Paiement constaté dans GYPIE')return;
+   let proposed = r.days>=rules.force ? 'Relancé' : 'Relancé';
+   if(getRowStatus(r)==='À recouvrer'){localStorage.setItem(rowKey(r),proposed);changed++}
+ });
+ alert(`${changed} créance(s) ont été positionnée(s) au statut « Relancé ». Les procédures de mise en demeure ou de recouvrement forcé restent à valider et engager hors de cet outil.`);
+ render();
+}
+
+function renderAging(){
+ let vals=buckets.map(b=>({b,v:sum(filtered.filter(r=>r.bucket===b.key))})), max=Math.max(...vals.map(x=>x.v),1);
+ aging.innerHTML=vals.map(({b,v})=>`<div class="barwrap"><div class="barval">${shortEur(v)}</div><div class="bar ${b.key==='365+'?'red':''}" style="height:${Math.max(3,v/max*150)}px"></div><div class="barlab">${b.label}</div></div>`).join('');
+}
+function renderRisk(){
+ const by={}; filtered.forEach(r=>{let k=r.tiersId||r.tiersLabel; if(!by[k])by[k]={id:r.tiersId,label:r.tiersLabel,amt:0,max:0,score:0};by[k].amt+=r.amount;by[k].max=Math.max(by[k].max,r.days||0);by[k].score=Math.max(by[k].score,r.priorityScore)});
+ const top=Object.values(by).sort((a,b)=>b.score-a.score||b.amt-a.amt).slice(0,6);
+ risklist.innerHTML=top.length?top.map(x=>`<div class="risk" onclick="openTiers('${js(x.id)}','${js(x.label)}')" style="cursor:pointer"><div><b>${esc(x.label)}</b><small>${x.max} j max · ${nextActionFromDays(x.max)}</small></div><b>${eur(x.amt)}</b></div>`).join(''):'<div class="empty">Aucune créance dans la sélection.</div>';
+}
+
+function prescriptionCell(r){
+ const p=prescriptionInfo(r);
+ if(!p.base)return '<span class="badge">Date inconnue</span>';
+ const lab=p.band==='elapsed'?'À contrôler immédiatement':p.band==='critical'?`< 3 mois`:p.band==='warning'?`3–6 mois`:p.band==='watch'?`6–12 mois`:'> 1 an';
+ const cls=(p.band==='elapsed'||p.band==='critical')?'danger':p.band==='warning'?'warn':p.band==='ok'?'ok':'';
+ return `<span class="badge ${cls}" title="Échéance théorique : ${fmtDate(p.limit)}">${lab}</span>`;
+}
+
+function nextAction(r){return nextActionFromDays(r.days, r.relance)}
+function nextActionFromDays(d,rel=0){
+ if(d==null)return 'Contrôler échéance'; if(d<0)return 'Surveiller';
+ return strategyAction(d);
+}
+function openTiers(id,label){
+ currentTiers=id||label; const arr=rows.filter(r=>(r.tiersId||r.tiersLabel)===currentTiers); const total=sum(arr), max=Math.max(...arr.map(r=>r.days||0),0);
+ dTitle.textContent=label; dSub.textContent=(id?id+' · ':'')+`${arr.length} créance${arr.length>1?'s':''}`;
+ dStats.innerHTML=`<div class="mini"><small>Encours</small><b>${eur(total)}</b></div><div class="mini"><small>Retard max</small><b>${max} j</b></div><div class="mini"><small>> 90 jours</small><b>${eur(sum(arr.filter(r=>r.days>90)))}</b></div><div class="mini"><small>Relances GYPIE</small><b>${Math.max(...arr.map(r=>r.relance),0)}</b></div>`;
+ const state=getState(currentTiers); dStatus.value=state.status||getRowStatus(arr[0])||'À recouvrer'; dNext.value=state.next||''; dNote.value='';
+ renderTimeline(state.history||[]);
+ dItems.innerHTML='<div style="overflow:auto"><table style="min-width:700px"><thead><tr><th>Pièce</th><th>Échéance</th><th>Retard</th><th>Montant</th></tr></thead><tbody>'+arr.sort((a,b)=>(b.days||0)-(a.days||0)).map(r=>`<tr><td>${esc(r.piece)}</td><td>${r.dueDate?fmtDate(r.dueDate):'—'}</td><td>${r.days??'—'} j</td><td class="money">${eur(r.amount)}</td></tr>`).join('')+'</tbody></table></div>';
+ drawer.classList.add('open');overlay.classList.add('show');
+}
+function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('show')}
+function getState(k){try{return JSON.parse(localStorage.getItem('gy_agee_'+k))||{}}catch{return {}}}
+function saveAction(){
+ if(!currentTiers)return; let s=getState(currentTiers); s.status=dStatus.value;s.next=dNext.value;s.history=s.history||[];
+ if(norm(dNote.value))s.history.unshift({date:new Date().toISOString(),type:dStatus.value,note:norm(dNote.value)});
+ localStorage.setItem('gy_agee_'+currentTiers,JSON.stringify(s));
+ rows.filter(r=>(r.tiersId||r.tiersLabel)===currentTiers).forEach(r=>localStorage.setItem(rowKey(r),dStatus.value));
+ dNote.value='';renderTimeline(s.history);render();
+}
+function addQuickRelance(){dStatus.value='Relancé';dNote.value=(dNote.value?dNote.value+'\n':'')+'Relance effectuée.';saveAction()}
+function renderTimeline(h){timeline.innerHTML=h.length?h.map(e=>`<div class="event"><b>${esc(e.type)}</b><small>${new Date(e.date).toLocaleString('fr-FR')}</small><div>${esc(e.note)}</div></div>`).join(''):'<div class="muted">Aucune action enregistrée localement.</div>'}
+function resetFilters(){['q','fEts','fCompte','fBucket','fGest','fPriority','fRelance','fLitige'].forEach(id=>document.getElementById(id).value='');fMin.value=0;applyFilters()}
+function sortBy(k){if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=k==='priorityScore'||k==='amount'||k==='days'?-1:1}render()}
+function exportCSV(){
+ const cols=['Priorité','Tiers','N° tiers','Compte','Pièce','Échéance','Jours','Tranche','Encours','N° relance','Litige','Gestionnaire','Action suivante'];
+ const lines=[cols.join(';'),...filtered.map(r=>[r.priority,r.tiersLabel,r.tiersId,r.compte,r.piece,r.dueDate?fmtDate(r.dueDate):'',r.days??'',r.bucketLabel,r.amount.toFixed(2).replace('.',','),r.relance||'',r.litige,r.gest,nextAction(r)].map(csv).join(';'))];
+ const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='balance_agee_selection.csv';a.click();URL.revokeObjectURL(a.href);
+}
+
+const workflow=['À recouvrer','Relancé','Engagement de paiement','Paiement signalé','Paiement constaté dans GYPIE','Soldé'];
+function rowKey(r){return 'gy_row_'+(r.piece||r.i)+'_'+(r.tiersId||r.tiersLabel)}
+function getRowStatus(r){return localStorage.getItem(rowKey(r))||'À recouvrer'}
+function setRowStatus(r,status){
+ localStorage.setItem(rowKey(r),status);
+ let tk=r.tiersId||r.tiersLabel, st=getState(tk);st.history=st.history||[];
+ st.history.unshift({date:new Date().toISOString(),type:status,note:`Statut de la créance ${r.piece||''} : ${status}`});
+ localStorage.setItem('gy_agee_'+tk,JSON.stringify(st));
+}
+function statusClass(st){let i=workflow.indexOf(st);return 'st'+(i<0?0:i)}
+function advanceStatus(i){
+ let r=rows.find(x=>x.i===i);if(!r)return;
+ let cur=getRowStatus(r), idx=workflow.indexOf(cur);
+ let next=workflow[Math.min((idx<0?0:idx)+1,workflow.length-1)];
+ setRowStatus(r,next);render();
+}
+function activeRows(){return filtered.filter(r=>getRowStatus(r)!=='Soldé')}
+function exportXLSX(){
+ if(typeof XLSX==='undefined'){alert("Le module Excel n'est pas disponible.");return}
+ const nets={}; filtered.forEach(r=>{const k=r.tiersId||r.tiersLabel;nets[k]=(nets[k]||0)+r.debit-r.credit});
+ const data=filtered.map(r=>({
+  Priorité:r.priority,'Statut de recouvrement':getRowStatus(r),'Tiers':r.tiersLabel,'N° tiers':r.tiersId,Compte:r.compte,Pièce:r.piece,
+  Échéance:r.dueDate?fmtDate(r.dueDate):'',Jours:r.days??'',Tranche:r.bucketLabel,'Solde débit':r.debit,'Solde crédit':r.credit,
+  'Mouvement net':r.amount,'Solde débiteur du tiers':nets[r.tiersId||r.tiersLabel],'N° relance':r.relance||'',Litige:r.litige,Gestionnaire:r.gest,
+  'Date de référence prescription':prescriptionBaseDate(r)?fmtDate(prescriptionBaseDate(r)):'',
+  'Échéance théorique 4 ans':prescriptionInfo(r).limit?fmtDate(prescriptionInfo(r).limit):'',
+  'Jours avant échéance théorique':prescriptionInfo(r).daysLeft??'',
+  'Action suivante':nextAction(r)
+ }));
+ const ws=XLSX.utils.json_to_sheet(data), wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Portefeuille');
+ XLSX.writeFile(wb,'portefeuille_tiers_retravaille.xlsx');
+}
+function buildPortfolio(arr,label,id){
+ pfDate.textContent=new Date().toLocaleDateString('fr-FR');
+ pfEts.textContent=[...new Set(arr.map(r=>r.ets).filter(Boolean))].join(', ')||'—';pfTiers.textContent=label||'Sélection';pfTiersId.textContent=id||'—';
+ let deb=arr.reduce((s,r)=>s+r.debit,0),cred=arr.reduce((s,r)=>s+r.credit,0);
+ pfBody.innerHTML=arr.map(r=>`<tr><td>${esc(r.piece)}</td><td>${(r.docDate||r.emissionDate||r.dueDate)?fmtDate(r.docDate||r.emissionDate||r.dueDate):'—'}</td><td>${esc(r.compte)}</td><td>${esc(field(r.src,'Libellé compte','Libellé'))}</td><td>${esc(r.tiersId)}</td><td>${esc(r.tiersLabel)}</td><td>${esc(r.ref)}</td><td>${esc(field(r.src,'Libellé référence','Libellé'))}</td><td class="money">${eur(r.debit)}</td><td class="money">${eur(r.credit)}</td></tr>`).join('');
+ pfCount.textContent=arr.length;pfDebit.textContent=eur(deb);pfCredit.textContent=eur(cred);
+ // Convention tiers débiteur : solde débiteur = débits - crédits.
+ const solde=deb-cred;
+ pfSolde.textContent=solde>0 ? eur(solde)+' débiteur' : solde<0 ? eur(Math.abs(solde))+' créditeur' : eur(0);
+}
+function printPortfolio(){
+ let arr,label,id;
+ if(currentTiers){arr=rows.filter(r=>(r.tiersId||r.tiersLabel)===currentTiers);label=arr[0]?.tiersLabel;id=arr[0]?.tiersId}
+ else {arr=filtered;label='Portefeuille sélectionné';id=''}
+ if(!arr.length){alert('Aucune opération à éditer.');return}
+ buildPortfolio(arr,label,id);window.print();
+}
+function loadDemo(){
+ raw=[
+ {'Pièce':'BE24000096','Compte':'441928','Tiers principal':'0012257741','Libellé Tiers Principal':"DEPARTEMENT DE L'EURE ET LOIR",'Solde crédit':'3225,14','Echéance':'25/09/2024',"Date d'échéance initiale":'25/09/2024','Ets':'P03901','N° relance':'2','Gestionnaire':'VIVIEN'},
+ {'Pièce':'BE24000101','Compte':'419100','Tiers principal':'0012351958','Libellé Tiers Principal':'ALKAN Suna','Solde crédit':'117','Echéance':'14/10/2024',"Date d'échéance initiale":'14/10/2024','Ets':'P03901','N° relance':'1'},
+ {'Pièce':'BE25000412','Compte':'411200','Tiers principal':'0099100021','Libellé Tiers Principal':'DUPONT Camille','Solde crédit':'845,20','Echéance':'15/06/2026',"Date d'échéance initiale":'15/06/2026','Ets':'P03901','N° relance':'1'},
+ {'Pièce':'BE26000012','Compte':'411200','Tiers principal':'0099100028','Libellé Tiers Principal':'MARTIN Hugo','Solde crédit':'260,00','Echéance':'20/08/2026',"Date d'échéance initiale":'20/08/2026','Ets':'P03901'}
+ ];recompute()
+}
+function sum(a){return a.reduce((s,r)=>s+r.amount,0)}function eur(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(v||0)}function shortEur(v){return v>=1e6?(v/1e6).toFixed(1)+' M€':v>=1000?(v/1000).toFixed(1)+' k€':Math.round(v)+' €'}
+function fmtDate(d){return d.toLocaleDateString('fr-FR')}function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function js(s){return String(s??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}function csv(s){s=String(s??'');return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+const saved=localStorage.getItem('gy_agee_last'); if(saved){raw=parseDelimited(saved);recompute()} else render();
+</script>
+</body>
+</html>

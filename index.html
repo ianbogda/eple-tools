@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <title>EPLE Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABTUlEQVRYR+2XvQ3CMBBF38QAJJ2AElkAJZACk7ACp7ACJ2ABJ2AElkAJZACkzC9KpFJXrI1fZ7z8+8kHh5gKkP4gB+ANcA1y9kJ3B6E7A9wB1j5kK6gHcAZo4y4R7rL7Z4A0wB2jD6JpJtQ2Y7x4J0AEsA9YxqkC2J9E6k1Q0wE0gM4bZC5iFZk4b4J0AEsA9YxqkC2J9E6k1Q0wE0gM4bZC5iFZk4b4J0AEsA9YxqkC2J9E6k1Q0wE0gM4bZC5iFZk4b4J0AF8Fv1m7z3s7wAAAABJRU5ErkJggg==">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+body{background:#f7f8fb;color:#172033;overflow:hidden}
+
+.navbar-shell{height:64px;background:#fff;border-bottom:1px solid #e7eaf0;box-shadow:0 .15rem .8rem rgba(15,23,42,.035);z-index:1030}
+.navbar-brand{display:flex;align-items:center;gap:.65rem;margin-right:1.5rem}
+.brand-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2563eb,#0f9f8f);box-shadow:0 .35rem .9rem rgba(37,99,235,.18)}
+.brand-mark svg{width:22px;height:22px}.brand-copy{line-height:1}.brand-copy strong{display:block;font-size:1rem;letter-spacing:-.02em}.brand-copy small{display:block;margin-top:.25rem;color:#8490a2;font-size:.59rem;text-transform:uppercase;letter-spacing:.08em}
+.navbar .nav-link{font-size:.79rem;font-weight:500;color:#5f697b;border-radius:.45rem;padding:.45rem .65rem!important}.navbar .nav-link:hover{color:#1d4ed8;background:#f2f6ff}.navbar .nav-link.active{color:#1d4ed8;background:#eaf1ff;font-weight:650}
+.navbar .nav-link.cap-link{color:#0f766e}.navbar .nav-link.cap-link.active,.navbar .nav-link.cap-link:hover{color:#0b665d;background:#eaf8f5}
+.dropdown-menu{border-color:#e7eaf0;box-shadow:0 .6rem 1.5rem rgba(15,23,42,.09);font-size:.79rem}.dropdown-item{padding:.5rem .85rem}.dropdown-item.active,.dropdown-item:active{background:#2563eb}
+.route-badge{font-size:.66rem;color:#768195;background:#f7f8fb;border:1px solid #e7eaf0;border-radius:999px;padding:.35rem .65rem;white-space:nowrap}
+.identity-badge{display:inline-flex;align-items:center;gap:.38rem;font-size:.72rem;font-weight:600;color:#344054;background:#f8fafc;border:1px solid #e4e7ec;border-radius:999px;padding:.34rem .65rem;white-space:nowrap;max-width:260px}.identity-badge .dot{width:7px;height:7px;border-radius:50%;background:#98a2b3;flex:0 0 7px}.identity-badge.ok .dot{background:#12b76a}.identity-badge .txt{overflow:hidden;text-overflow:ellipsis}
+
+.app-frame
+{
+  height: calc(100vh - 64px);
+  padding:.65rem;
+}
+
+.frame-card
+{
+  height: 100%;
+  background: #fff;
+  border-radius: .75rem;
+  box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .06);
+  display: flex;
+  flex-direction: column;
+}
+
+.frame-card-header
+{
+  padding: .6rem .9rem;
+  border-bottom: 1px solid #eef0f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.frame-card-body
+{
+  flex: 1;
+  padding: .75rem;
+}
+
+iframe
+{
+  width: 100%;
+  height: 100%;
+  border: 1px solid #eef0f6;
+  border-radius: .7rem;
+  background: #fff;
+}
+
+iframe.tool-frame.hidden
+{
+  display: none;
+}
+
+/* fallback */
+.fallback
+{
+  position: absolute;
+  inset: 0;
+  background: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden
+{
+  display: none;
+}
+
+.hud
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.game
+{
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ground
+{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 44px;
+  height: 2px;
+  background: #222;
+  opacity: .35;
+}
+
+.dragon
+{
+  position: absolute;
+  left: 40px;
+  bottom: 50px;
+  font-size: 56px;
+  line-height: 1;
+  transform: translateY(0);
+  will-change: transform;
+  user-select: none;
+}
+
+.dragon.running
+{
+  animation: run-bob 250ms infinite alternate;
+}
+
+@keyframes run-bob
+{
+  from
+  {
+    transform: translateY(0);
+  }
+
+  to
+  {
+    transform: translateY(-2px);
+  }
+}
+
+.dragon.jump
+{
+  animation: jump 520ms cubic-bezier(.2, .6, .2, 1) forwards;
+}
+
+@keyframes jump
+{
+  0%
+  {
+    transform: translateY(0);
+  }
+
+  45%
+  {
+    transform: translateY(-110px);
+  }
+
+  100%
+  {
+    transform: translateY(0);
+  }
+}
+
+.obstacle
+{
+  position: absolute;
+  right: -60px;
+  bottom: 52px;
+  font-size: 42px;
+  line-height: 1;
+  user-select: none;
+  will-change: transform;
+}
+
+.tip
+{
+  position: absolute;
+  bottom: 10px;
+  opacity: .75;
+  font-size: 13px;
+}
+
+.game.over .tip
+{
+  font-size: 14px;
+  opacity: 1;
+}
+  </style>
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+
+<style id="eple-tools-logo-integration">
+  .navbar-brand .brand-mark.eple-tools-logo{
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+  }
+  .navbar-brand .brand-mark.eple-tools-logo svg{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+</style>
+
+
+<style id="eple-tools-favicon-brand-fix">
+  .navbar-brand .brand-mark.eple-tools-logo{
+    width:32px;
+    height:32px;
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    display:grid;
+    place-items:center;
+    overflow:visible;
+    flex:0 0 32px;
+  }
+  .navbar-brand .brand-mark.eple-tools-logo svg{
+    width:30px;
+    height:30px;
+    display:block;
+  }
+</style>
+
+</head>
+
+<body>
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar navbar-expand-lg navbar-light navbar-shell">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#/" aria-label="Accueil EPLE Tools">
+        <span class="brand-mark eple-tools-logo"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+  <rect x="1" y="1" width="6" height="6" rx="1.2" fill="#2563eb"/>
+  <rect x="9" y="1" width="6" height="6" rx="1.2" fill="#60a5fa"/>
+  <rect x="1" y="9" width="6" height="6" rx="1.2" fill="#60a5fa"/>
+  <rect x="9" y="9" width="6" height="6" rx="1.2" fill="#2563eb"/>
+</svg></span>
+        <span class="brand-copy"><strong>EPLE Tools</strong><small>La gamme métier</small></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="menu"></ul>
+        <div class="d-flex align-items-center gap-2">
+          <span class="identity-badge" id="identityBadge" title="Identité Windows détectée par l’agent local"><span class="dot"></span><span class="txt" id="identityUser">Utilisateur non identifié</span></span>
+          <span class="route-badge d-none d-xl-inline" id="currentPath"></span>
+          <button class="btn btn-sm btn-outline-secondary" id="openStandalone" type="button" title="Ouvrir l’outil dans un nouvel onglet">Ouvrir seul ↗</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- ================= CONTENT ================= -->
+  <div class="app-frame">
+    <iframe id="frame"></iframe>
+    <div id="fallback" class="fallback hidden" aria-live="polite">
+      <div class="hud">
+        <div>🐉 DRAGON OFFLINE</div>
+        <div>Score: <span id="score">0</span></div>
+      </div>
+      <div id="game" class="game" role="application" aria-label="Mini-jeu du dragon offline">
+        <div id="dragon" class="dragon" aria-label="Dragon">🐉</div>
+        <div id="obstacle" class="obstacle" aria-label="Obstacle">🪨</div>
+        <div class="ground"></div>
+        <div id="tip" class="tip">Espace / ↑ pour sauter — R pour rejouer</div>
+      </div>
+    </div>
+  </div>
+  <!-- ================= SCRIPT ================= -->
+  <script src="assets/toolbox-api.js"></script>
+  <script>
+/**
+ * Shell Router (local file:// friendly)
+ * - Menu Bootstrap (top navbar) + active state
+ * - Hash routing: #/route
+ * - Un iframe persistant par outil ouvert (les imports restent en mémoire)
+ * - URL shell suit la navigation iframe (interception + sync on load)
+ * - Ouverture standalone
+ *
+ * Requis dans le DOM:
+ *   #menu (ul.navbar-nav)
+ *   #frame (iframe)
+ *   #currentLabel, #currentRoute, #currentPath (optionnels mais gérés)
+ *   #openStandalone (button optionnel)
+ */
+(() =>
+{
+  "use strict";
+  /* ================= CONFIG ================= */
+  const TOOL_GROUPS = [
+    {type:"links",items:[
+      {label:"Accueil",route:"",file:"home.html"}
+    ]},
+    {type:"dropdown",label:"Piloter",items:[
+      {label:"Tableau de bord OP@LE",route:"cockpit-opale",file:"cockpit-opale.html",aliases:["tdb-opale.html"]},
+      {label:"Factures à traiter",route:"factures",file:"factures.html"},
+      {label:"Télépaiements",route:"tlp",file:"tlp.html",aliases:["telepaiements.html","telepaiements_opale_standalone_v1_2.html"]},
+      {label:"Recouv’Op@le",route:"recouv-opale",file:"recouv-opale.html",aliases:["GYPIE_Suivi_Debiteurs_v1.0.html","recouv-opale_v1.1.html"]},
+      {label:"Crédit nourriture",route:"creditnourriture",file:"creditnourriture.html"},
+      {label:"Analyse financière",route:"analyse-fdr",file:"analyse_fdr.html",aliases:["analyse_fdr(2).html"]}
+    ]},
+    {type:"dropdown",label:"Sécuriser",items:[
+      {label:"M@TRISK",route:"matrisk",file:"matrisk.html",aliases:["matrix.html"]},
+      {label:"PCIF Académie",route:"pcif-academie",file:"pcif-academie.html",aliases:["PCIF_Academie.html","PCIF_Academie(2).html"]},
+      {label:"IBAN Analyzer",route:"iban-analyzer",file:"iban-analyzer.html"},
+      {label:"Contrôle interne",route:"controle-interne",file:"controleinterne.html"},
+      {label:"YCRINT Analyzer",route:"ycrint-analyzer",file:"ycrint-analyzer.html"},
+      {label:"Rapproch’SRH",route:"rapproch-srh",file:"rapproch-srh.html",aliases:["rapproch_srh_webgerest_opale_v3_filtres_dates.html","rapproch_srh_webgerest_opale_v2_tiers_siret.html"]},
+      {label:"Identités",route:"identities",file:"identities.html"},
+      {label:"Sessions",route:"sessions",file:"sessions.html"}
+    ]},
+    {type:"links",className:"cap-link",items:[
+      {label:"Cap Mobilités",route:"cap-mobilites",file:"cap-mobilites.html",aliases:["cap_mobilites_v3_1_1_repertoire_fiche_projet.html"]}
+    ]}
+  ];
+  // Timeout avant fallback (ms)
+  const IFRAME_FAIL_TIMEOUT = 3500;
+  /* ================= ELEMENTS ================= */
+  const els = {
+    menu: document.getElementById("menu"),
+    frame: document.getElementById("frame"),
+    currentLabel: document.getElementById("currentLabel"),
+    currentRoute: document.getElementById("currentRoute"),
+    currentPath: document.getElementById("currentPath"),
+    openStandalone: document.getElementById("openStandalone"),
+    identityBadge: document.getElementById("identityBadge"),
+    identityUser: document.getElementById("identityUser"),
+  };
+  if(!els.menu || !els.frame)
+  {
+    console.error("Shell Router: éléments requis manquants (#menu, #frame).");
+    return;
+  }
+
+  async function refreshIdentityBadge() {
+    if(!els.identityUser) return;
+    try {
+      if(!window.ToolboxAPI) throw new Error('API indisponible');
+      const id = await window.ToolboxAPI.identity();
+      const label = id.user || (id.domain && id.username ? `${id.domain}\\${id.username}` : id.username) || 'Utilisateur non identifié';
+      els.identityUser.textContent = label;
+      if(els.identityBadge){
+        els.identityBadge.classList.toggle('ok', !!(id && id.username));
+        els.identityBadge.title = id && id.hostname ? `${label} · ${id.hostname}` : label;
+      }
+    } catch (_) {
+      els.identityUser.textContent = 'Utilisateur non identifié';
+      if(els.identityBadge) els.identityBadge.classList.remove('ok');
+    }
+  }
+  refreshIdentityBadge();
+  setInterval(refreshIdentityBadge, 60000);
+
+  /* ================= INDEXES ================= */
+  const allTools = TOOL_GROUPS.flatMap(g => g.items);
+  const byRoute = new Map(allTools.map(t => [t.route, t]));
+  const byFile = new Map();
+  allTools.forEach(t => {
+    byFile.set(t.file.toLowerCase(), t);
+    (t.aliases || []).forEach(alias => byFile.set(alias.toLowerCase(), t));
+  });
+  // Les iframes sont créées à la demande puis conservées : changer d'outil
+  // masque l'iframe active sans détruire son état JavaScript ni ses imports.
+  const framePool = new Map();
+  let iframeHost = null;
+
+  // Passerelle de persistance pour les applications embarquées.
+  // Requête iframe : {type:"toolbox:storage", action:"save|get|list|remove|health", key, value, requestId}
+  // Réponse shell  : {type:"toolbox:storage:response", requestId, ok, data|error}
+  window.addEventListener("message", async (event) =>
+  {
+    const data = event.data;
+    if(!data || data.type !== "toolbox:storage") return;
+    const managedFrame = [...framePool.values()].find(frame => frame.contentWindow === event.source);
+    if(!managedFrame) return;
+    const requestId = data.requestId || null;
+    const app = String(data.app || managedFrame.dataset.route || "home");
+    const key = String(data.key || "state");
+    try
+    {
+      if(!window.ToolboxAPI) throw new Error("API SQLite indisponible");
+      let result;
+      if(data.action === "save") result = await window.ToolboxAPI.save(app, key, data.value);
+      else if(data.action === "get") result = await window.ToolboxAPI.get(app, key);
+      else if(data.action === "list") result = await window.ToolboxAPI.list(app);
+      else if(data.action === "remove") result = await window.ToolboxAPI.remove(app, key);
+      else if(data.action === "health") result = await window.ToolboxAPI.health();
+      else throw new Error("Action de stockage inconnue");
+      event.source.postMessage({type:"toolbox:storage:response", requestId, ok:true, data:result}, "*");
+    }
+    catch (error)
+    {
+      event.source.postMessage({type:"toolbox:storage:response", requestId, ok:false, error:String(error.message || error)}, "*");
+    }
+  });
+  // Journal d’interactions générique envoyé par les outils embarqués.
+  window.addEventListener("message", (event) =>
+  {
+    const data = event.data;
+    if(!data || data.type !== "toolbox:trace") return;
+    const managedFrame = [...framePool.values()].find(frame => frame.contentWindow === event.source);
+    if(!managedFrame || !window.ToolboxAPI) return;
+    const app = String(data.app || managedFrame.dataset.route || "app");
+    window.ToolboxAPI.event(app, String(data.action || "interaction"), data.detail || {}).catch(()=>{});
+  });
+
+  // ===== Bridge navigation iframe -> shell (works when file:// iframe is cross-origin "null") =====
+  window.addEventListener("message", (event) =>
+  {
+    const data = event.data;
+    if(!data || data.type !== "shell:navigate") return;
+    // data.file expected like "iban-analyzer.html" (preferred)
+    const file = String(data.file || "").trim();
+    if(!file) return;
+    const tool = byFile.get(file.toLowerCase());
+    if(!tool) return;
+    navigateTo(tool,
+    {
+      replace: false,
+      pushHash: true
+    });
+  });
+  /* ================= ROUTER (hash) ================= */
+  function routeFromHash()
+  {
+    const m = location.hash.match(/^#\/?(.*)$/);
+    return (m && m[1] != null) ? m[1] : "";
+  }
+
+  function setRoute(route, replace = false)
+  {
+    const h = "#/" + (route || "");
+    if(replace) history.replaceState(
+    {}, "", h);
+    else location.hash = h;
+  }
+
+  function safeBasename(pathname)
+  {
+    const parts = String(pathname || "").split("/").filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : "";
+  }
+
+  function setUi(tool)
+  {
+    if(!tool) return;
+    if(els.currentLabel) els.currentLabel.textContent = tool.label;
+    if(els.currentRoute) els.currentRoute.textContent = tool.route || "/";
+    if(els.currentPath) els.currentPath.textContent = `#/${tool.route || ""}`;
+    document.title = tool.label ? `Outils — ${tool.label}` : "Outils";
+    if(window.ToolboxAPI){
+      window.ToolboxAPI.setCurrentApp(tool.route || "home");
+      window.ToolboxAPI.event(tool.route || "home", "tool_open", {label:tool.label,file:tool.file,route:tool.route || ""}).catch(()=>{});
+    }
+  }
+  /* ================= MENU ================= */
+  function renderMenu(activeRoute)
+  {
+    els.menu.innerHTML = "";
+    for(const group of TOOL_GROUPS)
+    {
+      if(group.type === "links")
+      {
+        group.items.forEach(t =>
+        {
+          const li = document.createElement("li");
+          li.className = "nav-item";
+          li.innerHTML = `
+            <a class="nav-link ${group.className || ""} ${t.route === activeRoute ? "active" : ""}"
+               href="#/${t.route}">
+               ${t.label}
+            </a>
+          `;
+          els.menu.appendChild(li);
+        });
+        continue;
+      }
+      if(group.type === "dropdown")
+      {
+        const isActive = group.items.some(i => i.route === activeRoute);
+        const li = document.createElement("li");
+        li.className = "nav-item dropdown";
+        li.innerHTML = `
+          <a class="nav-link dropdown-toggle ${isActive ? "active" : ""}"
+             href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+             ${group.label}
+          </a>
+          <ul class="dropdown-menu">
+            ${group.items.map(i => `
+              <li><a class="dropdown-item ${i.route === activeRoute ? "active" : ""}" href="#/${i.route}">${i.label}</a></li>
+            `).join("")}
+          </ul>
+        `;
+        els.menu.appendChild(li);
+      }
+    }
+  }
+  /* ================= FALLBACK UI + MINI JEU ================= */
+  // État watchdog / jeu (global au shell)
+  const fb = {
+    overlay: null,
+    scoreEl: null,
+    gameEl: null,
+    dragonEl: null,
+    obstacleEl: null,
+    tipEl: null,
+    // watchdog
+    loadToken: 0,
+    loadTimer: null,
+    loadedForToken: false,
+    // game loop
+    running: false,
+    rafId: null,
+    lastTs: 0,
+    score: 0,
+    speed: 6,
+    obstacleX: 0,
+    obstacleGap: 0,
+    jumpLock: false,
+    // listeners
+    keyHandler: null,
+  };
+
+  function ensureIframeWrapper()
+  {
+    // On veut un conteneur position:relative autour de l’iframe.
+    // Si ton HTML a déjà un wrapper, on le réutilise; sinon on en crée un.
+    const frame = els.frame;
+    // Déjà wrapper ?
+    if(frame.parentElement && frame.parentElement.classList.contains("iframe-wrapper"))
+    {
+      return frame.parentElement;
+    }
+    // Créer wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "iframe-wrapper";
+    wrapper.style.position = "relative";
+    wrapper.style.width = "100%";
+    wrapper.style.height = "100%";
+    // remplace l’iframe par wrapper + remet l’iframe dedans
+    const parent = frame.parentElement;
+    parent.insertBefore(wrapper, frame);
+    wrapper.appendChild(frame);
+    // si l’iframe avait des styles de taille, laisse l’iframe gérer; wrapper suit
+    return wrapper;
+  }
+
+  function injectFallbackStylesOnce()
+  {
+    if(document.getElementById("__dragonFallbackStyles")) return;
+    const style = document.createElement("style");
+    style.id = "__dragonFallbackStyles";
+    style.textContent = `
+      .shell-fallback {
+        position:absolute; inset:0;
+        background:#fafafa;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        display:flex; flex-direction:column;
+        z-index: 999;
+      }
+      .shell-fallback.hidden { display:none; }
+      .shell-fallback .hud {
+        display:flex; justify-content:space-between; align-items:center;
+        padding:10px 12px; border-bottom:1px solid #e5e5e5;
+      }
+      .shell-fallback .game {
+        position:relative; flex:1; overflow:hidden;
+        display:flex; align-items:flex-end; justify-content:center;
+      }
+      .shell-fallback .ground {
+        position:absolute; left:0; right:0; bottom:44px;
+        height:2px; background:#222; opacity:.35;
+      }
+      .shell-fallback .dragon {
+        position:absolute; left:40px; bottom:50px;
+        font-size:56px; line-height:1;
+        will-change: transform;
+        user-select:none;
+      }
+      .shell-fallback .dragon.running {
+        animation: run-bob 250ms infinite alternate;
+      }
+      @keyframes run-bob { from{transform:translateY(0)} to{transform:translateY(-2px)} }
+      .shell-fallback .dragon.jump {
+        animation: jump 520ms cubic-bezier(.2,.6,.2,1) forwards;
+      }
+      @keyframes jump {
+        0%{transform:translateY(0)} 45%{transform:translateY(-110px)} 100%{transform:translateY(0)}
+      }
+      .shell-fallback .obstacle {
+        position:absolute; right:-60px; bottom:52px;
+        font-size:42px; line-height:1;
+        user-select:none;
+        will-change: transform;
+      }
+      .shell-fallback .tip {
+        position:absolute; bottom:10px;
+        opacity:.75; font-size:13px;
+      }
+      .shell-fallback .game.over .tip { font-size:14px; opacity:1; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureFallbackUI()
+  {
+    if(fb.overlay) return;
+    const wrapper = ensureIframeWrapper();
+    injectFallbackStylesOnce();
+    const overlay = document.createElement("div");
+    overlay.className = "shell-fallback hidden";
+    overlay.setAttribute("aria-live", "polite");
+    overlay.innerHTML = `
+      <div class="hud">
+        <div>🐉 DRAGON OFFLINE</div>
+        <div>Score: <span id="__dragonScore">0</span></div>
+      </div>
+
+      <div id="__dragonGame" class="game" role="application" aria-label="Mini-jeu du dragon offline">
+        <div id="__dragon" class="dragon" aria-label="Dragon">🐉</div>
+        <div id="__obstacle" class="obstacle" aria-label="Obstacle">🪨</div>
+        <div class="ground"></div>
+        <div id="__dragonTip" class="tip">Espace / ↑ pour sauter — R pour rejouer</div>
+      </div>
+    `;
+    wrapper.appendChild(overlay);
+    fb.overlay = overlay;
+    fb.scoreEl = overlay.querySelector("#__dragonScore");
+    fb.gameEl = overlay.querySelector("#__dragonGame");
+    fb.dragonEl = overlay.querySelector("#__dragon");
+    fb.obstacleEl = overlay.querySelector("#__obstacle");
+    fb.tipEl = overlay.querySelector("#__dragonTip");
+  }
+
+  function showFallbackAndStartGame()
+  {
+    ensureFallbackUI();
+    fb.overlay.classList.remove("hidden");
+    startGame();
+  }
+
+  function hideFallbackAndStopGame()
+  {
+    if(fb.overlay) fb.overlay.classList.add("hidden");
+    stopGame();
+  }
+
+  function armIframeWatchdog(frame = els.frame)
+  {
+    // Nouveau token pour invalider les anciens timers
+    fb.loadToken += 1;
+    const token = fb.loadToken;
+    fb.loadedForToken = false;
+    if(fb.loadTimer) clearTimeout(fb.loadTimer);
+    fb.loadTimer = setTimeout(() =>
+    {
+      // si c’est toujours le token courant et pas chargé -> fallback
+      if(fb.loadToken === token && !fb.loadedForToken && els.frame === frame)
+      {
+        // masque iframe pour éviter un “cadre blanc”
+        frame.style.display = "none";
+        showFallbackAndStartGame();
+      }
+    }, IFRAME_FAIL_TIMEOUT);
+  }
+
+  function markIframeLoaded(frame = els.frame)
+  {
+    frame.dataset.loaded = "true";
+    if(els.frame !== frame) return;
+    // Marque le token courant comme OK + nettoie
+    fb.loadedForToken = true;
+    if(fb.loadTimer)
+    {
+      clearTimeout(fb.loadTimer);
+      fb.loadTimer = null;
+    }
+    // réaffiche iframe si elle était masquée
+    frame.style.display = "";
+    hideFallbackAndStopGame();
+  }
+  /* ================= MINI JEU (engine) ================= */
+  function startGame()
+  {
+    // idempotent
+    if(!fb.gameEl || !fb.dragonEl || !fb.obstacleEl) return;
+    stopGame(); // reset propre si relancé
+    fb.running = true;
+    fb.lastTs = 0;
+    fb.score = 0;
+    fb.speed = 6;
+    fb.obstacleX = 0;
+    fb.obstacleGap = 0;
+    fb.jumpLock = false;
+    fb.scoreEl.textContent = "0";
+    fb.tipEl.textContent = "Espace / ↑ pour sauter — R pour rejouer";
+    fb.gameEl.classList.remove("over");
+    fb.dragonEl.className = "dragon running";
+    resetObstacle(true);
+    fb.keyHandler = (e) =>
+    {
+      const code = e.code || e.key;
+      if(code === "Space" || code === "ArrowUp")
+      {
+        e.preventDefault();
+        jump();
+      }
+      else if(code === "KeyR")
+      {
+        e.preventDefault();
+        restart();
+      }
+    };
+    window.addEventListener("keydown", fb.keyHandler,
+    {
+      passive: false
+    });
+    fb.rafId = requestAnimationFrame(loop);
+  }
+
+  function stopGame()
+  {
+    fb.running = false;
+    if(fb.rafId) cancelAnimationFrame(fb.rafId);
+    fb.rafId = null;
+    if(fb.keyHandler) window.removeEventListener("keydown", fb.keyHandler);
+    fb.keyHandler = null;
+  }
+
+  function resetObstacle(first = false)
+  {
+    fb.obstacleX = 0;
+    fb.obstacleGap = first ? 420 : (260 + Math.random() * 320);
+    fb.obstacleEl.style.transform = `translateX(${fb.obstacleX}px)`;
+  }
+
+  function jump()
+  {
+    if(!fb.running || fb.jumpLock) return;
+    fb.jumpLock = true;
+    fb.dragonEl.classList.remove("running");
+    fb.dragonEl.classList.add("jump");
+    setTimeout(() =>
+    {
+      fb.dragonEl.classList.remove("jump");
+      if(fb.running) fb.dragonEl.classList.add("running");
+      fb.jumpLock = false;
+    }, 520);
+  }
+
+  function endGame()
+  {
+    fb.running = false;
+    fb.gameEl.classList.add("over");
+    fb.dragonEl.classList.remove("running");
+    fb.tipEl.textContent = `💥 Crash ! Score ${fb.score}. Appuie sur R pour rejouer.`;
+    if(fb.rafId) cancelAnimationFrame(fb.rafId);
+    fb.rafId = null;
+  }
+
+  function restart()
+  {
+    if(!fb.overlay || fb.overlay.classList.contains("hidden")) return;
+    startGame();
+  }
+
+  function isColliding()
+  {
+    const dRect = fb.dragonEl.getBoundingClientRect();
+    const oRect = fb.obstacleEl.getBoundingClientRect();
+    // “shrink” hitboxes (emoji => bounding box un peu large)
+    const d = {
+      left: dRect.left + 10,
+      right: dRect.right - 10,
+      top: dRect.top + 10,
+      bottom: dRect.bottom - 6,
+    };
+    const o = {
+      left: oRect.left + 8,
+      right: oRect.right - 8,
+      top: oRect.top + 8,
+      bottom: oRect.bottom - 8,
+    };
+    return !(d.right < o.left || d.left > o.right || d.bottom < o.top || d.top > o.bottom);
+  }
+
+  function loop(ts)
+  {
+    if(!fb.running) return;
+    if(!fb.lastTs) fb.lastTs = ts;
+    const dt = Math.min(32, ts - fb.lastTs);
+    fb.lastTs = ts;
+    // score + speed scaling
+    fb.score += Math.round(dt / 16);
+    fb.scoreEl.textContent = String(fb.score);
+    fb.speed = 6 + Math.min(10, fb.score / 400); // max ~16
+    // move obstacle left
+    fb.obstacleX -= fb.speed * (dt / 16);
+    fb.obstacleEl.style.transform = `translateX(${fb.obstacleX}px)`;
+    const oRect = fb.obstacleEl.getBoundingClientRect();
+    const gRect = fb.gameEl.getBoundingClientRect();
+    const obstacleOffLeft = oRect.right < gRect.left;
+    if(obstacleOffLeft)
+    {
+      fb.obstacleX = 0;
+      fb.obstacleGap = 260 + Math.random() * 340;
+      fb.obstacleX += fb.obstacleGap; // “teleport” à droite
+      fb.obstacleEl.style.transform = `translateX(${fb.obstacleX}px)`;
+    }
+    if(isColliding())
+    {
+      endGame();
+      return;
+    }
+    fb.rafId = requestAnimationFrame(loop);
+  }
+  /* ================= NAVIGATION ================= */
+  function bindFrame(frame, tool)
+  {
+    frame.classList.add("tool-frame");
+    frame.dataset.route = tool.route;
+    frame.title = tool.label;
+    frame.addEventListener("load", () =>
+    {
+      markIframeLoaded(frame);
+      try
+      {
+        installIframeInterceptor(frame);
+        if(els.frame === frame) syncFromIframe(true, frame);
+      }
+      catch (err)
+      {
+        console.warn("Shell Router: accès iframe bloqué (file://). Bridge postMessage recommandé.", err);
+      }
+    });
+  }
+
+  function getOrCreateFrame(tool)
+  {
+    if(framePool.has(tool.route)) return framePool.get(tool.route);
+    let frame;
+    if(framePool.size === 0)
+    {
+      frame = els.frame;
+    }
+    else
+    {
+      frame = document.createElement("iframe");
+      frame.className = "tool-frame hidden";
+      iframeHost.insertBefore(frame, fb.overlay || null);
+    }
+    bindFrame(frame, tool);
+    framePool.set(tool.route, frame);
+    return frame;
+  }
+
+  function activateFrame(frame)
+  {
+    framePool.forEach(candidate => candidate.classList.add("hidden"));
+    frame.classList.remove("hidden");
+    frame.style.display = "";
+    els.frame = frame;
+  }
+
+  function navigateTo(tool, opts = {})
+  {
+    const
+    {
+      replace = false, pushHash = true
+    } = opts;
+    if(!tool) return;
+    // reset fallback à chaque nav
+    hideFallbackAndStopGame();
+    const alreadyOpen = framePool.has(tool.route);
+    const frame = getOrCreateFrame(tool);
+    activateFrame(frame);
+    if(!alreadyOpen)
+    {
+      armIframeWatchdog(frame);
+      frame.setAttribute("src", tool.file);
+    }
+    else if(frame.dataset.loaded === "true") markIframeLoaded(frame);
+    else
+    {
+      armIframeWatchdog(frame);
+    }
+    if(pushHash) setRoute(tool.route, replace);
+    renderMenu(tool.route);
+    setUi(tool);
+  }
+
+  function navigateToRoute(route, replace = true)
+  {
+    const tool = byRoute.get(route) || allTools[0];
+    navigateTo(tool,
+    {
+      replace,
+      pushHash: true
+    });
+  }
+  /* ================= IFRAME SYNC (fallback) ================= */
+  function syncFromIframe(replace = true, frame = els.frame)
+  {
+    // same-origin attendu
+    const inner = new URL(frame.contentWindow.location.href);
+    const file = safeBasename(inner.pathname);
+    if(!file || !file.toLowerCase().endsWith(".html")) return;
+    const tool = byFile.get(file.toLowerCase());
+    if(!tool) return;
+    const current = routeFromHash();
+    if(current !== tool.route)
+    {
+      setRoute(tool.route, replace);
+      renderMenu(tool.route);
+      setUi(tool);
+    }
+  }
+  /* ================= IFRAME CLICK INTERCEPT ================= */
+  function installIframeInterceptor(frame = els.frame)
+  {
+    const doc = frame.contentDocument;
+    if(!doc || doc.__shellNavInterceptorInstalled) return;
+    doc.__shellNavInterceptorInstalled = true;
+    doc.addEventListener("click", (e) =>
+    {
+      const a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+      if(!a) return;
+      if(e.defaultPrevented) return;
+      if(e.button !== 0) return;
+      if(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if(a.target && a.target !== "_self") return;
+      const href = a.getAttribute("href") || "";
+      if(!href) return;
+      const h = href.toLowerCase();
+      if(h.startsWith("#") || h.startsWith("mailto:") || h.startsWith("tel:") || h.startsWith("javascript:")) return;
+      let url;
+      try
+      {
+        url = new URL(href, frame.contentWindow.location.href);
+      }
+      catch
+      {
+        return;
+      }
+      const file = safeBasename(url.pathname);
+      if(!file || !file.toLowerCase().endsWith(".html")) return;
+      const tool = byFile.get(file.toLowerCase());
+      if(!tool) return;
+      e.preventDefault();
+      navigateTo(tool,
+      {
+        replace: false,
+        pushHash: true
+      });
+    }, true);
+  }
+  /* ================= EVENTS ================= */
+  window.addEventListener("hashchange", () =>
+  {
+    navigateToRoute(routeFromHash(), true);
+  });
+  if(els.openStandalone)
+  {
+    els.openStandalone.addEventListener("click", () =>
+    {
+      const r = routeFromHash();
+      const tool = byRoute.get(r) || allTools[0];
+      if(tool) window.open(tool.file, "_blank", "noopener");
+    });
+  }
+  // === Cross-origin safe navigation bridge (works with file:// iframe restrictions) ===
+  window.addEventListener("message", (event) =>
+  {
+    const data = event.data;
+    if(!data || data.type !== "shell:navigate") return;
+    // data.href can be "iban-analyzer.html" or a file://... URL
+    let url;
+    try
+    {
+      url = new URL(data.href, location.href);
+    }
+    catch
+    {
+      return;
+    }
+    const file = safeBasename(url.pathname);
+    const tool = byFile.get(file.toLowerCase());
+    if(!tool) return;
+    navigateTo(tool,
+    {
+      replace: false,
+      pushHash: true
+    });
+  });
+  /* ================= INIT ================= */
+  // Prépare UI fallback (sans l’afficher)
+  ensureFallbackUI();
+  iframeHost = els.frame.parentElement;
+  const init = routeFromHash();
+  navigateToRoute(init, true);
+})();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Cockpit OP@LE — Préparation des demandes de paiement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{
+      --bg:#f7f8fb;
+      --card:#fff;
+      --line:#eef0f6;
+      --ink:#212529;
+      --muted:#6c757d;
+      --primary:#0d6efd;
+      --primary-soft:#eaf2ff;
+      --success:#198754;
+      --success-soft:#e8f5ee;
+      --warning:#f59f00;
+      --warning-soft:#fff4db;
+      --danger:#dc3545;
+      --danger-soft:#fdecee;
+      --dark:#374151;
+      --shadow:0 .25rem 1rem rgba(0,0,0,.06);
+    }
+
+    body{
+      background:#f7f8fb;
+      color:var(--ink);
+    }
+
+    .page{
+      background:#fff;
+      border-radius:.75rem;
+      box-shadow:0 .25rem 1rem rgba(0,0,0,.06);
+      padding:1.5rem;
+    }
+
+    .tool-card{
+      height:100%;
+      border:1px solid #eef0f6;
+      border-radius:.75rem;
+      background:#fff;
+      transition:background .15s ease, box-shadow .15s ease;
+    }
+
+    .tool-card:hover{
+      background:#f7f8fb;
+      box-shadow:0 .25rem .75rem rgba(0,0,0,.06);
+    }
+
+    .tool-icon{
+      font-size:1.6rem;
+      color:#0d6efd;
+      line-height:1;
+    }
+
+    .app-logo{
+      width:44px;
+      height:44px;
+      flex:0 0 44px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:.75rem;
+      background:#f0efff;
+      color:#514bff;
+    }
+
+    .app-logo svg{
+      width:21px;
+      height:21px;
+      stroke:currentColor;
+    }
+
+    .small-muted{
+      color:#6c757d;
+      font-size:.875rem;
+    }
+
+    .section-title{
+      font-weight:600;
+      font-size:.95rem;
+      color:#374151;
+      margin-bottom:.75rem;
+    }
+
+    .metric{
+      height:100%;
+      background:#fff;
+      border:1px solid #eef0f6;
+      border-radius:.75rem;
+      padding:1rem;
+      box-shadow:0 .15rem .6rem rgba(0,0,0,.025);
+    }
+
+    .metric .label{
+      font-size:.75rem;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#6c757d;
+      font-weight:700;
+    }
+
+    .metric .value{
+      font-size:1.55rem;
+      font-weight:700;
+      margin-top:.2rem;
+      color:#212529;
+    }
+
+    .metric .hint{
+      font-size:.78rem;
+      color:#6c757d;
+      margin-top:.15rem;
+    }
+
+    .metric.primary{border-top:3px solid var(--primary)}
+    .metric.success{border-top:3px solid var(--success)}
+    .metric.warning{border-top:3px solid var(--warning)}
+    .metric.danger{border-top:3px solid var(--danger)}
+
+    .badge-soft-primary{background:var(--primary-soft);color:var(--primary)}
+    .badge-soft-success{background:var(--success-soft);color:var(--success)}
+    .badge-soft-warning{background:var(--warning-soft);color:#9a6700}
+    .badge-soft-danger{background:var(--danger-soft);color:var(--danger)}
+
+    .nav-pills{
+      gap:.4rem;
+    }
+
+    .nav-pills .nav-link{
+      color:#475467;
+      border:1px solid #eef0f6;
+      background:#fff;
+      border-radius:.55rem;
+      padding:.4rem .75rem;
+      font-size:.875rem;
+    }
+
+    .nav-pills .nav-link:hover{
+      background:#f7f8fb;
+      color:#0d6efd;
+    }
+
+    .nav-pills .nav-link.active{
+      background:#0d6efd;
+      border-color:#0d6efd;
+      color:#fff;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      max-height:620px;
+      border:1px solid #eef0f6;
+      border-radius:.75rem;
+      background:#fff;
+    }
+
+    table{
+      font-size:.84rem;
+      margin-bottom:0;
+    }
+
+    thead th{
+      position:sticky;
+      top:0;
+      background:#f8f9fb!important;
+      z-index:2;
+      white-space:nowrap;
+      color:#374151;
+      font-weight:600;
+      border-bottom:1px solid #eef0f6;
+    }
+
+    td,th{vertical-align:middle}
+    .table>tbody>tr:hover>*{background:#f7f8fb}
+
+    .amount{
+      text-align:right;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .action-box{
+      border:1px solid #eef0f6;
+      border-left:4px solid var(--primary);
+      background:#fff;
+      border-radius:.65rem;
+      padding:.75rem .85rem;
+    }
+
+    .action-box.warning{border-left-color:var(--warning)}
+    .action-box.danger{border-left-color:var(--danger)}
+    .action-box.success{border-left-color:var(--success)}
+
+    .supplier-card{
+      border:1px solid #eef0f6;
+      border-radius:.75rem;
+      padding:.85rem;
+      background:#fff;
+      transition:background .15s ease, box-shadow .15s ease;
+    }
+
+    .supplier-card:hover{
+      background:#f7f8fb;
+      box-shadow:0 .25rem .75rem rgba(0,0,0,.05);
+    }
+
+    .progress{
+      height:.4rem;
+      background:#edf0f5;
+    }
+
+    .priority-dot{
+      width:.65rem;
+      height:.65rem;
+      border-radius:50%;
+      display:inline-block;
+      margin-right:.35rem;
+    }
+
+    .p1{background:var(--danger)}
+    .p2{background:var(--warning)}
+    .p3{background:var(--primary)}
+    .p4{background:#98a2b3}
+
+    .sidebar-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .form-control,.form-select{
+      border-color:#e2e6ee;
+      border-radius:.55rem;
+    }
+
+    .form-control:focus,.form-select:focus{
+      border-color:#86b7fe;
+      box-shadow:0 0 0 .2rem rgba(13,110,253,.12);
+    }
+
+    .btn{
+      border-radius:.55rem;
+    }
+
+    .sticky-actions{
+      position:sticky;
+      top:1rem;
+    }
+
+    details summary{
+      color:#374151;
+    }
+
+    @media(max-width:991px){
+      .sticky-actions{position:static}
+    }
+  </style>
+
+<style id="factures-width-match-telepaiements">
+/* Même largeur utile que l'outil Télépaiements */
+.container,
+.container-fluid,
+main,
+main.container,
+main.container-fluid,
+.wrap,
+.app,
+.content,
+.page,
+.page-shell{
+  max-width:none !important;
+}
+
+main,
+main.container,
+main.container-fluid,
+.wrap,
+.app,
+.content,
+.page,
+.page-shell{
+  width:100% !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  padding-left:1.5rem !important;
+  padding-right:1.5rem !important;
+  box-sizing:border-box !important;
+}
+
+/* L'en-tête suit également la largeur Télépaiements */
+header .container,
+header .container-fluid,
+.app-header .container,
+.app-header .container-fluid{
+  max-width:none !important;
+  width:100% !important;
+}
+
+@media(max-width:600px){
+  main,
+  main.container,
+  main.container-fluid,
+  .wrap,
+  .app,
+  .content,
+  .page,
+  .page-shell{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+  }
+}
+</style>
+
+  <script src="assets/iframe-storage-bridge.js"></script>
+</head>
+<body>
+<div class="container py-4">
+
+  <div class="page mb-4">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="app-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+              <path d="M9 8h6M9 12h4M9 16h3"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="h4 mb-1">Factures à traiter</h1>
+            <p class="small-muted mb-0">Priorisation, détection des anomalies et préparation des demandes de paiement.</p>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <label class="btn btn-primary mb-0" for="fileInput">Importer Excel / CSV</label>
+        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" class="d-none">
+        <button class="btn btn-outline-secondary" id="exportBtn">Exporter la file de travail</button>
+      </div>
+    </div>
+    <div class="small-muted mt-2" id="status">Aucun fichier chargé.</div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric primary"><div class="label">Factures</div><div class="value" id="kCount">—</div><div class="hint">lignes analysées</div></div></div>
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric primary"><div class="label">Montant TTC</div><div class="value" id="kTotal">—</div><div class="hint">portefeuille importé</div></div></div>
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric success"><div class="label">Immédiatement traitables</div><div class="value" id="kReady">—</div><div class="hint" id="kReadyAmt">—</div></div></div>
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric danger"><div class="label">Bloquées</div><div class="value" id="kBlocked">—</div><div class="hint" id="kBlockedAmt">—</div></div></div>
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric warning"><div class="label">≥ 30 jours</div><div class="value" id="kOld">—</div><div class="hint">date facture</div></div></div>
+    <div class="col-6 col-md-4 col-xl-2"><div class="metric danger"><div class="label">Anomalies</div><div class="value" id="kErrors">—</div><div class="hint">signaux détectés</div></div></div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-9">
+      <div class="page mb-4">
+        <div class="d-flex flex-column flex-xl-row justify-content-between gap-3 mb-3">
+          <div>
+            <div class="section-title mb-1">File de travail</div>
+            <div class="small-muted">La priorité distingue ce qui peut être payé de ce qui doit d’abord être corrigé.</div>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <input id="search" class="form-control form-control-sm" style="min-width:220px" placeholder="Facture, tiers, SIRET, EJ…">
+            <select id="sort" class="form-select form-select-sm" style="min-width:200px">
+              <option value="priority">Priorité opérationnelle</option>
+              <option value="oldest">Plus anciennes</option>
+              <option value="amount">Montant TTC décroissant</option>
+              <option value="recent">Plus récentes</option>
+            </select>
+          </div>
+        </div>
+
+        <ul class="nav nav-pills mb-3" id="views">
+          <li class="nav-item"><button class="nav-link active" data-view="all">Toutes</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="ready">À mettre en DP</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="blocked">À corriger</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="old">Anciennes</button></li>
+          <li class="nav-item"><button class="nav-link" data-view="highamount">Montants significatifs</button></li>
+        </ul>
+
+        <div class="table-wrap">
+          <table class="table table-hover table-sm mb-0">
+            <thead>
+              <tr>
+                <th>Priorité</th><th>État</th><th>Facture</th><th>Date</th><th>Âge</th>
+                <th>Tiers</th><th>SIRET</th><th>EJ / réf.</th><th class="amount">TTC</th><th>Action recommandée</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="10" class="text-center text-muted py-5">Importez un fichier pour commencer.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page mb-4">
+        <div class="section-title">Traitements groupés à préparer</div>
+        <div class="small-muted mb-3">Regroupement par fournisseur et par anomalie pour éviter de corriger facture par facture.</div>
+        <div class="row g-3" id="batchActions">
+          <div class="col-12 text-muted">Aucune donnée.</div>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="section-title">Fournisseurs à fiabiliser en priorité</div>
+        <div class="small-muted mb-3">Les tiers récurrents sont remontés avant les anomalies isolées.</div>
+        <div id="supplierSummary" class="row g-3"><div class="col-12 text-muted">Aucune donnée.</div></div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="sticky-actions">
+        <div class="page mb-4">
+          <div class="section-title">Plan de travail conseillé</div>
+          <div id="workPlan" class="d-grid gap-2">
+            <div class="text-muted small">Importez un fichier pour générer un plan.</div>
+          </div>
+        </div>
+
+        <div class="page mb-4">
+          <div class="section-title">Anomalies détectées</div>
+          <select id="errorFilter" class="form-select form-select-sm mb-3">
+            <option value="">Toutes anomalies</option>
+            <option value="SATFB058">SATFB058 — fournisseur non trouvé</option>
+            <option value="SATFB064">SATFB064 — domiciliation non trouvée</option>
+            <option value="SATFC056">SATFC056 — aucune commande à rattacher</option>
+            <option value="AUTRE">Autre anomalie</option>
+          </select>
+          <div id="errorSummary" class="d-grid gap-2"><div class="text-muted small">Aucune donnée.</div></div>
+        </div>
+
+        <div class="page">
+          <div class="section-title">Paramétrage</div>
+          <details>
+            <summary class="small fw-semibold" style="cursor:pointer">Mapping des colonnes</summary>
+            <p class="small-muted mt-2">Reconnaissance automatique des entêtes ; à défaut, positions de l’export source observé.</p>
+            <div id="mapping" class="d-grid gap-2"></div>
+            <button class="btn btn-sm btn-outline-primary mt-3" id="applyMap">Appliquer</button>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let rawAOA=[], rows=[], headers=[], currentView='all';
+const DEFAULT={id:0,invoice:2,invoiceDate:3,integrationDate:5,thirdParty:7,amountHT:11,amountTTC:12,actor:68,actorDate:69,ejRef:93,establishmentSiret:104,supplierSiret:107,supplierError:108,bankType:109,iban:110,bic:111,bankError:112,traceDate:116,traceTime:117,traceId:118,orderError:121};
+let map={...DEFAULT};
+const money=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmtNum=v=>{if(v==null||v==='')return 0;if(typeof v==='number')return v;let n=Number(String(v).replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
+const parseDate=v=>{if(!v)return null;if(v instanceof Date&&!isNaN(v))return v;if(typeof v==='number'&&window.XLSX){const d=XLSX.SSF.parse_date_code(v);if(d)return new Date(d.y,d.m-1,d.d)}const s=String(v).trim();let m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);const d=new Date(s);return isNaN(d)?null:d};
+const dateFR=d=>d?d.toLocaleDateString('fr-FR'):'—';
+const ageDays=d=>d?Math.max(0,Math.floor((new Date().setHours(0,0,0,0)-new Date(d).setHours(0,0,0,0))/86400000)):0;
+const val=(r,i)=>(i==null||i<0)?'':(r[i]??'');
+const sum=a=>a.reduce((s,x)=>s+x.amountTTC,0);
+
+function detectHeaderMode(aoa){if(!aoa.length)return false;const first=aoa[0].map(x=>String(x??'').toLowerCase());return first.filter(x=>/fact|montant|date|siret|iban|fournisseur|tiers|erreur|commande/.test(x)).length>=2}
+function autoMapFromHeaders(h){
+  const find=(patterns,fallback)=>{let i=h.findIndex(x=>patterns.some(p=>p.test(String(x??'').toLowerCase())));return i>=0?i:fallback};
+  map={
+    id:find([/identifiant.*fact/,/^id$/,/identifiant$/],DEFAULT.id),
+    invoice:find([/num.*fact/,/référence.*fact/,/reference.*fact/,/^facture$/],DEFAULT.invoice),
+    invoiceDate:find([/date.*fact/,/date.*pièce/,/date.*piece/],DEFAULT.invoiceDate),
+    integrationDate:find([/date.*intégr/,/date.*integr/,/date.*récep/,/date.*recep/],DEFAULT.integrationDate),
+    thirdParty:find([/fournisseur.*code/,/tiers/],DEFAULT.thirdParty),
+    amountHT:find([/montant.*ht/,/^ht$/],DEFAULT.amountHT),
+    amountTTC:find([/montant.*ttc/,/^ttc$/],DEFAULT.amountTTC),
+    actor:find([/acteur/,/créateur/,/createur/,/utilisateur/],DEFAULT.actor),
+    actorDate:find([/date.*acteur/,/date.*créat/,/date.*creat/],DEFAULT.actorDate),
+    ejRef:find([/\bej\b/,/engagement/,/commande.*réf/,/commande.*ref/],DEFAULT.ejRef),
+    establishmentSiret:find([/siret.*étab/,/siret.*etab/],DEFAULT.establishmentSiret),
+    supplierSiret:find([/siret.*fourn/,/siret.*tiers/],DEFAULT.supplierSiret),
+    supplierError:find([/erreur.*fourn/,/message.*fourn/],DEFAULT.supplierError),
+    bankType:find([/type.*rib/,/type.*iban/],DEFAULT.bankType),
+    iban:find([/^iban$/],DEFAULT.iban),
+    bic:find([/^bic$/, /swift/],DEFAULT.bic),
+    bankError:find([/erreur.*domic/,/erreur.*iban/,/message.*iban/,/message.*ban/],DEFAULT.bankError),
+    traceDate:find([/date.*trace/],DEFAULT.traceDate),
+    traceTime:find([/heure.*trace/],DEFAULT.traceTime),
+    traceId:find([/id.*trace/],DEFAULT.traceId),
+    orderError:find([/erreur.*commande/,/message.*commande/],DEFAULT.orderError)
+  };
+}
+function normalize(){
+  rows=rawAOA.filter(r=>r.some(x=>String(x??'').trim()!=='')).map(r=>{
+    const invoiceDate=parseDate(val(r,map.invoiceDate)), age=ageDays(invoiceDate), ttc=fmtNum(val(r,map.amountTTC));
+    const errors=[val(r,map.supplierError),val(r,map.bankError),val(r,map.orderError)].map(x=>String(x??'').trim()).filter(Boolean);
+    const allErr=errors.join(' | '); let code='';
+    if(/SATFB058/i.test(allErr))code='SATFB058'; else if(/SATFB064/i.test(allErr))code='SATFB064'; else if(/SATFC056/i.test(allErr))code='SATFC056'; else if(allErr)code='AUTRE';
+    const blocked=errors.length>0;
+    let score=blocked?0:Math.min(60,age*1.7)+Math.min(20,Math.log10(Math.max(ttc,1))*5)+(age>=30?15:0); score=Math.round(score);
+    let action='Préparer la demande de paiement';
+    if(code==='SATFB058')action='Fiabiliser / créer le fournisseur dans OP@LE';
+    if(code==='SATFB064')action='Contrôler puis rattacher la domiciliation bancaire';
+    if(code==='SATFC056')action='Identifier l’EJ / la commande à rattacher';
+    if(code==='AUTRE')action='Analyser le message avant traitement';
+    let priority=blocked?'CORR':score>=65?'P1':score>=45?'P2':score>=25?'P3':'P4';
+    return {raw:r,id:String(val(r,map.id)||''),invoice:String(val(r,map.invoice)||''),invoiceDate,age,thirdParty:String(val(r,map.thirdParty)||''),amountTTC:ttc,ejRef:String(val(r,map.ejRef)||''),supplierSiret:String(val(r,map.supplierSiret)||''),iban:String(val(r,map.iban)||''),bic:String(val(r,map.bic)||''),errors,code,blocked,score,priority,action};
+  });
+  renderAll();
+}
+function getFiltered(){
+  const q=document.getElementById('search').value.trim().toLowerCase(), ef=document.getElementById('errorFilter').value;
+  let out=rows.filter(x=>{
+    if(currentView==='ready'&&x.blocked)return false;
+    if(currentView==='blocked'&&!x.blocked)return false;
+    if(currentView==='old'&&x.age<30)return false;
+    if(currentView==='highamount'&&x.amountTTC<1000)return false;
+    if(ef&&x.code!==ef)return false;
+    if(q&&!([x.id,x.invoice,x.thirdParty,x.supplierSiret,x.ejRef,x.errors.join(' ')].join(' ').toLowerCase().includes(q)))return false;
+    return true;
+  });
+  const sort=document.getElementById('sort').value;
+  out.sort((a,b)=>{
+    if(sort==='amount')return b.amountTTC-a.amountTTC;
+    if(sort==='oldest')return b.age-a.age;
+    if(sort==='recent')return (b.invoiceDate?.getTime()||0)-(a.invoiceDate?.getTime()||0);
+    if(a.blocked!==b.blocked)return a.blocked?1:-1;
+    return b.score-a.score||b.age-a.age||b.amountTTC-a.amountTTC;
+  });
+  return out;
+}
+function pBadge(x){
+  if(x.blocked)return '<span class="badge badge-soft-danger">Correction</span>';
+  const cls=x.priority==='P1'?'p1':x.priority==='P2'?'p2':x.priority==='P3'?'p3':'p4';
+  return `<span class="priority-dot ${cls}"></span><strong>${x.priority}</strong>`;
+}
+function renderTable(){
+  const data=getFiltered(), tb=document.getElementById('tbody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="10" class="text-center text-muted py-5">Aucune ligne pour ce filtre.</td></tr>';return}
+  tb.innerHTML=data.map(x=>`<tr>
+    <td>${pBadge(x)}</td>
+    <td>${x.blocked?'<span class="badge badge-soft-danger">À corriger</span>':'<span class="badge badge-soft-success">À mettre en DP</span>'}</td>
+    <td><strong>${esc(x.invoice||x.id||'—')}</strong><div class="small text-muted">${esc(x.id)}</div></td>
+    <td>${dateFR(x.invoiceDate)}</td><td>${x.age} j</td><td>${esc(x.thirdParty||'—')}</td><td>${esc(x.supplierSiret||'—')}</td><td>${esc(x.ejRef||'—')}</td>
+    <td class="amount"><strong>${money.format(x.amountTTC)}</strong></td>
+    <td>${x.code?`<span class="badge badge-soft-warning mb-1">${x.code}</span><br>`:''}${esc(x.action)}${x.errors.length?`<div class="small text-muted mt-1">${esc(x.errors.join(' · '))}</div>`:''}</td>
+  </tr>`).join('');
+}
+function renderKPIs(){
+  const ready=rows.filter(x=>!x.blocked),blocked=rows.filter(x=>x.blocked);
+  kCount.textContent=rows.length;kTotal.textContent=money.format(sum(rows));kReady.textContent=ready.length;kReadyAmt.textContent=money.format(sum(ready));kBlocked.textContent=blocked.length;kBlockedAmt.textContent=money.format(sum(blocked));kOld.textContent=rows.filter(x=>x.age>=30).length;kErrors.textContent=rows.reduce((s,x)=>s+x.errors.length,0);
+}
+function renderErrors(){
+  const defs=[['SATFB058','Fournisseur non trouvé'],['SATFB064','Domiciliation bancaire'],['SATFC056','Commande / EJ absent'],['AUTRE','Autre anomalie']];
+  errorSummary.innerHTML=defs.map(([code,label])=>{const a=rows.filter(x=>x.code===code);return `<div class="supplier-card"><div class="d-flex justify-content-between gap-2"><strong class="small">${code}</strong><span class="badge text-bg-light">${a.length}</span></div><div class="small-muted">${label}</div><div class="small mt-1">${money.format(sum(a))}</div></div>`}).join('');
+}
+function renderWorkPlan(){
+  const ready=rows.filter(x=>!x.blocked).sort((a,b)=>b.score-a.score);
+  const suppliers=rows.filter(x=>x.code==='SATFB058'),banks=rows.filter(x=>x.code==='SATFB064'),orders=rows.filter(x=>x.code==='SATFC056');
+  const steps=[];
+  if(ready.length)steps.push(['success','1. Lancer les DP prêtes',`${ready.length} facture(s) · ${money.format(sum(ready))}`]);
+  if(suppliers.length)steps.push(['danger','2. Fiabiliser les fournisseurs',`${new Set(suppliers.map(x=>x.supplierSiret)).size} SIRET · ${suppliers.length} facture(s)`]);
+  if(banks.length)steps.push(['warning','3. Corriger les domiciliations',`${new Set(banks.map(x=>x.thirdParty)).size} tiers · ${banks.length} facture(s)`]);
+  if(orders.length)steps.push(['warning','4. Rechercher les EJ / commandes',`${orders.length} facture(s) à rattacher`]);
+  workPlan.innerHTML=steps.length?steps.map(s=>`<div class="action-box ${s[0]}"><strong class="small">${s[1]}</strong><div class="small-muted">${s[2]}</div></div>`).join(''):'<div class="text-muted small">Aucune donnée.</div>';
+}
+function renderBatchActions(){
+  const groups={};
+  rows.filter(x=>x.blocked).forEach(x=>{const key=(x.code||'AUTRE')+'|'+(x.supplierSiret||x.thirdParty||'Sans tiers');(groups[key]??=[]).push(x)});
+  const arr=Object.entries(groups).map(([k,a])=>({key:k,a,count:a.length,total:sum(a),code:a[0].code,supplier:a[0].supplierSiret||a[0].thirdParty||'Sans tiers'})).sort((a,b)=>b.count-a.count||b.total-a.total).slice(0,8);
+  batchActions.innerHTML=arr.length?arr.map(g=>`<div class="col-md-6 col-xl-4"><div class="tool-card p-3"><div class="d-flex justify-content-between align-items-start gap-2"><div><span class="badge badge-soft-warning">${g.code}</span><div class="fw-semibold mt-2">${esc(g.supplier)}</div></div><span class="badge text-bg-light">${g.count} fact.</span></div><div class="small-muted mt-2">${money.format(g.total)} concernés</div><div class="small mt-2">${g.code==='SATFB058'?'Une correction du fournisseur peut débloquer plusieurs factures.':g.code==='SATFB064'?'Contrôler une seule fois les coordonnées bancaires du tiers.':g.code==='SATFC056'?'Rechercher les EJ en série pour ce tiers.':'Traiter ces anomalies ensemble.'}</div></div></div>`).join(''):'<div class="col-12 text-muted">Aucune anomalie à regrouper.</div>';
+}
+function renderSuppliers(){
+  const m={};
+  rows.filter(x=>x.blocked).forEach(x=>{const key=x.supplierSiret||x.thirdParty||'Sans identifiant';if(!m[key])m[key]={key,count:0,total:0,codes:new Set()};m[key].count++;m[key].total+=x.amountTTC;m[key].codes.add(x.code||'AUTRE')});
+  const arr=Object.values(m).sort((a,b)=>b.count-a.count||b.total-a.total).slice(0,6);
+  supplierSummary.innerHTML=arr.length?arr.map((g,i)=>`<div class="col-md-6 col-xl-4"><div class="supplier-card h-100"><div class="d-flex justify-content-between"><strong>${esc(g.key)}</strong><span class="badge text-bg-light">${g.count}</span></div><div class="small-muted mt-1">${money.format(g.total)} bloqués</div><div class="mt-2">${[...g.codes].map(c=>`<span class="badge badge-soft-warning me-1">${c}</span>`).join('')}</div><div class="progress mt-3"><div class="progress-bar" style="width:${Math.min(100,g.count/Math.max(1,arr[0].count)*100)}%"></div></div></div></div>`).join(''):'<div class="col-12 text-muted">Aucun fournisseur à fiabiliser.</div>';
+}
+function renderAll(){renderKPIs();renderTable();renderErrors();renderWorkPlan();renderBatchActions();renderSuppliers()}
+function renderMapping(){
+  const fields={invoice:'N° facture',invoiceDate:'Date facture',thirdParty:'Code tiers',amountTTC:'Montant TTC',ejRef:'EJ / commande',supplierSiret:'SIRET fournisseur',supplierError:'Erreur fournisseur',iban:'IBAN',bic:'BIC/SWIFT',bankError:'Erreur bancaire',orderError:'Erreur commande'};
+  mapping.innerHTML=Object.entries(fields).map(([k,label])=>`<label class="small">${label}<select class="form-select form-select-sm mt-1" data-map="${k}"><option value="-1">— Non utilisée —</option>${headers.map((h,i)=>`<option value="${i}" ${map[k]===i?'selected':''}>${i+1} — ${esc(h||('Colonne '+(i+1)))}</option>`).join('')}</select></label>`).join('');
+}
+function loadAOA(aoa,name){
+  if(!aoa.length){alert('Aucune donnée détectée.');return}
+  const headerMode=detectHeaderMode(aoa);
+  if(headerMode){headers=aoa[0].map((x,i)=>String(x??'').trim()||`Colonne ${i+1}`);rawAOA=aoa.slice(1);autoMapFromHeaders(headers)}
+  else{const width=Math.max(...aoa.map(r=>r.length));headers=Array.from({length:width},(_,i)=>`Colonne ${i+1}`);rawAOA=aoa;map={...DEFAULT}}
+  renderMapping();normalize();status.textContent=`${name} — ${rows.length} ligne(s) analysée(s)`;
+}
+fileInput.addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;const buf=await f.arrayBuffer();
+  try{
+    const wb=/\.csv$/i.test(f.name)?XLSX.read(new TextDecoder('utf-8').decode(buf),{type:'string'}):XLSX.read(buf,{type:'array',cellDates:true});
+    loadAOA(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''}),f.name);
+  }catch(err){console.error(err);alert('Lecture impossible. Vérifiez le format Excel/CSV.')}
+});
+applyMap.onclick=()=>{document.querySelectorAll('[data-map]').forEach(s=>map[s.dataset.map]=Number(s.value));normalize()};
+['search','errorFilter','sort'].forEach(id=>document.getElementById(id).addEventListener('input',renderTable));
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentView=b.dataset.view;renderTable()});
+exportBtn.onclick=()=>{
+  const data=getFiltered().map(x=>({Priorite:x.priority,Etat:x.blocked?'A corriger':'A mettre en DP',Facture:x.invoice,Date:dateFR(x.invoiceDate),Age_jours:x.age,Tiers:x.thirdParty,SIRET:x.supplierSiret,EJ:x.ejRef,Montant_TTC:x.amountTTC,Code_anomalie:x.code,Action:x.action,Message:x.errors.join(' | ')}));
+  if(!data.length)return;const ws=XLSX.utils.json_to_sheet(data),csv=XLSX.utils.sheet_to_csv(ws,{FS:';'}),blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cockpit_opale_file_travail.csv';a.click();URL.revokeObjectURL(a.href);
+};
+renderMapping();
+</script>
+</body>
+</html>
